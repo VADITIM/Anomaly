@@ -1,0 +1,35 @@
+[gd_scene load_steps=2 format=3 uid="uid://dql27fxuj2d7r"]
+
+[ext_resource type="Texture2D" uid="uid://btoxfe4qv5cre" path="res://#Assets/UI/Resources UI/Stamina Bar/stamina_segment_empty.png" id="1_03gfy"]
+
+[node name="Stamina Empty Segment" type="TextureRect"]
+texture_filter = 1
+offset_top = -3.0
+offset_right = 1.0
+offset_bottom = 4.0
+pivot_offset = Vector2(0, 3.5)
+texture = ExtResource("1_03gfy")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/health_bar_1.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/health_bar_1.aseprite",
+"source_uid": 6654028064338848644
+}
+metadata/_aseprite_wizard_source_file_hash_ = "fabf74583610f97e2c705911b8b56d0c"

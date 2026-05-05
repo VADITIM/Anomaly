@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://dmovjpiadixon"]
+
+[ext_resource type="Texture2D" uid="uid://cdtlhrl0iuc1e" path="res://#Assets/UI/GUI/quick_item_slots.png" id="1_kgfbw"]
+[ext_resource type="Texture2D" uid="uid://c86gbbkpst8d3" path="res://#Assets/Entities/Weapons/scythe.png" id="2_couue"]
+
+[node name="Quick Item Slots" type="TextureRect"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -1635.0
+offset_bottom = -717.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_kgfbw")
+stretch_mode = 4
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(145, 78)
+
+[node name="Sprite2D2" type="Sprite2D" parent="."]
+position = Vector2(235, 191)
+scale = Vector2(0.157143, 0.157143)
+texture = ExtResource("2_couue")
+
+[node name="Sprite2D3" type="Sprite2D" parent="."]
+position = Vector2(145, 274)
+
+[node name="Sprite2D4" type="Sprite2D" parent="."]
+position = Vector2(50, 191)

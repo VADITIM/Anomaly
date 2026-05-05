@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://p85virnxgu84"
+path="res://.godot/imported/Bow_1_Template_Idle_Left.aseprite-5df6469131154e32814850f300ad88f5.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Bow/Bow_1_Template_Idle_Left.aseprite"
+dest_files=["res://.godot/imported/Bow_1_Template_Idle_Left.aseprite-5df6469131154e32814850f300ad88f5.res"]
+
+[params]
+

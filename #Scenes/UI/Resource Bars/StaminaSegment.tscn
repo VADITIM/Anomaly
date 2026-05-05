@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://dbt5lujwrmhd0"]
+
+[ext_resource type="Texture2D" uid="uid://o1vswyw0jgl4" path="res://#Assets/UI/Resources UI/Stamina Bar/stamina_segment.png" id="1_wghx3"]
+
+[node name="Stamina Segment" type="TextureRect"]
+texture_filter = 1
+pivot_offset = Vector2(0, 3.5)
+texture = ExtResource("1_wghx3")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/resources_ui_ase-Sheet.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/Resources UI/resources_ui_ase-Sheet.aseprite",
+"source_uid": 8076790468175671351
+}
+metadata/_aseprite_wizard_source_file_hash_ = "0dbeb590ed98d56a7fd3e0af1bbeb618"

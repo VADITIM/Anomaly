@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://d112v2ekbjvru"
+path="res://.godot/imported/Sword_1_Template_Idle_Up.aseprite-4773f02075b643da04b41cd410823511.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Sword/Sword_1_Template_Idle_Up.aseprite"
+dest_files=["res://.godot/imported/Sword_1_Template_Idle_Up.aseprite-4773f02075b643da04b41cd410823511.res"]
+
+[params]
+

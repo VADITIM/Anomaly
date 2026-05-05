@@ -1,0 +1,387 @@
+using Godot;
+using System;
+
+public class TenacitySystem
+{
+    public TenacitySystem(Enemy enemy, Node parent, EnemyStateMachine stateMachine)
+    {
+        Enemy = enemy;
+        Parent = parent;
+        EnemyStateMachine = stateMachine;
+        MaxStaggers = enemy.maxStaggers;
+    }
+    
+    private Enemy Enemy;
+    private Node Parent;
+    private EnemyStateMachine EnemyStateMachine;
+
+    public event Action<Vector2, float> OnKnockbackStarted;
+    public event Action OnKnockbackEnded;
+    public event Action<float> OnStaggerStarted;
+    public event Action OnStaggerEnded;
+    public event Action<float> OnRecoveryStarted;
+    public event Action OnRecoveryEnded;
+
+    private Vector2 knockbackVelocity = Vector2.Zero;
+    private float knockbackDecay = 2000f;
+    private float knockbackDuration = 0f;
+    private bool isKnockbackActive = false;
+
+    private float staggerDuration = 0f;
+    private bool isStaggered = false;
+    public int CurrentStaggerCount { get; private set; } = 0;
+    public int MaxStaggers { get; private set; } = 3;
+
+    private float recoveryDuration = 0f;
+    private bool isRecovering = false;
+    public bool IsRecovering => isRecovering;
+
+    private int tenacityStackCount = 0;
+    private const int MAX_TENACITY_STACKS = 10;
+    private Timer stackResetTimer = null;
+
+    private bool isInStaggerWindow = false;
+    private Timer staggerWindowTimer = null;
+
+    private bool cuePlayed = false;
+    private Weapon pendingWeaponReset = null;
+    public bool IsInRecoveryCooldown => isRecovering;
+    public bool IsInStaggerWindow => isInStaggerWindow;
+    public bool IsStaggered => isStaggered;
+    public bool IsKnockbackActive => isKnockbackActive;
+
+    private const float STACK_RESET_TIME = 1.5f;
+    private const float STAGGER_IMMOBILITY_DURATION = 1.2f;  
+    private const float STAGGER_WINDOW_DURATION = 2.0f;      
+    private const float RECOVERY_DURATION = 2.5f;
+
+    public float GetRemainingStaggerTime() => isStaggered ? staggerDuration : 0f;
+    public float GetRemainingKnockbackTime() => isKnockbackActive ? knockbackDuration : 0f;
+    public float GetRemainingRecoveryTime() => isRecovering ? recoveryDuration : 0f;
+    public bool IsInLockedState() { return isStaggered || isKnockbackActive || EnemyStateMachine.IsDead; }
+
+
+    public void Process(float delta)
+    {
+        ProcessStagger(delta);
+        ProcessKnockback(delta);
+        ProcessRecovery(delta);
+    }
+
+    private void ProcessStagger(float delta)
+    {
+        if (!isStaggered) return;
+        
+        staggerDuration -= delta;
+        ProcessKnockbackPhysics(delta);
+        
+        if (staggerDuration <= 0)
+        {
+            isStaggered = false;
+            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+            OnStaggerEnded?.Invoke();
+        }
+    }
+
+    private void ProcessKnockback(float delta)
+    {
+        if (!isKnockbackActive) return;
+        
+        knockbackDuration -= delta;
+        ProcessKnockbackPhysics(delta);
+        
+        if (knockbackDuration <= 0)
+        {
+            isKnockbackActive = false;
+            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+            OnKnockbackEnded?.Invoke();
+        }
+    }
+
+    private void ProcessRecovery(float delta)
+    {
+        if (!isRecovering) return;
+        
+        recoveryDuration -= delta;
+        if (recoveryDuration <= 0)
+        {
+            isRecovering = false;
+            CurrentStaggerCount = 0;
+            OnRecoveryComplete();
+        }
+    }
+
+    public bool ProcessTenacitySystem(Vector2 playerPosition, Weapon weapon)
+    {
+        if (isRecovering) return false;
+        
+        pendingWeaponReset = weapon;
+        float tenacityDamage;
+        if (global::StateMachine.CurrentState == PlayerState.HeavyAttacking)
+        {
+            tenacityDamage = weapon.CalculateTenacityDamage(weapon.tenacityDamage) * 1.30f;
+        }
+        else
+        {
+            tenacityDamage = weapon.CalculateTenacityDamage(weapon.tenacityDamage);
+        }
+
+        Enemy.tenacity -= tenacityDamage;
+        Enemy.tenacity = Mathf.Max(Enemy.tenacity, 0f);
+        
+        if (tenacityStackCount < MAX_TENACITY_STACKS)
+        {
+            tenacityStackCount++;
+            RestartStackResetTimer();
+        }
+        else
+        {
+            TriggerRecovery();
+            return false;
+        }
+        
+        bool shouldStagger = Enemy.tenacity <= 0f && CanBeStaggered();
+        
+        if (shouldStagger)
+        {
+            TriggerStagger(playerPosition, weapon);
+            return true;
+        }
+        
+        return false;
+    }
+
+
+    public bool CanBeStaggered()
+    {
+        if (isRecovering || EnemyStateMachine.IsDead)
+            return false;
+        return CurrentStaggerCount < MaxStaggers;
+    }
+
+    public bool RequestStagger(float duration = -1f)
+    {
+        if (!CanBeStaggered()) return false;
+        
+        staggerDuration = duration > 0 ? duration : Enemy.DefaultStaggerDuration;
+        CurrentStaggerCount++;
+        isStaggered = true;
+        
+        EnemyStateMachine.TransitionTo(EnemyState.Staggered);
+        OnStaggerStarted?.Invoke(staggerDuration);
+        
+        return true;
+    }
+
+    private void TriggerStagger(Vector2 playerPosition, Weapon weapon)
+    {
+        bool isFirstStagger = !isInStaggerWindow;
+        
+        if (!cuePlayed && Enemy.TenacityCooldownCue != null)
+        {
+            Enemy.TenacityCooldownCue.Play("tenacity broken");
+            Enemy.TenacityCooldownCue.Visible = true;
+            cuePlayed = true;
+        }
+        
+        bool staggerApplied = RequestStagger(STAGGER_IMMOBILITY_DURATION);
+        
+        if (staggerApplied)
+        {
+            bool isSpecialHit = (weapon.hitCount % weapon.specialHitInterval) == 0;
+            ApplyStaggerKnockback(playerPosition, weapon, isSpecialHit);
+            
+            if (isFirstStagger)
+            {
+                StartStaggerWindow();
+            }
+            
+            if (CurrentStaggerCount >= MaxStaggers)
+            {
+                ClearStaggerWindowTimer();
+                TriggerRecovery();
+            }
+        }
+    }
+
+    private void StartStaggerWindow()
+    {
+        isInStaggerWindow = true;
+        ClearStaggerWindowTimer();
+        
+        staggerWindowTimer = new Timer();
+        staggerWindowTimer.WaitTime = STAGGER_WINDOW_DURATION;
+        staggerWindowTimer.OneShot = true;
+        Parent.AddChild(staggerWindowTimer);
+        staggerWindowTimer.Start();
+        
+        staggerWindowTimer.Timeout += OnStaggerWindowExpired;
+    }
+
+    private void OnStaggerWindowExpired()
+    {
+        ClearStaggerWindowTimer();
+        TriggerRecovery();
+    }
+
+
+    public void RequestRecovery(float duration = -1f)
+    {
+        if (EnemyStateMachine.IsDead) return;
+        if (isRecovering) return;
+        
+        recoveryDuration = duration > 0 ? duration : Enemy.DefaultRecoveryDuration;
+        isRecovering = true;
+        
+        if (isStaggered)
+        {
+            isStaggered = false;
+            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+        }
+        
+        OnRecoveryStarted?.Invoke(recoveryDuration);
+    }
+
+    private void TriggerRecovery()
+    {
+        if (isRecovering) return;
+        
+        isInStaggerWindow = false;
+        ClearStackResetTimer();
+        ClearStaggerWindowTimer();
+        
+        RequestRecovery(RECOVERY_DURATION);
+    }
+
+    private void OnRecoveryComplete()
+    {
+        Enemy.tenacity = Enemy.maxTenacity;
+        tenacityStackCount = 0;
+        isInStaggerWindow = false;
+        
+        pendingWeaponReset?.ResetTenacityDamage();
+        pendingWeaponReset = null;
+        
+        if (cuePlayed && Enemy.TenacityCooldownCue != null)
+        {
+            Enemy.TenacityCooldownCue.Play("tenacity recovered");
+            cuePlayed = false;
+        }
+    }
+
+
+    public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
+    {
+        if (EnemyStateMachine.IsDead) return;
+        
+        knockbackVelocity = direction.Normalized() * force;
+        knockbackDuration = duration > 0 ? duration : Enemy.DefaultKnockbackDuration;
+        
+        if (isStaggered)
+        {
+            OnKnockbackStarted?.Invoke(direction, force);
+            return;
+        }
+        
+        isKnockbackActive = true;
+        EnemyStateMachine.TransitionTo(EnemyState.Knockback);
+        OnKnockbackStarted?.Invoke(direction, force);
+    }
+
+    private void ApplyStaggerKnockback(Vector2 playerPosition, Weapon weapon, bool isSpecialHit)
+    {
+        float baseForce = weapon.knockback / 4;
+        
+        if (isSpecialHit)
+        {
+            baseForce *= 1.3f;
+        }
+        
+        float tenacityDifference = Enemy.maxTenacity - 5f;
+        float tenacityDistanceMultiplier = 1f + (tenacityDifference * -0.1f);
+        tenacityDistanceMultiplier = Mathf.Clamp(tenacityDistanceMultiplier, 0.25f, 1.25f);
+
+        float maxTenacityReduction = 1f - (Enemy.maxTenacity / 100f);
+        maxTenacityReduction = Mathf.Clamp(maxTenacityReduction, 0.3f, 1f);
+
+        float weaknessMultiplier = (Enemy.weaknessType.ToString() == weapon.attackType.ToString()) 
+            ? Enemy.outsideKnockbackForce : 1f;
+        
+        float effectiveKnockback = baseForce * tenacityDistanceMultiplier * maxTenacityReduction * weaknessMultiplier * 10f;
+        Vector2 knockbackDirection = (Enemy.GlobalPosition - playerPosition).Normalized();
+        
+        RequestKnockback(knockbackDirection, effectiveKnockback);
+    }
+
+    public void ProcessKnockbackPhysics(float delta)
+    {
+        if (knockbackVelocity.Length() > 0 && Enemy != null)
+        {
+            Enemy.Velocity = knockbackVelocity;
+            Enemy.MoveAndSlide();
+            knockbackVelocity = knockbackVelocity.MoveToward(Vector2.Zero, knockbackDecay * delta);
+        }
+    }
+
+    private void RestartStackResetTimer()
+    {
+        if (isInStaggerWindow) return;
+        
+        ClearStackResetTimer();
+        
+        stackResetTimer = new Timer();
+        stackResetTimer.WaitTime = STACK_RESET_TIME;
+        stackResetTimer.OneShot = true;
+        Parent.AddChild(stackResetTimer);
+        stackResetTimer.Start();
+        
+        stackResetTimer.Timeout += OnStackResetTimeout;
+    }
+
+    private void OnStackResetTimeout()
+    {
+        if (tenacityStackCount < MAX_TENACITY_STACKS && !isRecovering && !isInStaggerWindow)
+        {
+            Enemy.tenacity = Enemy.maxTenacity;
+            tenacityStackCount = 0;
+        }
+        
+        ClearStackResetTimer();
+    }
+
+    private void ClearStackResetTimer()
+    {
+        if (stackResetTimer != null && IsInstanceValid(stackResetTimer))
+        {
+            stackResetTimer.Stop();
+            stackResetTimer.QueueFree();
+            stackResetTimer = null;
+        }
+    }
+
+    private void ClearStaggerWindowTimer()
+    {
+        if (staggerWindowTimer != null && IsInstanceValid(staggerWindowTimer))
+        {
+            staggerWindowTimer.Stop();
+            staggerWindowTimer.QueueFree();
+            staggerWindowTimer = null;
+        }
+    }
+    
+    private bool IsInstanceValid(GodotObject obj)
+    {
+        return GodotObject.IsInstanceValid(obj);
+    }
+
+    public void Cleanup()
+    {
+        ClearStackResetTimer();
+        ClearStaggerWindowTimer();
+        
+        if (EnemyStateMachine != null)
+        {
+            OnRecoveryEnded -= OnRecoveryComplete;
+        }
+    }
+}

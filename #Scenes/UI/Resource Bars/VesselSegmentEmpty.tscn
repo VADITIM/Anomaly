@@ -1,0 +1,34 @@
+[gd_scene load_steps=2 format=3 uid="uid://brsabeqgs8ycx"]
+
+[ext_resource type="Texture2D" uid="uid://bv2lunvct7cwl" path="res://#Assets/UI/Resources UI/Vessel Bar/vessel_segment_empty.png" id="1_jabwv"]
+
+[node name="Heal Empty Segment" type="TextureRect"]
+z_index = 1
+texture_filter = 1
+offset_right = 1.0
+offset_bottom = 2.0
+texture = ExtResource("1_jabwv")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/health_bar_1.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/health_bar_1.aseprite",
+"source_uid": 6654028064338848644
+}
+metadata/_aseprite_wizard_source_file_hash_ = "fabf74583610f97e2c705911b8b56d0c"

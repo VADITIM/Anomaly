@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://bualcr85nt0rd"]
+
+[node name="Label" type="RichTextLabel"]
+offset_left = -246.0
+offset_top = 7.00002
+offset_right = 744.0
+offset_bottom = 520.0
+scale = Vector2(0.576131, 0.576131)
+theme_override_font_sizes/normal_font_size = 50
+text = "State
+Health 
+Armor
+Tenacity 
+Staggers
+Weakness"

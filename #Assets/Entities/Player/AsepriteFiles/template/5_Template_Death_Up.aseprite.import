@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://cj6lk5ijclaag"
+path="res://.godot/imported/5_Template_Death_Up.aseprite-2c31a9d11c6c50f02bf8415b24ed7eb4.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/5_Template_Death_Up.aseprite"
+dest_files=["res://.godot/imported/5_Template_Death_Up.aseprite-2c31a9d11c6c50f02bf8415b24ed7eb4.res"]
+
+[params]
+

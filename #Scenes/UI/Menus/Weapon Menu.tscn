@@ -1,0 +1,49 @@
+[gd_scene load_steps=8 format=3 uid="uid://bgahxlcxcj3nk"]
+
+[ext_resource type="Script" uid="uid://dvkwvks0uu08m" path="res://#Scripts/UI/WeaponMenu.cs" id="1_0kfwu"]
+[ext_resource type="PackedScene" uid="uid://ckjier8c5ki5i" path="res://#Scenes/Weapons/Weapon Manager.tscn" id="2_paqvh"]
+[ext_resource type="PackedScene" uid="uid://b8qxomuahcc2v" path="res://#Scenes/UI/WeapnItemControl.tscn" id="2_rs1rc"]
+[ext_resource type="Script" uid="uid://cp3w71omtqs2m" path="res://#Scripts/Weapons/WeaponInventory.cs" id="3_1cs8r"]
+[ext_resource type="PackedScene" uid="uid://drls02dfnacq0" path="res://#Scenes/Weapons/Pierching Weapon.tscn" id="4_rs1rc"]
+[ext_resource type="PackedScene" uid="uid://4vrodf6tt6t6" path="res://#Scenes/Weapons/Slashing Weapon.tscn" id="5_u51ay"]
+[ext_resource type="PackedScene" uid="uid://dygiv72viw8hp" path="res://#Scenes/Weapons/Smashing Weapon.tscn" id="6_3mofk"]
+
+[node name="Weapon Menu" type="Control" node_paths=PackedStringArray("WeaponManager", "WeaponInventory", "WeaponGrid")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_0kfwu")
+WeaponManager = NodePath("Weapon Manager")
+WeaponInventory = NodePath("Weapon Inventory")
+WeaponGrid = NodePath("Weapon Inventory Panel/GridContainer")
+WeaponButtonScene = ExtResource("2_rs1rc")
+
+[node name="Weapon Inventory Panel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 511.0
+offset_top = 226.0
+offset_right = -511.0
+offset_bottom = -226.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="Weapon Inventory Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+columns = 5
+
+[node name="Weapon Manager" parent="." instance=ExtResource("2_paqvh")]
+
+[node name="Weapon Inventory" type="Node2D" parent="."]
+script = ExtResource("3_1cs8r")
+StartingWeapons = Array[PackedScene]([ExtResource("4_rs1rc"), ExtResource("5_u51ay"), ExtResource("6_3mofk")])

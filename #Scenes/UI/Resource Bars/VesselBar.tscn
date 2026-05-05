@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3 uid="uid://bcjb7ovxbu5u4"]
+
+[ext_resource type="Texture2D" uid="uid://uwyb7smbbmxh" path="res://#Assets/UI/Resources UI/Vessel Bar/vessel_segment.png" id="1_mgyxg"]
+[ext_resource type="Texture2D" uid="uid://6sxgybt22quk" path="res://#Assets/UI/Resources UI/Vessel Bar/vessel_end_start.png" id="2_4b6wd"]
+
+[node name="XP Bar" type="Node2D"]
+
+[node name="Segments" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Segments"]
+texture = ExtResource("1_mgyxg")
+offset = Vector2(0.5, 0)
+
+[node name="Start Sprite" type="Sprite2D" parent="."]
+position = Vector2(-1, 0)
+texture = ExtResource("2_4b6wd")
+offset = Vector2(0.5, 0)
+
+[node name="End Sprite" type="Sprite2D" parent="."]
+position = Vector2(1, 0)
+texture = ExtResource("2_4b6wd")
+offset = Vector2(0.5, 0)

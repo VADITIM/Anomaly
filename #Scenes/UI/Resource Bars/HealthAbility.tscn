@@ -1,0 +1,33 @@
+[gd_scene load_steps=2 format=4 uid="uid://dq00tljbii6cr"]
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_st6yx"]
+_data = PackedByteArray("AAADAAUAAAABAAAAIAAAABsAAACiAAAAUklGRpoAAABXRUJQVlA4TI4AAAAvH4AGEB8gEEjyJ9xmDYFAEtj+WgsEkmT3R3j+A/BXgaPatt3khCohI8qQhYovgV7UPHCSMWq6k5QR69f3YyGi/wrbtm2U2V2/AYwAssz6MJLytIVmGantdAWYxpZVxHZyG8DXdna8hr/92UXFxsrRyn3Q2PO1seVDJzWtj+l/Kx1al9aZ122E1Ga9jLIA")
+size_override = Vector2(32, 27)
+
+[node name="TextureRect" type="TextureRect"]
+texture_filter = 1
+offset_right = 40.0
+offset_bottom = 40.0
+texture = SubResource("PortableCompressedTexture2D_st6yx")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/health_star.aseprite",
+"source_uid": 4472883050294626615
+}
+metadata/_aseprite_wizard_source_file_hash_ = "1ff17a476e5cbdc6d4fd77ed8e102918"

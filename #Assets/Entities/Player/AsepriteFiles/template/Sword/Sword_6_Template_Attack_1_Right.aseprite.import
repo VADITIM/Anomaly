@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://3vnpm7nhxgte"
+path="res://.godot/imported/Sword_6_Template_Attack_1_Right.aseprite-d449888ac8642945b757976c8d3555e3.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Sword/Sword_6_Template_Attack_1_Right.aseprite"
+dest_files=["res://.godot/imported/Sword_6_Template_Attack_1_Right.aseprite-d449888ac8642945b757976c8d3555e3.res"]
+
+[params]
+

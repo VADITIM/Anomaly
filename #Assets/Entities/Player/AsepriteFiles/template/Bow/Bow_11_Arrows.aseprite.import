@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://mvbe05xxtr7c"
+path="res://.godot/imported/Bow_11_Arrows.aseprite-ea44c26677ccf2cac8456eb2dc31ddec.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Bow/Bow_11_Arrows.aseprite"
+dest_files=["res://.godot/imported/Bow_11_Arrows.aseprite-ea44c26677ccf2cac8456eb2dc31ddec.res"]
+
+[params]
+

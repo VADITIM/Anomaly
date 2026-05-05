@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://dcgcbm4uvqfjj"
+path="res://.godot/imported/Bow_6_Template_Attack_1_Down_Right_Diagonal.aseprite-25c6b2f7f18f8eda13643cb71606407e.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Bow/Bow_6_Template_Attack_1_Down_Right_Diagonal.aseprite"
+dest_files=["res://.godot/imported/Bow_6_Template_Attack_1_Down_Right_Diagonal.aseprite-25c6b2f7f18f8eda13643cb71606407e.res"]
+
+[params]
+

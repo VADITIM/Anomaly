@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://c2ir1qn186vcv"
+path="res://.godot/imported/4_Template_Take_Damage_Left.aseprite-e90edf5b8f6285fe3f090462c2691592.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/4_Template_Take_Damage_Left.aseprite"
+dest_files=["res://.godot/imported/4_Template_Take_Damage_Left.aseprite-e90edf5b8f6285fe3f090462c2691592.res"]
+
+[params]
+

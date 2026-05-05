@@ -1,0 +1,63 @@
+[gd_scene load_steps=4 format=3 uid="uid://bmqiwtplkxkbm"]
+
+[ext_resource type="FontFile" uid="uid://clad1xd41f85h" path="res://#Assets/UI/Fonts/Zodiak-Variable.ttf" id="1_ltxt0"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ltxt0"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_oscs7"]
+font = ExtResource("1_ltxt0")
+font_size = 50
+
+[node name="Stat Upgrade Description" type="VBoxContainer"]
+custom_minimum_size = Vector2(350, 150)
+offset_right = 800.0
+offset_bottom = 1080.0
+
+[node name="Panel" type="Panel" parent="."]
+custom_minimum_size = Vector2(800, 150)
+layout_mode = 2
+
+[node name="Stat Name" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.024
+anchor_right = 1.024
+anchor_bottom = 1.0
+offset_left = -0.200001
+offset_right = -0.200012
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_ltxt0")
+text = "Vigor"
+label_settings = SubResource("LabelSettings_oscs7")
+vertical_alignment = 1
+
+[node name="Current Stat Level" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.024
+anchor_right = 1.024
+anchor_bottom = 1.0
+offset_left = 380.8
+offset_right = -326.2
+grow_horizontal = 2
+grow_vertical = 2
+text = "1"
+label_settings = SubResource("LabelSettings_oscs7")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Next Stat Level" type="Label" parent="Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.024
+anchor_right = 1.024
+anchor_bottom = 1.0
+offset_left = 473.8
+offset_right = -233.2
+grow_horizontal = 2
+grow_vertical = 2
+text = "+2"
+label_settings = SubResource("LabelSettings_oscs7")
+horizontal_alignment = 1
+vertical_alignment = 1

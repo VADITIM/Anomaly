@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://civ4lh3l07iw5"
+path="res://.godot/imported/Bow_9_Template_Combo_Attack_1_And_2_Up.aseprite-e205181c32510403713a02c1879ef764.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Bow/Bow_9_Template_Combo_Attack_1_And_2_Up.aseprite"
+dest_files=["res://.godot/imported/Bow_9_Template_Combo_Attack_1_And_2_Up.aseprite-e205181c32510403713a02c1879ef764.res"]
+
+[params]
+

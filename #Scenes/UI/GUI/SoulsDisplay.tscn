@@ -1,0 +1,27 @@
+[gd_scene load_steps=4 format=3 uid="uid://dw3rw4rj3q58r"]
+
+[ext_resource type="Texture2D" uid="uid://dhk01yur47rbu" path="res://#Assets/UI/GUI/souls_background.png" id="1_q00j3"]
+[ext_resource type="FontFile" uid="uid://clad1xd41f85h" path="res://#Assets/UI/Fonts/Zodiak-Variable.ttf" id="2_gi622"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_eu6ni"]
+font = ExtResource("2_gi622")
+font_size = 25
+
+[node name="Souls Display" type="TextureRect"]
+offset_right = 137.0
+offset_bottom = 67.0
+texture = ExtResource("1_q00j3")
+stretch_mode = 6
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(68.5, 25.5)
+text = "4185"
+label_settings = SubResource("LabelSettings_eu6ni")
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://7gs2yuklouxh"]
+
+[ext_resource type="Texture2D" uid="uid://uwyb7smbbmxh" path="res://#Assets/UI/Resources UI/Vessel Bar/vessel_segment.png" id="1_563qx"]
+
+[node name="XP Segment" type="TextureRect"]
+offset_top = -1.0
+offset_right = 1.0
+offset_bottom = 1.0
+pivot_offset = Vector2(0, 1)
+texture = ExtResource("1_563qx")

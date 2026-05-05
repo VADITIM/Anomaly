@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://lx5v45c06o32"]
+
+[ext_resource type="PackedScene" uid="uid://c1p0pxepqtr8x" path="res://#Scenes/UI/GUI/GUI.tscn" id="1_p1kr5"]
+[ext_resource type="PackedScene" uid="uid://y771x2vrsh37" path="res://#Scenes/UI/Menus/Bonfire Menu.tscn" id="2_2wck2"]
+
+[node name="Player UI Layer" type="CanvasLayer"]
+
+[node name="GUI" parent="." instance=ExtResource("1_p1kr5")]
+
+[node name="Bonfire Interface" parent="." instance=ExtResource("2_2wck2")]

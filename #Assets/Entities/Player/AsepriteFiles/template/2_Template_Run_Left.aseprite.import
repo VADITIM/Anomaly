@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://jqxn3ec5b00d"
+path="res://.godot/imported/2_Template_Run_Left.aseprite-e9ad2ecb812ba88eff1fcb68dfa722c5.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/2_Template_Run_Left.aseprite"
+dest_files=["res://.godot/imported/2_Template_Run_Left.aseprite-e9ad2ecb812ba88eff1fcb68dfa722c5.res"]
+
+[params]
+

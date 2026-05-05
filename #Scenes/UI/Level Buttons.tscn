@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://dcabfgn3ql732"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_k5q6a"]
+bg_color = Color(0.755743, 0.534741, 0.526047, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_x7ycf"]
+bg_color = Color(0.425442, 0.671029, 0.427846, 1)
+
+[node name="Level Buttons" type="HBoxContainer"]
+custom_minimum_size = Vector2(350, 150)
+offset_right = 350.0
+offset_bottom = 150.0
+alignment = 1
+
+[node name="Level Down Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_k5q6a")
+
+[node name="Level Up Button" type="Button" parent="."]
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_x7ycf")

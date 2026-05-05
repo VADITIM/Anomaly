@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://p7kmxb5hvjfb"
+path="res://.godot/imported/Sword_2_Template_Run_Down.aseprite-a305a710c64040cf0cd4e07e0a079c4f.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Sword/Sword_2_Template_Run_Down.aseprite"
+dest_files=["res://.godot/imported/Sword_2_Template_Run_Down.aseprite-a305a710c64040cf0cd4e07e0a079c4f.res"]
+
+[params]
+

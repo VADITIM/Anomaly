@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://c5ssersydyk5b"]
+
+[ext_resource type="Texture2D" uid="uid://bimv0i4nhnel6" path="res://#Assets/UI/Resources UI/Stamina Bar/stamina_segment_dodge.png" id="1_1hbl8"]
+
+[node name="Stamina Segment Dodge" type="TextureRect"]
+texture_filter = 1
+pivot_offset = Vector2(0, 3.5)
+texture = ExtResource("1_1hbl8")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/Resources_UI_Sheet.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/Resources UI/resources_ui_ase-Sheet.aseprite",
+"source_uid": 8076790468175671351
+}
+metadata/_aseprite_wizard_source_file_hash_ = "0dbeb590ed98d56a7fd3e0af1bbeb618"

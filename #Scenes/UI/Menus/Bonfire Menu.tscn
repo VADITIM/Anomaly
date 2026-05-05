@@ -1,0 +1,375 @@
+[gd_scene format=3 uid="uid://y771x2vrsh37"]
+
+[ext_resource type="Script" uid="uid://m62bwuf6nk05" path="res://#Scripts/UI/PlayerUpgradePanel.cs" id="1_7iacv"]
+[ext_resource type="FontFile" uid="uid://ceiw7dkwk6bie" path="res://#Assets/UI/Fonts/Zodiak-VariableItalic.ttf" id="2_1yf8e"]
+[ext_resource type="Texture2D" uid="uid://kyusuogsyad3" path="res://#Assets/UI/Icons/weapons.png" id="3_7iacv"]
+[ext_resource type="Texture2D" uid="uid://bsaikot68m70g" path="res://#Assets/UI/Icons/inventory.png" id="4_rk6rw"]
+[ext_resource type="Texture2D" uid="uid://bpp8ox1413yyj" path="res://#Assets/UI/Icons/bar-stats.png" id="5_r43tu"]
+[ext_resource type="Texture2D" uid="uid://cha1j4rf66s6" path="res://#Assets/UI/Icons/history-book.png" id="6_8vudp"]
+[ext_resource type="Texture2D" uid="uid://c35x727im5rdb" path="res://#Assets/UI/Icons/gear.png" id="7_n802k"]
+[ext_resource type="Texture2D" uid="uid://ddowx2qixt2e4" path="res://#Assets/UI/Menus/panel.png" id="8_o5wqi"]
+[ext_resource type="PackedScene" uid="uid://d24xrg35vas4m" path="res://#Scenes/UI/Stat.tscn" id="10_rk6rw"]
+[ext_resource type="Script" uid="uid://cyqgrwbn5qrxj" path="res://#Scripts/UI/UpgradeBackground.cs" id="11_rk6rw"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glx4g"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="LabelSettings" id="LabelSettings_miouo"]
+font = ExtResource("2_1yf8e")
+font_size = 100
+shadow_size = 0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5axjh"]
+bg_color = Color(0.045323387, 0.042998917, 0.03675987, 1)
+border_width_left = 10
+border_width_top = 10
+border_width_right = 10
+border_width_bottom = 10
+corner_radius_top_left = 64
+corner_radius_top_right = 64
+corner_radius_bottom_right = 64
+corner_radius_bottom_left = 64
+
+[node name="Bonfire Menu" type="Control" unique_id=592398393 node_paths=PackedStringArray("UpgradeContainer")]
+layout_direction = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 3563.0
+offset_bottom = 2003.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.35, 0.35)
+script = ExtResource("1_7iacv")
+UpgradeContainer = NodePath("Upgrade Container")
+StatUpgradePanelScene = ExtResource("10_rk6rw")
+
+[node name="Panel" type="Panel" parent="." unique_id=183864191]
+custom_minimum_size = Vector2(151, 378)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1212.7853
+offset_top = 767.07104
+offset_right = 1212.7856
+offset_bottom = 1145.071
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Button Container" type="HBoxContainer" parent="Panel" unique_id=310065916]
+custom_minimum_size = Vector2(151, 378)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -1160.0
+offset_top = -189.0
+offset_right = 1160.0
+offset_bottom = 189.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Buttons" type="HBoxContainer" parent="Panel/Button Container" unique_id=827418969]
+layout_mode = 2
+theme_override_constants/separation = 80
+alignment = 1
+
+[node name="Equipment Button" type="Button" parent="Panel/Button Container/Buttons" unique_id=331058670]
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Label" type="Label" parent="Panel/Button Container/Buttons/Equipment Button" unique_id=86605472]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.743881
+anchor_right = 1.0
+anchor_bottom = 0.256119
+offset_left = -130.0
+offset_top = 638.0
+offset_right = 101.0
+offset_bottom = 410.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.63485, 0.63485)
+pivot_offset = Vector2(356, 63.5)
+text = "Equipment"
+label_settings = SubResource("LabelSettings_miouo")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect" type="TextureRect" parent="Panel/Button Container/Buttons/Equipment Button" unique_id=347768368]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_7iacv")
+expand_mode = 2
+
+[node name="Inventory Button" type="Button" parent="Panel/Button Container/Buttons" unique_id=700074236]
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Label" type="Label" parent="Panel/Button Container/Buttons/Inventory Button" unique_id=2020239869]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.743881
+anchor_right = 1.0
+anchor_bottom = 0.256119
+offset_left = -130.0
+offset_top = 638.0
+offset_right = 107.0
+offset_bottom = 410.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.63485, 0.63485)
+pivot_offset = Vector2(318.5, 75)
+text = "Inventory"
+label_settings = SubResource("LabelSettings_miouo")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect2" type="TextureRect" parent="Panel/Button Container/Buttons/Inventory Button" unique_id=1849950266]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_rk6rw")
+expand_mode = 2
+
+[node name="Status Button" type="Button" parent="Panel/Button Container/Buttons" unique_id=1575010599]
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Label" type="Label" parent="Panel/Button Container/Buttons/Status Button" unique_id=1611463481]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.743881
+anchor_right = 1.0
+anchor_bottom = 0.256119
+offset_left = -130.0
+offset_top = 639.0
+offset_right = 101.0
+offset_bottom = 411.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.63485, 0.63485)
+pivot_offset = Vector2(315.5, 75)
+text = "Status"
+label_settings = SubResource("LabelSettings_miouo")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+
+[node name="TextureRect3" type="TextureRect" parent="Panel/Button Container/Buttons/Status Button" unique_id=717737773]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("5_r43tu")
+expand_mode = 2
+
+[node name="Messages Button" type="Button" parent="Panel/Button Container/Buttons" unique_id=654205481]
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Label" type="Label" parent="Panel/Button Container/Buttons/Messages Button" unique_id=1103041838]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.743881
+anchor_right = 1.0
+anchor_bottom = 0.256119
+offset_left = -130.0
+offset_top = 635.0
+offset_right = 101.0
+offset_bottom = 407.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.63485, 0.63485)
+pivot_offset = Vector2(315.5, 75)
+text = "Messages"
+label_settings = SubResource("LabelSettings_miouo")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect4" type="TextureRect" parent="Panel/Button Container/Buttons/Messages Button" unique_id=124078016]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("6_8vudp")
+expand_mode = 2
+
+[node name="System" type="Button" parent="Panel/Button Container/Buttons" unique_id=1940592625]
+modulate = Color(0, 0, 0, 1)
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Label" type="Label" parent="Panel/Button Container/Buttons/System" unique_id=688929230]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = -1
+anchor_top = -0.743881
+anchor_right = 1.0
+anchor_bottom = 0.256119
+offset_left = -130.0
+offset_top = 636.0
+offset_right = 101.0
+offset_bottom = 408.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.63485, 0.63485)
+pivot_offset = Vector2(315.5, 75)
+text = "System"
+label_settings = SubResource("LabelSettings_miouo")
+horizontal_alignment = 1
+vertical_alignment = 1
+justification_flags = 162
+metadata/_edit_use_anchors_ = true
+
+[node name="TextureRect5" type="TextureRect" parent="Panel/Button Container/Buttons/System" unique_id=741283156]
+custom_minimum_size = Vector2(0, 150)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("7_n802k")
+expand_mode = 2
+
+[node name="Left Sprite" type="TextureRect" parent="." unique_id=543936953]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_top = -1173.5
+offset_right = 779.0
+offset_bottom = 693.5
+grow_vertical = 2
+scale = Vector2(1.65, 1.65)
+pivot_offset = Vector2(0, 562.5)
+texture = ExtResource("8_o5wqi")
+
+[node name="Right Sprite" type="TextureRect" parent="." unique_id=1991590991]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 5482.86
+offset_top = -1175.79
+offset_right = 6261.86
+offset_bottom = 691.214
+grow_vertical = 2
+scale = Vector2(-1.77856, 1.65)
+pivot_offset = Vector2(0, 562.5)
+texture = ExtResource("8_o5wqi")
+
+[node name="Equipment Button2" type="Button" parent="." unique_id=809534415]
+custom_minimum_size = Vector2(400, 150)
+layout_mode = 0
+offset_left = 1874.2859
+offset_top = 2171.4285
+offset_right = 3725.714
+offset_bottom = 2994.2856
+theme_override_fonts/font = ExtResource("2_1yf8e")
+theme_override_font_sizes/font_size = 26
+theme_override_styles/normal = SubResource("StyleBoxFlat_glx4g")
+alignment = 2
+
+[node name="Upgrade Background" type="Panel" parent="." unique_id=806846807 node_paths=PackedStringArray("StatContainer")]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 1074.2856
+offset_top = 411.42856
+offset_right = -1074.2856
+offset_bottom = -405.7141
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_5axjh")
+script = ExtResource("11_rk6rw")
+StatContainer = NodePath("Current Stats Panel/HBoxContainer")
+
+[node name="Current Stats Panel" type="Panel" parent="Upgrade Background" unique_id=1328411188]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 160.00012
+offset_top = 319.99997
+offset_right = -2191.5718
+offset_bottom = -320.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="Upgrade Background/Current Stats Panel" unique_id=1918075916]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 4.3596538e-05
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Upgrade Container" type="Control" parent="." unique_id=183646173]
+layout_mode = 1
+anchor_top = 0.20759
+anchor_right = 0.234543
+anchor_bottom = 0.778463
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(0, 880)
+metadata/_edit_use_anchors_ = true

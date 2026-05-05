@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://iwaw5n1j41np"
+path="res://.godot/imported/3_Template_Dash_Left.aseprite-9a0c04e9f0c9afb82c5d1c705083895c.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/3_Template_Dash_Left.aseprite"
+dest_files=["res://.godot/imported/3_Template_Dash_Left.aseprite-9a0c04e9f0c9afb82c5d1c705083895c.res"]
+
+[params]
+

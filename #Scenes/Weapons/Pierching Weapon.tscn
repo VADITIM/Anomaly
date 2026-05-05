@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://drls02dfnacq0"]
+
+[ext_resource type="Script" uid="uid://rsftpla73pqh" path="res://#Scripts/Weapons/Types/SlashingWeapon.cs" id="1_0msrr"]
+[ext_resource type="Texture2D" uid="uid://s0mt200dgsge" path="res://#Assets/Entities/Weapons/spear.png" id="2_0msrr"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lqgd4"]
+height = 48.78862
+
+[node name="Piercing Weapon" type="Node2D" unique_id=398307262]
+rotation = -0.7853982
+script = ExtResource("1_0msrr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=202251563]
+position = Vector2(10, -9)
+scale = Vector2(1.6544614, 1.6544614)
+texture = ExtResource("2_0msrr")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1535300539]
+collision_layer = 2
+collision_mask = 24
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1837552535]
+position = Vector2(14.000001, -13.000001)
+rotation = 0.7862146
+shape = SubResource("CapsuleShape2D_lqgd4")

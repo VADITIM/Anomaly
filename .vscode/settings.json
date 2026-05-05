@@ -1,0 +1,10 @@
+{
+    "godotTools.editorPath.godot4": "/bin/godot-mono",
+    "files.exclude": {
+        "**/*.uid": true,
+        "**/*.csproj": true,
+        "**/*.sln": true,
+        "**/.godot": true,
+        "**/*.tscn": true
+    }
+}

@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://cwujiovfsa5j2"
+path="res://.godot/imported/Sword_9_Template_Combo_Attack_1_And_2_Down.aseprite-56b1af721d4d4478d1f0d3ddb17e9f99.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/AsepriteFiles/template/Sword/Sword_9_Template_Combo_Attack_1_And_2_Down.aseprite"
+dest_files=["res://.godot/imported/Sword_9_Template_Combo_Attack_1_And_2_Down.aseprite-56b1af721d4d4478d1f0d3ddb17e9f99.res"]
+
+[params]
+

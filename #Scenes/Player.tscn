@@ -1,0 +1,222 @@
+[gd_scene format=4 uid="uid://drd25waqbbhwc"]
+
+[ext_resource type="Script" uid="uid://c5pjjhqjn5jwm" path="res://#Scripts/Player/Player.cs" id="1_88kja"]
+[ext_resource type="Script" uid="uid://c7bg3hawoqli0" path="res://#Scripts/Camera/Camera.cs" id="2_53fn5"]
+[ext_resource type="PackedScene" uid="uid://4vrodf6tt6t6" path="res://#Scenes/Weapons/Slashing Weapon.tscn" id="5_5ixxa"]
+[ext_resource type="Script" uid="uid://b1xb0rxo2com0" path="res://#Scripts/Camera/PhantomCameraCursorOffset.cs" id="6_sueg4"]
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="12_o3h8g"]
+[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="13_1e7my"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="14_arntx"]
+[ext_resource type="PackedScene" uid="uid://d1galkq7q1y51" path="res://#Scenes/UI/UI.tscn" id="18_tpvil"]
+[ext_resource type="PackedScene" uid="uid://dpw5xycjoyqy4" path="res://#Scenes/UI/ResourcesUIControl.tscn" id="19_53fn5"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_tpvil"]
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_sbbnb"]
+_data = PackedByteArray("AAADAAUAAAABAAAAQAEAAEABAAAeBQAAUklGRhYFAABXRUJQVlA4TAoFAAAvP8FPEE9gFgCaDLqTSCGC8OY3hn0zMdMACW0IwMvJKGdEc3j5GIpAhq9Akmuiiu928x8A3Lv5lPOlaDrCi3XNFuhq+9+2rf56TFHQZqbfgVfnwakb84QXIA9I2ThxPh0acar+3NIT3C6llA9/WqfbEf13LUmSYOS6uOOpZvATct3SifHTJWfdJWovqXwT4+rTx1IV266k6uDeRAR3qYvTETR4oS70QnuT9/fKbgfQYFvbLoFdSVVdjPB2OBcc3LZLVBXu9bCb3lZCB7Pv2rKsgy56E8GDOdOub3aqyrr2D/C2pMLvqs60K0ZVtex6NmZoE8JrzcRpCJl3pXdroMFdz/IIXUxydsZd6zzyLvC4ydkVsE7OuCuLfvrX+l4XOa+fpj3Uvcz2XWvehXgvzH3vTwSbQxczQA+8r/neTLua86kL6rGqr0331rRFuuzhLop2LaYurIZazH7uAgaaZT/XHFRHT3f0yNFDs7qqHy5B19E71/676k6M9l0znltV5JsYV0SpLr43s+6kqi5GGl6my25vqrg7qeqW4XtLtl1Jlc8tB2VoLsXfS7Eu+KDKvnfapVv6u04Fuvjvjr9iVFV4E3aKdK2Y0xhzejcq6Aph6lqTuZ4socS7tnRvFyG8Xuc17hqV3AKlmC4LyNmy69mYJzPuOp0s85p3IXmkMpZLMO2STc6Odo2Cu6D73p8U6GLn5dcJdr2m5DXUtN7XzIOpC/KD0C7veBdU9VTVUz1n3LXApIx5d3FtAfWxM3AFumavogZsmL9OzLtmT2TeXV3VD7yL/27su47eufbflX9iPHJd38S4ElGlXSKXtytOJ6mqQ128m1AHu5IWmkvV4b3hvToyON9bAd+dReV7c7gLDb6F0mEX6y7xu9wp7nJs8P1c8MW6VJX/r/d33CV08SL0RaKejS6HsIA2vyvucnTuJfRszGSn7/KzpyHchoI6Sh2em8oj6s65gObewrbrWaY2OSdWvZksmHsN1kCbPAo8r5/CvXGpaZbQvWaJ53aQ99C59zcZd/O+UBeC507UAPVfPLwFfxidh5L32CB0cKxusYrO1WH9HIixylzNVVBrr6YGex3VYgNXWeu5DivQVYD1XJzwLmuCCVfgY5zVdvxj3nX0zrX/rjwUY5mu5Hj3bLu+iXEl6miXqCrsEpHZdsXpJKVd+wt2O/u5HKSOUt4tuNt6bzs413dnfK6do3bKu1D4NwdrhV07YV0Hd9O56CVC15qU/+/3dz4XO/iSjTp2aQjCu427mnsLy66sT0NY2s/FpHsNxbpSzpPbVIM1kGsauPeEupJ7dgDvdWncdfsCZjnalTeTBUTnSnhu8d6469z7m0zC3Y7P3Vl39V88vLUwnoureBdVt1jF5z72Wt5VQLUwnovreFcB855Let5lbuhk7l3mpJO5d83hzeXuGuop/Oida/9d9SbGveQovby+iXEloqpsb0nVkb3yvZvfY9xfbG/7i+6VdttTdbiLdidVdWzvomrou7M4XdQM9qrqMPS97/jeCuyVZOm+y/JJkkY4tm5jXFl26XvdlpeGwMZWjdGwS9+NLse4sJQ1h0C6n42uSFdDuvKzpyHctrznDLvf0bn0HZ87Z1vJPYOUz/Ve1wLdNlOX7dsNn8t8bnNiPxd37v3NAni3dddJg/RfPKwajnbfWvC5bLvq1lrdUnVbYO5T3mWt4k4x4V3mCnT9o2Wo2+4SdF0vdQQ=")
+size_override = Vector2(320, 320)
+
+[sub_resource type="Animation" id="Animation_2d3aw"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [12, 23, 22, 21, 20, 19]
+}
+
+[sub_resource type="Animation" id="Animation_0vi5m"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [18, 17, 16, 15, 14, 13]
+}
+
+[sub_resource type="Animation" id="Animation_5ypym"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 11, 10, 9, 8, 7]
+}
+
+[sub_resource type="Animation" id="Animation_jnoax"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [6, 5, 4, 3, 2, 1]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_hwgyn"]
+_data = {
+&"Weapon_Idle_Down": SubResource("Animation_2d3aw"),
+&"Weapon_Idle_Left": SubResource("Animation_0vi5m"),
+&"Weapon_Idle_Right": SubResource("Animation_5ypym"),
+&"Weapon_Idle_Up": SubResource("Animation_jnoax")
+}
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_hwgyn"]
+radius = 31.144823
+
+[sub_resource type="Resource" id="Resource_53fn5"]
+script = ExtResource("14_arntx")
+
+[node name="Player" type="CharacterBody2D" unique_id=996730977 node_paths=PackedStringArray("WeaponSlot", "WeaponSprite")]
+collision_mask = 184
+script = ExtResource("1_88kja")
+WeaponSlot = NodePath("Weapon Slot")
+WeaponSprite = NodePath("Weapon Slot/Weapon Sprite Position")
+metadata/_edit_horizontal_guides_ = [-154.0]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1256938737]
+position = Vector2(0, -4)
+scale = Vector2(0.44, 0.44)
+shape = SubResource("CircleShape2D_tpvil")
+
+[node name="Player Shadow" type="Sprite2D" parent="." unique_id=1118241517]
+self_modulate = Color(0, 0, 0, 0.53333336)
+position = Vector2(0, -2.3841858e-07)
+scale = Vector2(0.050781246, 0.028320314)
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1960448699]
+texture_filter = 1
+texture = SubResource("PortableCompressedTexture2D_sbbnb")
+hframes = 5
+vframes = 5
+frame = 11
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": true,
+"output_section": true,
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "res://#Assets/Entities/Player/Animation Player",
+"o_name": "",
+"only_visible": false,
+"player": "AnimationPlayer",
+"scale": "1.0",
+"slice": "",
+"source": "res://#Assets/Entities/Player/Idle Animations/Weapon_Idle.aseprite",
+"source_uid": 1728573140794644296
+}
+metadata/_aseprite_wizard_source_file_hash_ = "67144ffe1ec330d3b784561fa0560ad8"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1621135587]
+root_node = NodePath("../Sprite2D")
+libraries/ = SubResource("AnimationLibrary_hwgyn")
+
+[node name="Camera" type="Node2D" parent="." unique_id=1828703016]
+visible = false
+
+[node name="Drag Deadozone Area" type="Area2D" parent="Camera" unique_id=1451198011]
+position = Vector2(0, -9)
+collision_layer = 0
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Camera/Drag Deadozone Area" unique_id=841210675]
+shape = SubResource("CircleShape2D_hwgyn")
+debug_color = Color(0.31500039, 0.22962484, 1, 0.15686275)
+
+[node name="Camera Drag" type="Node2D" parent="Camera" unique_id=2126112370]
+script = ExtResource("6_sueg4")
+phantomCameraPath = NodePath("../PhantomCamera2D")
+cursorDeadzonePath = NodePath("../Drag Deadozone Area")
+maxCursorOffset = Vector2(35, 25)
+offsetLerpSpeed = 12.0
+returnLerpSpeed = 12.0
+
+[node name="Camera2D" type="Camera2D" parent="Camera" unique_id=861298931]
+physics_interpolation_mode = 1
+zoom = Vector2(3.4, 3.4)
+process_callback = 0
+editor_draw_limits = true
+script = ExtResource("2_53fn5")
+
+[node name="PhantomCameraHost" type="Node" parent="Camera/Camera2D" unique_id=646453096]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("12_o3h8g")
+
+[node name="PhantomCamera2D" type="Node2D" parent="Camera" unique_id=98379471 node_paths=PackedStringArray("follow_target")]
+top_level = true
+script = ExtResource("13_1e7my")
+priority = 1
+follow_mode = 2
+follow_target = NodePath("../..")
+zoom = Vector2(3.4, 3.4)
+tween_resource = SubResource("Resource_53fn5")
+follow_damping = true
+follow_damping_value = Vector2(0.15, 0.15)
+draw_limits = true
+
+[node name="Weapon Slot" type="Node2D" parent="." unique_id=1685480075]
+z_index = 1
+scale = Vector2(0.44, 0.44)
+
+[node name="Slashing Weapon" parent="Weapon Slot" unique_id=1053038586 instance=ExtResource("5_5ixxa")]
+visible = false
+
+[node name="Weapon Sprite Position" type="Node2D" parent="Weapon Slot" unique_id=1167179286]
+visible = false
+
+[node name="Heavy Charge" type="ProgressBar" parent="." unique_id=1763018090]
+visible = false
+offset_left = -12.0
+offset_top = -31.0
+offset_right = 2115.0
+offset_bottom = 457.0
+scale = Vector2(0.01, 0.01)
+theme_override_font_sizes/font_size = 355
+
+[node name="Player UI Layer" type="CanvasLayer" parent="." unique_id=1882075777]
+visible = false
+
+[node name="Resoruces UI" parent="Player UI Layer" unique_id=1747310682 instance=ExtResource("19_53fn5")]
+
+[node name="UI" parent="Player UI Layer" unique_id=1511214651 instance=ExtResource("18_tpvil")]
+
+[editable path="Player UI Layer/Resoruces UI"]
+[editable path="Player UI Layer/UI"]
+[editable path="Player UI Layer/UI/Bonfire Interface"]
+[editable path="Player UI Layer/UI/Weapon Menu"]

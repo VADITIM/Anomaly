@@ -1,0 +1,103 @@
+[gd_scene format=4 uid="uid://4vrodf6tt6t6"]
+
+[ext_resource type="Script" uid="uid://rsftpla73pqh" path="res://#Scripts/Weapons/Types/SlashingWeapon.cs" id="1_pxm3g"]
+[ext_resource type="Texture2D" uid="uid://c3etglb06gjh7" path="res://#Assets/Entities/Weapons/Scythe/31.png" id="2_8somd"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8somd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_8somd")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ro0yq"]
+radius = 16.0
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_xo64o"]
+_data = PackedByteArray("AAADAAUAAAABAAAAUgAAAEAAAADAAAAAUklGRrgAAABXRUJQVlA4TKwAAAAvUcAPEBcgFkz8r7kmkIaQIOH/X7MCgUQx7qWe//hFBW5ra2+T/zjbU5DTFIwQHSsyjKEliJVKjtY0v/SRQxXR/wmgV5tFkKSJEPmeu1hcP445pbhprkFni1vtNLYRczw3NWSX6QxCDdFk9EFTzBaTdSFFCNlbGIL2MP+LAmOVAhNBZc+EKpigFJhULEhE5sKqVK5UtJSyIjOZ5IrMp3FsAWSiOIsChi7ES3rm")
+size_override = Vector2(82, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdnid"]
+atlas = SubResource("PortableCompressedTexture2D_xo64o")
+region = Rect2(0, 0, 41, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g4hkm"]
+atlas = SubResource("PortableCompressedTexture2D_xo64o")
+region = Rect2(41, 0, 41, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8somd"]
+atlas = SubResource("PortableCompressedTexture2D_xo64o")
+region = Rect2(0, 32, 41, 32)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m1yf4"]
+atlas = SubResource("PortableCompressedTexture2D_xo64o")
+region = Rect2(41, 32, 41, 32)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_7iex5"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gdnid")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g4hkm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8somd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m1yf4")
+}],
+"loop": false,
+"name": &"default",
+"speed": 10.0
+}]
+
+[node name="Slashing Weapon" type="Node2D" unique_id=317822717 node_paths=PackedStringArray("Hitbox", "AnimatedSprite", "AttackAnimationSprite")]
+script = ExtResource("1_pxm3g")
+Hitbox = NodePath("Hitbox")
+AnimatedSprite = NodePath("AnimatedSprite2D")
+AttackAnimationSprite = NodePath("AttackAnimationSprite")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=662122874]
+visible = false
+sprite_frames = SubResource("SpriteFrames_8somd")
+
+[node name="Hitbox" type="Area2D" parent="." unique_id=908206759]
+collision_layer = 2
+collision_mask = 24
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1466608632]
+shape = SubResource("CircleShape2D_ro0yq")
+
+[node name="AttackAnimationSprite" type="AnimatedSprite2D" parent="." unique_id=265854609]
+texture_filter = 1
+position = Vector2(-1, 0)
+sprite_frames = SubResource("SpriteFrames_7iex5")
+frame = 3
+frame_progress = 1.0
+metadata/_aseprite_wizard_interface_config_ = {
+"animation_section": true,
+"layer_section": false,
+"output_section": false,
+"pending_changes": {},
+"slice_section": true
+}
+metadata/_aseprite_wizard_config_ = {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"scale": "1.0",
+"should_round_fps": true,
+"slice": "",
+"source": "res://#Assets/VFX/Attacks/FE1001/Small_Fire_Slash.aseprite",
+"source_uid": 1774798867470910822
+}
+metadata/_aseprite_wizard_source_file_hash_ = "cc9337ab1ed52948774ba9c31cdfad86"

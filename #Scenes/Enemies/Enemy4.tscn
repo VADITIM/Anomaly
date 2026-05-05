@@ -1,0 +1,213 @@
+[gd_scene format=3 uid="uid://bo8wy1jc7h2bo"]
+
+[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Enemy/Types/Enemy4.cs" id="1_micq5"]
+[ext_resource type="Texture2D" uid="uid://dq0xti6ehs3ln" path="res://#Assets/Entities/Enemies/4/D_Walk.png" id="2_bj8pf"]
+[ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="3_4upu0"]
+[ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="4_5b6a6"]
+[ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="5_keduy"]
+[ext_resource type="Texture2D" uid="uid://dtum370lchaq1" path="res://#Assets/VFX/Tenacity VFX/cue4.png" id="6_dmnrg"]
+[ext_resource type="Texture2D" uid="uid://ittl4mkf231e" path="res://#Assets/VFX/Tenacity VFX/cue5.png" id="7_e12vo"]
+[ext_resource type="Texture2D" uid="uid://dt4f13jp3dpr6" path="res://#Assets/VFX/Tenacity VFX/cue6.png" id="8_vrglb"]
+[ext_resource type="Texture2D" uid="uid://dys8pwyngntvn" path="res://#Assets/VFX/Tenacity VFX/cue7.png" id="9_p6l7g"]
+[ext_resource type="Texture2D" uid="uid://cfxda724e0262" path="res://#Assets/VFX/Tenacity VFX/cue8.png" id="10_6faxr"]
+[ext_resource type="Texture2D" uid="uid://c3f76gkpt1254" path="res://#Assets/VFX/Tenacity VFX/cue9.png" id="11_7bjtp"]
+[ext_resource type="Texture2D" uid="uid://hk0fdn544068" path="res://#Assets/VFX/Tenacity VFX/cue10.png" id="12_mlddk"]
+[ext_resource type="Texture2D" uid="uid://blwgmtj5d1y0o" path="res://#Assets/VFX/Tenacity VFX/cue11.png" id="13_eswdr"]
+[ext_resource type="Texture2D" uid="uid://c03b50rso6j3n" path="res://#Assets/VFX/Tenacity VFX/cue12.png" id="14_my22x"]
+[ext_resource type="Texture2D" uid="uid://cy6cpnfvppoo" path="res://#Assets/VFX/Tenacity VFX/cue13.png" id="15_07etu"]
+[ext_resource type="Texture2D" uid="uid://7twuvvlhm2yp" path="res://#Assets/VFX/Tenacity VFX/cue14.png" id="16_lpfoi"]
+[ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="17_8ret6"]
+[ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="18_t4woj"]
+[ext_resource type="PackedScene" uid="uid://bualcr85nt0rd" path="res://#Scenes/UI/EnemyStateDisplay.tscn" id="19_bj8pf"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
+size = Vector2(100, 78.125)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4upu0"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(0, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5b6a6"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(48, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_keduy"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(96, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dmnrg"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(144, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e12vo"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(192, 0, 48, 48)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vrglb"]
+atlas = ExtResource("2_bj8pf")
+region = Rect2(240, 0, 48, 48)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p6l7g"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4upu0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5b6a6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_keduy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dmnrg")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e12vo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vrglb")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vu8ro"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_4upu0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_5b6a6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_keduy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dmnrg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_e12vo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_vrglb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_p6l7g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_6faxr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_7bjtp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mlddk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_eswdr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_my22x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_07etu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_lpfoi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_8ret6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_t4woj")
+}],
+"loop": false,
+"name": &"tenacity broken",
+"speed": 30.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_8ret6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_lpfoi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_07etu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_my22x")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_eswdr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mlddk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_7bjtp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_4upu0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_5b6a6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_keduy")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_dmnrg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_e12vo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_6faxr")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_vrglb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_p6l7g")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_t4woj")
+}],
+"loop": false,
+"name": &"tenacity recovered",
+"speed": 30.0
+}]
+
+[node name="Enemy4" type="CharacterBody2D"]
+scale = Vector2(0.32, 0.32)
+collision_layer = 8
+collision_mask = 39
+script = ExtResource("1_micq5")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 18.75)
+shape = SubResource("RectangleShape2D_0a874")
+
+[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="."]
+scale = Vector2(4.6875, 4.6875)
+sprite_frames = SubResource("SpriteFrames_p6l7g")
+autoplay = "default"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_vu8ro")
+animation = &"tenacity recovered"
+
+[node name="Health Bar" type="ProgressBar" parent="."]
+offset_left = -120.0
+offset_top = -223.0
+offset_right = 121.0
+offset_bottom = -186.0
+value = 100.0
+rounded = true
+metadata/_edit_use_anchors_ = true
+
+[node name="Label" parent="." instance=ExtResource("19_bj8pf")]

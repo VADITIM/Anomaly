@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://dygiv72viw8hp"]
+
+[ext_resource type="Script" uid="uid://rsftpla73pqh" path="res://#Scripts/Weapons/Types/SlashingWeapon.cs" id="1_v0t1i"]
+[ext_resource type="Texture2D" uid="uid://snh1bgeh8gtp" path="res://#Assets/Entities/Weapons/hammer.png" id="2_v0t1i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_43bbr"]
+size = Vector2(24.02501, 19.798985)
+
+[node name="Smashing Weapon" type="Node2D" unique_id=1132937978]
+rotation = -0.6758345
+scale = Vector2(1.5599989, 1.5599989)
+script = ExtResource("1_v0t1i")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=927392790]
+position = Vector2(10, -12)
+scale = Vector2(1.2176487, 1.5757786)
+texture = ExtResource("2_v0t1i")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=330774098]
+collision_layer = 2
+collision_mask = 24
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=706260479]
+position = Vector2(16.999998, -22)
+rotation = 0.7859605
+shape = SubResource("RectangleShape2D_43bbr")

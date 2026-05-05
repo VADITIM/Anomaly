@@ -1,0 +1,258 @@
+[gd_scene load_steps=15 format=3 uid="uid://dpw5xycjoyqy4"]
+
+[ext_resource type="Script" uid="uid://6jkta12jpl1l" path="res://#Scripts/UI/SegmentManager.cs" id="2_4ep0o"]
+[ext_resource type="PackedScene" uid="uid://d1jdq283kcrcx" path="res://#Scenes/UI/Resource Bars/HealthSegment.tscn" id="2_efbx6"]
+[ext_resource type="Texture2D" uid="uid://ddk3ytt3sc0kr" path="res://#Assets/UI/Resources UI/Corruption Bar/corruption_bar.png" id="2_tsuej"]
+[ext_resource type="PackedScene" uid="uid://xsl4fuon62ir" path="res://#Scenes/UI/Resource Bars/HealthSegmentEmpty.tscn" id="3_uo63d"]
+[ext_resource type="PackedScene" uid="uid://dbt5lujwrmhd0" path="res://#Scenes/UI/Resource Bars/StaminaSegment.tscn" id="4_yofde"]
+[ext_resource type="PackedScene" uid="uid://dql27fxuj2d7r" path="res://#Scenes/UI/Resource Bars/StaminaSegmenteMPTY.tscn" id="5_hpf54"]
+[ext_resource type="PackedScene" uid="uid://7gs2yuklouxh" path="res://#Scenes/UI/Resource Bars/VesselSegment.tscn" id="6_anwd2"]
+[ext_resource type="PackedScene" uid="uid://c5ssersydyk5b" path="res://#Scenes/UI/Resource Bars/StaminaSegmentDodge.tscn" id="6_tsuej"]
+[ext_resource type="PackedScene" uid="uid://brsabeqgs8ycx" path="res://#Scenes/UI/Resource Bars/VesselSegmentEmpty.tscn" id="7_h0kwx"]
+[ext_resource type="Texture2D" uid="uid://6sxgybt22quk" path="res://#Assets/UI/Resources UI/Vessel Bar/vessel_end_start.png" id="9_7cm8p"]
+[ext_resource type="Texture2D" uid="uid://c0g1b038fj6ej" path="res://#Assets/UI/Resources UI/Health Bar/health_bar_start.png" id="10_hisel"]
+[ext_resource type="Texture2D" uid="uid://df2f0nc0qg4l8" path="res://#Assets/UI/Resources UI/Health Bar/health_ability.png" id="11_uvx6t"]
+[ext_resource type="Texture2D" uid="uid://dfd3kw6myj84u" path="res://#Assets/UI/Resources UI/Stamina Bar/stamina_ability.png" id="12_g8o5a"]
+[ext_resource type="Texture2D" uid="uid://cnqcv5vraik3m" path="res://#Assets/UI/Resources UI/Stamina Bar/stamina_end.png" id="13_hdxl1"]
+
+[node name="Resoruces UI" type="Control"]
+layout_direction = 1
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+
+[node name="Segment Manager" type="Control" parent="." node_paths=PackedStringArray("HealthSegmentsContainer", "HealthAbilityTexture", "StaminaSegmentsContainer", "StaminaEndTexture", "VesselSegmentsContainer", "VesselEndTexture")]
+layout_mode = 1
+anchors_preset = 0
+scale = Vector2(5, 5)
+script = ExtResource("2_4ep0o")
+HealthSegmentsContainer = NodePath("Health Bar/Health Segments Container")
+HealthFullSegmentScene = ExtResource("2_efbx6")
+HealthEmptySegmentScene = ExtResource("3_uo63d")
+HealthAbilityTexture = NodePath("Health Bar/Health Ability Texture")
+StaminaSegmentsContainer = NodePath("Stamina Bar/Stamina Segments Container")
+StaminaFullSegmentScene = ExtResource("4_yofde")
+StaminaEmptySegmentScene = ExtResource("5_hpf54")
+StaminaDodgeSegmentScene = ExtResource("6_tsuej")
+StaminaEndTexture = NodePath("Stamina Bar/Stamina End Texture")
+VesselSegmentsContainer = NodePath("Vessel Bar/Vessel Segments Container")
+VesselFullSegmentScene = ExtResource("6_anwd2")
+VesselEmptySegmentScene = ExtResource("7_h0kwx")
+VesselEndTexture = NodePath("Vessel Bar/Vessel End Texture")
+
+[node name="Health Bar" type="Control" parent="Segment Manager"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 43.0
+offset_top = 15.0
+offset_right = 43.0
+offset_bottom = 15.0
+
+[node name="Health Segments Container" type="Control" parent="Segment Manager/Health Bar"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 0
+offset_left = 0.2
+offset_right = 0.2
+
+[node name="Health Segment" parent="Segment Manager/Health Bar/Health Segments Container" instance=ExtResource("2_efbx6")]
+layout_mode = 0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 1.0
+offset_bottom = 7.0
+
+[node name="Health Extra Texture" type="TextureRect" parent="Segment Manager/Health Bar"]
+z_index = 1
+layout_mode = 1
+offset_left = -8.2
+offset_top = -2.4
+offset_right = -0.2
+offset_bottom = 8.6
+pivot_offset = Vector2(0, 5.5)
+texture = ExtResource("10_hisel")
+
+[node name="Health Ability Texture" type="TextureRect" parent="Segment Manager/Health Bar"]
+z_index = 2
+layout_mode = 1
+offset_left = -5.0
+offset_top = -10.0
+offset_right = 27.0
+offset_bottom = 17.0
+pivot_offset = Vector2(0, 13.5)
+texture = ExtResource("11_uvx6t")
+
+[node name="Stamina Bar" type="Control" parent="Segment Manager"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 33.0
+offset_top = 26.0
+offset_right = 33.0
+offset_bottom = 26.0
+
+[node name="Stamina Ability Texture" type="TextureRect" parent="Segment Manager/Stamina Bar"]
+z_index = 2
+texture_filter = 1
+layout_mode = 1
+offset_left = -8.0
+offset_right = 7.0
+offset_bottom = 15.0
+pivot_offset = Vector2(0, 7.5)
+texture = ExtResource("12_g8o5a")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/Resources_UI_Sheet.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/Resources UI/resources_ui_ase-Sheet.aseprite",
+"source_uid": 8076790468175671351
+}
+metadata/_aseprite_wizard_source_file_hash_ = "0dbeb590ed98d56a7fd3e0af1bbeb618"
+
+[node name="Stamina End Texture" type="TextureRect" parent="Segment Manager/Stamina Bar"]
+z_index = 1
+texture_filter = 1
+layout_mode = 1
+offset_right = 1.0
+offset_bottom = 5.0
+pivot_offset = Vector2(0, 2.5)
+texture = ExtResource("13_hdxl1")
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": false,
+"output_section": true,
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/Resources_UI_Sheet.aseprite"
+},
+"slice_section": false
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/UI/Resources UI/resources_ui_ase-Sheet.aseprite",
+"source_uid": 8076790468175671351
+}
+metadata/_aseprite_wizard_source_file_hash_ = "0dbeb590ed98d56a7fd3e0af1bbeb618"
+
+[node name="Stamina Segments Container" type="Control" parent="Segment Manager/Stamina Bar"]
+z_index = 1
+layout_mode = 1
+anchors_preset = 0
+offset_top = -1.0
+offset_bottom = -1.0
+
+[node name="Stamina Segment" parent="Segment Manager/Stamina Bar/Stamina Segments Container" instance=ExtResource("4_yofde")]
+layout_mode = 0
+
+[node name="Vessel Bar" type="Control" parent="Segment Manager"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 44.6
+offset_top = 12.0
+offset_right = 44.6
+offset_bottom = 12.0
+
+[node name="Vessel Segments Container" type="Control" parent="Segment Manager/Vessel Bar"]
+layout_mode = 1
+anchors_preset = 0
+offset_left = 0.4
+offset_top = 1.0
+offset_right = 0.4
+offset_bottom = 1.0
+
+[node name="XP Segment" parent="Segment Manager/Vessel Bar/Vessel Segments Container" instance=ExtResource("6_anwd2")]
+layout_mode = 0
+offset_top = 0.0
+offset_bottom = 2.0
+
+[node name="Vessel Start Texture" type="TextureRect" parent="Segment Manager/Vessel Bar"]
+layout_mode = 0
+offset_left = -0.6
+offset_top = 1.0
+offset_right = 0.4
+offset_bottom = 3.0
+pivot_offset = Vector2(0, 1)
+texture = ExtResource("9_7cm8p")
+
+[node name="Vessel End Texture" type="TextureRect" parent="Segment Manager/Vessel Bar"]
+layout_mode = 0
+offset_left = 0.4
+offset_top = 1.0
+offset_right = 1.4
+offset_bottom = 3.0
+pivot_offset = Vector2(0, 1)
+texture = ExtResource("9_7cm8p")
+
+[node name="Corruption Bar" type="Control" parent="."]
+anchors_preset = 0
+anchor_right = 0.0963542
+anchor_bottom = 0.194444
+metadata/_edit_use_anchors_ = true
+
+[node name="Corruption Bar" type="TextureRect" parent="Corruption Bar"]
+texture_filter = 1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -148.0
+offset_bottom = -168.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(5, 5)
+texture = ExtResource("2_tsuej")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {
+"source": "res://#Assets/UI/Resources UI/Aseprite/xp_bar.aseprite"
+}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 1,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "",
+"scale": "1.0",
+"slice": "",
+"source": "res://Assets/xp_bar.aseprite",
+"source_uid": 8655865022349110675
+}
+metadata/_aseprite_wizard_source_file_hash_ = "e0a00ea6958a5326ea63e876d091b2be"
+metadata/_edit_use_anchors_ = true

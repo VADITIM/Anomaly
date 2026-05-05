@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://cjbaqd5cx4yt4"
+path="res://.godot/imported/Weapon_Move.aseprite-1860af2bdfeb8e28b0a57dab6f7ddd4c.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Player/Animation Player/Move Animations/Weapon_Move.aseprite"
+dest_files=["res://.godot/imported/Weapon_Move.aseprite-1860af2bdfeb8e28b0a57dab6f7ddd4c.res"]
+
+[params]
+
