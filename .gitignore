@@ -1,3 +1,26 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# Godot C# / Visual Studio artifacts
+.vs/
+bin/
+obj/
+.mono/
+*.user
+*.suo
+*.userprefs
+*.csproj.user
+*.sln.docstates
+
+# Local plugins / addons
+addons/
+
+# Optional export outputs
+build/
+exports/
+*.apk
+*.aab
+*.exe
+*.app
+*.zip
