@@ -41,4 +41,4 @@ position = Vector2(567, -154)
 position = Vector2(1029, 579)
 
 [node name="Player" parent="." unique_id=996730977 instance=ExtResource("7_mjgta")]
-position = Vector2(562, 470)
+position = Vector2(592, 555)

@@ -65,6 +65,7 @@ public partial class Weapon : Node2D
         if (Hitbox != null)
         {
             Hitbox.BodyEntered += OnEnemyHit;
+            Hitbox.AreaEntered += OnHurtboxHit;
             Hitbox.Monitoring = false;
         }
     }
@@ -80,11 +81,28 @@ public partial class Weapon : Node2D
 
  
 #region Hit Detection
+    private void OnHurtboxHit(Area2D area)
+    {
+        if (area is not Hurtbox hurtbox)
+            return;
+
+        Entity targetEntity = hurtbox.OwnerEntity;
+        if (targetEntity is not Enemy enemy)
+            return;
+
+        Player player = Player.Instance;
+        if (player == null)
+            return;
+
+        CheckWeaknessExploited(enemy);
+        enemy.TakeDamage(this, player.GlobalPosition);
+    }
+
     private void OnEnemyHit(Node2D body)
     {
         if (body is Enemy enemy)
         {
-            Player player = GetTree().Root.FindChild("Player", true, false) as Player;
+            Player player = Player.Instance;
             if (player == null)
                 return;
             CheckWeaknessExploited(enemy);

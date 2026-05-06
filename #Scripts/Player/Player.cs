@@ -2,7 +2,7 @@ using Godot;
 using System;
 using System.Collections.Generic;
 
-public partial class Player : CharacterBody2D
+public partial class Player : Entity
 {
     public static Player Instance;
     public PlayerStateMachine StateMachine { get; private set; }
@@ -15,6 +15,9 @@ public partial class Player : CharacterBody2D
     [Export] public AnimationPlayer AnimationPlayer { get; set; }
     private PlayerState lastAnimation = (PlayerState)(-1);
     private string lastAnimationDirection = "";
+
+    private Vector2 _bodySpriteBasePosition;
+    private Vector2 _weaponSlotBasePosition;
 
     public PlayerStats Stats { get; private set; }
     private float _staminaRegenerationCooldown = 0f;
@@ -44,6 +47,7 @@ public partial class Player : CharacterBody2D
 
     public override void _Ready()
     {
+        base._Ready();
         Instance = this;
         Stats = new PlayerStats();
         WeaponSlot = GetNode<Node2D>("WEAPON");
@@ -53,6 +57,10 @@ public partial class Player : CharacterBody2D
         StateMachine = new PlayerStateMachine();
 
         Weapon = WeaponSlot.GetChild<Weapon>(0);
+
+    _bodySpriteBasePosition = BodySprite?.Position ?? Vector2.Zero;
+    _weaponSlotBasePosition = WeaponSlot?.Position ?? Vector2.Zero;
+    OnZChanged();
  
         StateMachine.Name = "PlayerStateMachine";
         AddChild(StateMachine);
@@ -83,12 +91,29 @@ public partial class Player : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        base._PhysicsProcess(delta);
         if (StateMachine.IsDead) return;
+
+        if (Input.IsActionJustPressed("jump") && canMove)
+        {
+            TryJump();
+        }
         
         PassiveStaminaRegeneration((float)delta);
 
         Player.Instance.ProcessMovement((float)delta);
         ProcessCombat((float)delta);
+    }
+
+    protected override void OnZChanged()
+    {
+        float yOffset = -Z;
+
+        if (BodySprite != null)
+            BodySprite.Position = _bodySpriteBasePosition + new Vector2(0f, yOffset);
+
+        if (WeaponSlot != null)
+            WeaponSlot.Position = _weaponSlotBasePosition + new Vector2(0f, yOffset);
     }
 
     public override void _Input(InputEvent @event)

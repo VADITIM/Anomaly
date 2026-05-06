@@ -1,7 +1,7 @@
 using Godot;
 using System.Collections.Generic;
 
-public abstract partial class Enemy : CharacterBody2D
+public abstract partial class Enemy : Entity
 {
     private static readonly List<Enemy> ActiveEnemies = new();
     private const float CAMERA_FOCUS_RANGE = 800f;
@@ -59,6 +59,7 @@ public abstract partial class Enemy : CharacterBody2D
 
     public override void _Ready()
     {
+        base._Ready();
         if (!ActiveEnemies.Contains(this))
         {
             ActiveEnemies.Add(this);
@@ -103,6 +104,7 @@ public abstract partial class Enemy : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
+        base._PhysicsProcess(delta);
         if (IsDead) return;
         
         UpdateHitTimer((float)delta);

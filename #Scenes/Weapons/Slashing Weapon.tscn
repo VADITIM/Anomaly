@@ -624,3 +624,4 @@ position = Vector2(-5, 18.000002)
 rotation = 1.5643528
 shape = SubResource("CapsuleShape2D_xo64o")
 disabled = true
+debug_color = Color(0.60784316, 0.12156863, 0.1764706, 0.33333334)
