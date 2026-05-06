@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://mefssmsl54s2"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdx4c"]
+bg_color = Color(0, 0, 0, 0.39215687)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.12781036, 0.12637094, 0.117194556, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s7wrk"]
+bg_color = Color(0.7176471, 0.30980393, 0.42745098, 0.78431374)
+border_width_left = 2
+border_width_top = 2
+border_width_bottom = 2
+border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[node name="Lower Enemy Health Bar" type="ProgressBar" unique_id=1470533157]
+offset_right = 73.0
+offset_bottom = 9.0
+theme_override_font_sizes/font_size = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_rdx4c")
+theme_override_styles/fill = SubResource("StyleBoxFlat_s7wrk")
+value = 50.0
+show_percentage = false

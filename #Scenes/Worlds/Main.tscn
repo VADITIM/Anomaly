@@ -20,44 +20,25 @@ position = Vector2(100, 700)
 [node name="Enemies" type="Node2D" parent="." unique_id=411547642]
 
 [node name="Enemy2" parent="Enemies" unique_id=347030271 instance=ExtResource("3_1aftv")]
-position = Vector2(1563, 957.9999)
+position = Vector2(1636.0001, 157.00006)
 
 [node name="Enemy1" parent="Enemies" unique_id=676023061 instance=ExtResource("4_7tn8n")]
-position = Vector2(673, 935)
+position = Vector2(661, 1279)
 
 [node name="Enemy7" parent="Enemies" unique_id=801131451 instance=ExtResource("5_2wusn")]
-position = Vector2(1564, 593)
+position = Vector2(1226, 72)
 
 [node name="Enemy10" parent="Enemies" unique_id=1571334115 instance=ExtResource("6_0ennt")]
-position = Vector2(1489, 1151)
+position = Vector2(1578, 719)
 
-[node name="Player" parent="." unique_id=1994656634 instance=ExtResource("7_mjgta")]
-position = Vector2(600, 550)
+[node name="Enemy11" parent="Enemies" unique_id=207420178 instance=ExtResource("6_0ennt")]
+position = Vector2(-281, 471)
 
-[node name="AnimatedSprite2D" parent="Player" index="2" unique_id=76445557]
-animation = &"IdleDownRight"
-frame_progress = 0.0
+[node name="Enemy12" parent="Enemies" unique_id=766688471 instance=ExtResource("6_0ennt")]
+position = Vector2(567, -154)
 
-[node name="PhantomCamera2D" parent="Player/Camera" parent_id_path=PackedInt32Array(1994656634, 1828703016) index="3" unique_id=98379471]
-position = Vector2(600, 550)
+[node name="Enemy13" parent="Enemies" unique_id=148211124 instance=ExtResource("6_0ennt")]
+position = Vector2(1029, 579)
 
-[node name="Weapon Slot" parent="Player" index="4" unique_id=1685480075]
-position = Vector2(8, 7)
-
-[node name="Slashing Weapon" parent="Player/Weapon Slot" index="0" unique_id=1053038586]
-visible = true
-position = Vector2(-1.0967255e-05, 0)
-scale = Vector2(1.5, 1.5)
-
-[node name="Resoruces UI" parent="Player/Player UI Layer" parent_id_path=PackedInt32Array(1994656634, 1882075777) index="0" unique_id=1747310682]
-offset_top = 1.0
-offset_bottom = 1.0
-
-[node name="Bonfire Interface" parent="Player/Player UI Layer/UI" parent_id_path=PackedInt32Array(1994656634, 1511214651) index="0" unique_id=1624975214]
-visible = false
-
-[editable path="Player"]
-[editable path="Player/Player UI Layer/Resoruces UI"]
-[editable path="Player/Player UI Layer/UI"]
-[editable path="Player/Player UI Layer/UI/Bonfire Interface"]
-[editable path="Player/Player UI Layer/UI/Weapon Menu"]
+[node name="Player" parent="." unique_id=996730977 instance=ExtResource("7_mjgta")]
+position = Vector2(562, 470)

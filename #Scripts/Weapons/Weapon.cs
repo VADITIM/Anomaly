@@ -6,8 +6,8 @@ public partial class Weapon : Node2D
     #region References
     private Camera Camera;
     [Export] public Area2D Hitbox;
-    [Export] public AnimatedSprite2D AnimatedSprite;
-    [Export] public AnimatedSprite2D AttackAnimationSprite;
+    [Export] public Sprite2D WeaponSprite;
+    [Export] public AnimationPlayer AnimationPlayer;
     private Timer _attackAnimationStopTimer;
     #endregion
 
@@ -55,8 +55,8 @@ public partial class Weapon : Node2D
     {
         Camera = GetViewport().GetCamera2D() as Camera;
         
-        AnimatedSprite = GetNodeOrNull<AnimatedSprite2D>("AnimatedSprite2D");
-        AttackAnimationSprite = GetNodeOrNull<AnimatedSprite2D>("AttackAnimationSprite");
+        WeaponSprite = GetNodeOrNull<Sprite2D>("Sprite2D");
+        AnimationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
         if (HasNode("Area2D"))
             Hitbox = GetNode<Area2D>("Area2D");
         else if (HasNode("Hitbox"))
@@ -74,63 +74,11 @@ public partial class Weapon : Node2D
         bool shouldMonitor = PlayerStateMachine.Instance != null && PlayerStateMachine.Instance.IsAttacking;
         if (Hitbox != null)
             Hitbox.Monitoring = shouldMonitor;
-        // UpdateWeaponSlotPosition();
     }
 #endregion
 
-    public void UpdateWeaponSlotPosition()
-    {
-        if (Player.Instance.WeaponSlot == null) return;
-        
-        Vector2 mousePos = GetGlobalMousePosition();
-        Vector2 directionToCursor = (mousePos - Player.Instance.WeaponSlot.GlobalPosition).Normalized();
-        
-        Vector2 toMouse = mousePos - GlobalPosition;
-        float angle = Mathf.RadToDeg(toMouse.Angle());
-        
-        while (angle > 180) angle -= 360;
-        while (angle < -180) angle += 360;
-        
-        Player.Instance.WeaponSprite.Position = GetWeaponSpriteOffset(angle);
-        if (Hitbox != null)
-            Hitbox.Position = directionToCursor * range;
-        if (AnimatedSprite != null)
-            AnimatedSprite.Position = GetWeaponSpriteOffset(angle);
-        
-        if ((angle >= -112.5f && angle < -67.5f) || (angle >= -67.5f && angle < -22.5f))
-        {
-            Player.Instance.WeaponSprite.ZIndex = -1;
-            if (AnimatedSprite != null)
-                AnimatedSprite.ZIndex = -1;
-        }
-        else
-        {
-            Player.Instance.WeaponSprite.ZIndex = 0;
-            if (AnimatedSprite != null)
-                AnimatedSprite.ZIndex = 0;
-        }
-    }
 
-    private Vector2 GetWeaponSpriteOffset(float angleDegrees)
-    {
-        if (angleDegrees >= -112.5f && angleDegrees < -67.5f)
-            return new Vector2(-7, 4); // Up
-        else if (angleDegrees >= -67.5f && angleDegrees < -22.5f)
-            return new Vector2(-3, 2); // UpRight
-        else if (angleDegrees >= -22.5f && angleDegrees < 22.5f)
-            return new Vector2(0, 0); // Right
-        else if (angleDegrees >= 22.5f && angleDegrees < 67.5f)
-            return new Vector2(9, 4); // DownRight
-        else if (angleDegrees >= 67.5f && angleDegrees < 112.5f)
-            return new Vector2(0, 0); // Down
-        else if (angleDegrees >= 112.5f && angleDegrees < 157.5f)
-            return new Vector2(0, 0); // DownLeft
-        else if (angleDegrees >= 157.5f || angleDegrees < -157.5f)
-            return new Vector2(0, 0); // Left
-        else // angleDegrees >= -157.5f && angleDegrees < -112.5f
-            return new Vector2(0, 0); // UpLeft
-    }
-
+ 
 #region Hit Detection
     private void OnEnemyHit(Node2D body)
     {
@@ -144,52 +92,131 @@ public partial class Weapon : Node2D
         }
     }
 
-    public void PlayAttackAnimation()
+    public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
     {
-        if (AttackAnimationSprite == null)
+        if (AnimationPlayer == null)
             return;
 
-        SpriteFrames spriteFrames = AttackAnimationSprite.SpriteFrames;
-        if (spriteFrames == null)
-            return;
-
-        string animationName = "Attack1";
-        if (!spriteFrames.HasAnimation(animationName))
+        string[] animationNames;
+        if (isHeavy)
         {
-            var animationNames = spriteFrames.GetAnimationNames();
-            if (animationNames.Length == 0)
-                return;
-            animationName = animationNames[0].ToString();
+            animationNames = new[] { "Sword_Attack_Spin", $"Sword_Attack_{direction}", "Attack1", "default" };
+        }
+        else
+        {
+            animationNames = new[] { $"Sword_Attack_{direction}", "Attack1", "default" };
         }
 
-        AttackAnimationSprite.Stop();
-        AttackAnimationSprite.Frame = 0;
-        AttackAnimationSprite.FrameProgress = 0f;
-        AttackAnimationSprite.Play(animationName);
+        string animationToPlay = null;
 
-        _attackAnimationStopTimer?.QueueFree();
-        float duration = GetAnimationDuration(spriteFrames, animationName, AttackAnimationSprite.SpeedScale);
-        if (duration > 0f)
+        foreach (string name in animationNames)
         {
-            _attackAnimationStopTimer = QuickTimer(this, duration);
+            if (AnimationPlayer.HasAnimation(name))
+            {
+                animationToPlay = name;
+                break;
+            }
+        }
+
+        if (string.IsNullOrEmpty(animationToPlay))
+            return;
+
+        // Stop any current playback and play the chosen attack animation
+        AnimationPlayer.Stop();
+
+        // Determine desired attack duration from weapon attack speed (attacks per second)
+        float desiredDuration = 1f / Mathf.Max(attackSpeed, 0.0001f);
+        if (isHeavy && heavyAttackDuration > 0f)
+            desiredDuration = heavyAttackDuration;
+
+        // Native animation length
+        float nativeLength = GetAnimationDuration(animationToPlay);
+        // Compute playback speed so the animation finishes in desiredDuration
+        float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
+        AnimationPlayer.SpeedScale = playbackSpeed;
+
+        AnimationPlayer.Play(animationToPlay);
+
+        // Schedule stopping after the desired duration and restore playback speed
+        _attackAnimationStopTimer?.QueueFree();
+        if (desiredDuration > 0f)
+        {
+            _attackAnimationStopTimer = QuickTimer(this, desiredDuration);
             _attackAnimationStopTimer.Timeout += () =>
             {
-                if (IsInstanceValid(AttackAnimationSprite))
-                    AttackAnimationSprite.Stop();
+                if (IsInstanceValid(AnimationPlayer))
+                {
+                    AnimationPlayer.Stop();
+                    AnimationPlayer.SpeedScale = 1f;
+                }
             };
         }
     }
 
-    private static float GetAnimationDuration(SpriteFrames spriteFrames, string animationName, float speedScale)
+    private float GetAnimationDuration(string animationName)
     {
-        float animationSpeed = (float)spriteFrames.GetAnimationSpeed(animationName);
-        int frameCount = spriteFrames.GetFrameCount(animationName);
-
-        if (animationSpeed <= 0f || frameCount <= 0)
+        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
             return 0f;
 
-        float finalSpeed = animationSpeed * Mathf.Max(speedScale, 0.001f);
-        return frameCount / finalSpeed;
+        Animation animation = AnimationPlayer.GetAnimation(animationName);
+        if (animation == null)
+            return 0f;
+
+        return Mathf.Max(0.1f, (float)animation.Length);
+    }
+
+    public float GetAttackAnimationDuration(string direction, bool isHeavy)
+    {
+        // Desired duration is driven by attacks-per-second (attackSpeed)
+        float baseDuration = 1f / Mathf.Max(attackSpeed, 0.0001f);
+        if (isHeavy && heavyAttackDuration > 0f)
+            return heavyAttackDuration;
+        return baseDuration;
+    }
+
+    // Play state/idle/move animations to mirror the player's animator
+    public void PlayStateAnimation(string animationName)
+    {
+        if (AnimationPlayer == null || string.IsNullOrEmpty(animationName))
+            return;
+
+        // Don't override attack animations here; attacks use PlayAttackAnimation
+        if (animationName.StartsWith("Sword_Attack") || animationName.StartsWith("Attack"))
+            return;
+
+        if (AnimationPlayer.HasAnimation(animationName))
+        {
+            // Ensure normal state animations play at normal speed
+            AnimationPlayer.SpeedScale = 1f;
+            if (AnimationPlayer.CurrentAnimation != animationName || !AnimationPlayer.IsPlaying())
+                AnimationPlayer.Play(animationName);
+            return;
+        }
+
+        // Try stripping common prefixes (e.g. "Weapon_") and fallback to a generic idle
+        string alt = animationName;
+        if (animationName.StartsWith("Weapon_"))
+            alt = animationName.Substring("Weapon_".Length);
+
+        if (!string.IsNullOrEmpty(alt) && AnimationPlayer.HasAnimation(alt))
+        {
+            AnimationPlayer.SpeedScale = 1f;
+            AnimationPlayer.Play(alt);
+            return;
+        }
+
+        if (AnimationPlayer.HasAnimation("idle"))
+        {
+            AnimationPlayer.SpeedScale = 1f;
+            AnimationPlayer.Play("idle");
+        }
+    }
+
+    // Adjust Z layering relative to the player's sprite ZIndex
+    public void SetLayerRelativeToPlayer(int playerZIndex, bool above)
+    {
+        int offset = above ? 1 : -1;
+        this.ZIndex = playerZIndex + offset;
     }
 
     public void CheckWeaknessExploited(Enemy enemy)

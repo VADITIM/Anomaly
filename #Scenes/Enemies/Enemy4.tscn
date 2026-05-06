@@ -19,9 +19,10 @@
 [ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="17_8ret6"]
 [ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="18_t4woj"]
 [ext_resource type="PackedScene" uid="uid://bualcr85nt0rd" path="res://#Scenes/UI/EnemyStateDisplay.tscn" id="19_bj8pf"]
+[ext_resource type="PackedScene" uid="uid://mefssmsl54s2" path="res://#Scenes/Enemies/lower_enemy_health_bar.tscn" id="20_wsip8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
-size = Vector2(100, 78.125)
+size = Vector2(50, 37.5)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4upu0"]
 atlas = ExtResource("2_bj8pf")
@@ -182,32 +183,36 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="Enemy4" type="CharacterBody2D"]
+[node name="Enemy4" type="CharacterBody2D" unique_id=1778528792]
 scale = Vector2(0.32, 0.32)
 collision_layer = 8
 collision_mask = 39
 script = ExtResource("1_micq5")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 18.75)
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1240647017]
+position = Vector2(0, 12.5)
 shape = SubResource("RectangleShape2D_0a874")
 
-[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="."]
-scale = Vector2(4.6875, 4.6875)
+[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="." unique_id=1626802038]
+scale = Vector2(2.6041667, 2.604167)
 sprite_frames = SubResource("SpriteFrames_p6l7g")
 autoplay = "default"
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=766473252]
+position = Vector2(0, 9.375001)
+scale = Vector2(0.33735797, 0.337358)
 sprite_frames = SubResource("SpriteFrames_vu8ro")
 animation = &"tenacity recovered"
 
-[node name="Health Bar" type="ProgressBar" parent="."]
-offset_left = -120.0
-offset_top = -223.0
-offset_right = 121.0
-offset_bottom = -186.0
-value = 100.0
-rounded = true
-metadata/_edit_use_anchors_ = true
+[node name="Label" parent="." unique_id=1362593918 instance=ExtResource("19_bj8pf")]
+offset_left = -112.49997
+offset_top = -121.875
+offset_right = 684.8447
+offset_bottom = 312.05414
+scale = Vector2(0.25810045, 0.25810045)
 
-[node name="Label" parent="." instance=ExtResource("19_bj8pf")]
+[node name="Lower Enemy Health Bar" parent="." unique_id=1470533157 instance=ExtResource("20_wsip8")]
+offset_left = -37.5
+offset_top = -25.0
+offset_right = 35.5
+offset_bottom = -16.0

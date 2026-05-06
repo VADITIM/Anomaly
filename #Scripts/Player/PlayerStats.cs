@@ -17,25 +17,19 @@ public class PlayerStats
 
     public PlayerStats()
     {
-        // Initialize all stats with their current, current max, and total max values
         Stats["Speed"] = new Stat { Current = 150f, CurrentMax = 130f, TotalMax = 150f };
         Stats["Armor"] = new Stat { Current = 20f, CurrentMax = 20f, TotalMax = 100f };
         Stats["Tenacity"] = new Stat { Current = 5f, CurrentMax = 5f, TotalMax = 20f };
         
-        // Health
-        Stats["Health"] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 200f };
+        Stats["Health"] = new Stat { Current = 200f, CurrentMax = 200f, TotalMax = 200f };
         
-        // Stamina
-        Stats["Stamina"] = new Stat { Current = 100f, CurrentMax = 100f, TotalMax = 300f };
+        Stats["Stamina"] = new Stat { Current = 300f, CurrentMax = 300f, TotalMax = 300f };
         Stats["Stamina Regen"] = new Stat { Current = 10f, CurrentMax = 10f, TotalMax = 50f };
         
-        // Vessel
         Stats["Vessel"] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 100f };
         
-        // Corruption
         Stats["Corruption"] = new Stat { Current = 100f, CurrentMax = 100f, TotalMax = 200f };
         
-        // Multipliers
         Stats["Lacerate Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
         Stats["Puncture Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
         Stats["Crush Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };

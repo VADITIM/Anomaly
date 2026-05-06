@@ -41,7 +41,7 @@ public abstract partial class Enemy : CharacterBody2D
     [Export] public float DefaultKnockbackDuration { get; set; } = 0.3f;
     [Export] public float ChaseRange { get; set; } = 500f;
     [Export] public float AttackRange { get; set; } = 50f;
-    [Export] public float StopDistance { get; set; } = 100f;
+    [Export] public float StopDistance { get; set; } = 20f;
 
     public float attackDuration;
     private float _hitTimer = 0f;
@@ -258,8 +258,40 @@ public abstract partial class Enemy : CharacterBody2D
 
     private void InitiateHealthBar()
     {
-        _healthBar = GetNode<ProgressBar>("Health Bar");
+        _healthBar = FindChildProgressBar();
+        if (_healthBar == null)
+            return;
         _healthBar.MaxValue = health;
         _healthBar.Value = health;
+    }
+
+    private ProgressBar FindChildProgressBar()
+    {
+        foreach (Node child in GetChildren())
+        {
+            if (child is ProgressBar bar)
+                return bar;
+
+            ProgressBar nested = FindProgressBarRecursive(child);
+            if (nested != null)
+                return nested;
+        }
+
+        return null;
+    }
+
+    private ProgressBar FindProgressBarRecursive(Node node)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is ProgressBar bar)
+                return bar;
+
+            ProgressBar nested = FindProgressBarRecursive(child);
+            if (nested != null)
+                return nested;
+        }
+
+        return null;
     }
 }

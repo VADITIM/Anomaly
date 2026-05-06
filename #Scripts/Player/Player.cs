@@ -9,10 +9,10 @@ public partial class Player : CharacterBody2D
     public ResourceManager ResourceManager { get; private set; }
     [Export]public Weapon Weapon { get; set; }
     [Export] public Node2D WeaponSlot;
-    [Export] public Node2D WeaponSprite;
     
     // Animation
-    [Export]public AnimatedSprite2D AnimatedSprite { get; set; }
+    [Export] public Sprite2D BodySprite { get; set; }
+    [Export] public AnimationPlayer AnimationPlayer { get; set; }
     private PlayerState lastAnimation = (PlayerState)(-1);
     private string lastAnimationDirection = "";
 
@@ -46,12 +46,14 @@ public partial class Player : CharacterBody2D
     {
         Instance = this;
         Stats = new PlayerStats();
-        WeaponSlot = GetNode<Node2D>("Weapon Slot");
-        AnimatedSprite = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        WeaponSlot = GetNode<Node2D>("WEAPON");
+        BodySprite = GetNode<Sprite2D>("Sprite2D");
+        AnimationPlayer = GetNode<AnimationPlayer>("Animator");
         ResourceManager = new ResourceManager(this);
         StateMachine = new PlayerStateMachine();
 
         Weapon = WeaponSlot.GetChild<Weapon>(0);
+ 
         StateMachine.Name = "PlayerStateMachine";
         AddChild(StateMachine);
         
@@ -60,7 +62,7 @@ public partial class Player : CharacterBody2D
         StateMachine.OnDodgeStarted += OnDodgeStarted;
         StateMachine.OnDied += OnPlayerDied;
 
-        StateMachine.OnAttackStarted += (isHeavy) => Weapon?.PlayAttackAnimation();
+        StateMachine.OnAttackStarted += (isHeavy) => PlayWeaponAttackAnimation(isHeavy);
         
         StateMachine.OnAttackStarted += (isHeavy) => OnActionPerformed();
         StateMachine.OnDodgeStarted += (direction) => OnActionPerformed();
@@ -131,6 +133,9 @@ public partial class Player : CharacterBody2D
 
     public void TakeDamage(float damage, Vector2 sourcePosition)
     {
+        if (Dodge.IsIFrameActive)
+            return;
+
         float armor = Stats.GetCurrentMax("Armor");
         float effectiveDamage = damage * (1f - armor / 100f);
         Vector2 knockbackDir = (GlobalPosition - sourcePosition).Normalized();
@@ -179,7 +184,7 @@ public partial class Player : CharacterBody2D
     
     private void UpdateAnimation()
     {
-        if (AnimatedSprite == null || StateMachine == null) return;
+        if (AnimationPlayer == null || StateMachine == null) return;
         
         PlayerState currentState = StateMachine.CurrentState;
         string direction;
@@ -204,79 +209,111 @@ public partial class Player : CharacterBody2D
         lastAnimationDirection = direction;
         _lastFlipH = flipH;
         
-        AnimatedSprite.FlipH = flipH;
-        
-        string stateName = GetStateAnimationName(currentState);
+        if (BodySprite != null)
+            BodySprite.FlipH = flipH;
 
-        if (!TryPlayStateAnimation(stateName, direction, currentState))
+        foreach (string animationName in GetAnimationCandidates(currentState, direction))
         {
-            TryPlayStateAnimation("Idle", direction, PlayerState.Idle);
+            if (AnimationPlayer.HasAnimation(animationName))
+            {
+                bool isAttackAnimation = animationName.StartsWith("Sword_Attack") || animationName.StartsWith("Attack");
+                if (isAttackAnimation && Weapon != null)
+                {
+                    float desiredDuration = Weapon.GetAttackAnimationDuration(direction, currentState == PlayerState.HeavyAttacking);
+                    float nativeLength = GetAnimationDuration(animationName);
+                    float speedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
+                    AnimationPlayer.SpeedScale = speedScale;
+                }
+                else
+                {
+                    AnimationPlayer.SpeedScale = 1f;
+                }
+
+                if (PlayAnimation(animationName))
+                {
+                    // Mirror weapon animations (idle/move) to match the player
+                    try
+                    {
+                        Weapon?.PlayStateAnimation(animationName);
+
+                        int playerZ = BodySprite != null ? BodySprite.ZIndex : 0;
+                        bool weaponAbove = direction == "Right" || direction == "Up";
+                        if (Weapon != null)
+                            Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
+                    }
+                    catch (Exception)
+                    {
+                        // Swallow any unexpected errors from optional weapon mirroring
+                    }
+
+                    return;
+                }
+            }
         }
     }
-    
-    private string GetStateAnimationName(PlayerState state)
+
+    private float GetAnimationDuration(string animationName)
     {
+        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
+            return 0.1f;
+
+        Animation animation = AnimationPlayer.GetAnimation(animationName);
+        if (animation == null)
+            return 0.1f;
+
+        return Mathf.Max(0.1f, (float)animation.Length);
+    }
+    
+    private string[] GetAnimationCandidates(PlayerState state, string direction)
+    {
+        string idle = $"Weapon_Idle_{direction}";
+
         return state switch
         {
-            PlayerState.Idle => "Idle",
-            PlayerState.Moving => "Move",
-            PlayerState.Dodging => "Dodge",
-            PlayerState.Attacking => "Attack",
-            PlayerState.HeavyAttacking => "Attack",
-            PlayerState.Healing => "Heal",
-            PlayerState.Knockback => "Knockback",
-            PlayerState.Dead => "Dead",
-            _ => "Idle"
+            PlayerState.Idle => new[] { idle },
+            PlayerState.Moving => new[] { $"Weapon_Move_{direction}", idle },
+            PlayerState.Attacking => new[] { $"Sword_Attack_{direction}", idle },
+            PlayerState.HeavyAttacking => new[] { "Sword_Attack_Spin", $"Sword_Attack_{direction}", idle },
+            PlayerState.Dodging => new[] { $"Weapon_Move_{direction}", idle },
+            PlayerState.Healing => new[] { idle },
+            PlayerState.Staggered => new[] { idle },
+            PlayerState.Knockback => new[] { idle },
+            PlayerState.Dead => new[] { "Weapon_Idle_Down", idle },
+            _ => new[] { idle }
         };
     }
 
-    private bool TryPlayStateAnimation(string stateName, string direction, PlayerState state)
-    {
-        if (AnimatedSprite == null) return false;
-
-        string[] candidates;
-        if (state == PlayerState.Attacking || state == PlayerState.HeavyAttacking)
-        {
-            candidates = new[]
-            {
-                $"{stateName}_{direction}",
-                $"{stateName}{direction}",
-                $"Idle_{direction}",
-                $"Idle{direction}"
-            };
-        }
-        else
-        {
-            candidates = new[]
-            {
-                $"{stateName}_{direction}",
-                $"{stateName}{direction}"
-            };
-        }
-
-        foreach (string animationName in candidates)
-        {
-            if (PlayAnimation(animationName))
-            {
-                return true;
-            }
-        }
-
-        return false;
-    }
-    
     private bool PlayAnimation(string animationName)
     {
-        if (AnimatedSprite == null) return false;
-        
-        var spriteFrames = AnimatedSprite.SpriteFrames;
-        
-        if (spriteFrames.HasAnimation(animationName))
-        {
-            AnimatedSprite.Play(animationName);
-            return true;
-        }
+        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
+            return false;
 
-        return false;
+        if (AnimationPlayer.CurrentAnimation != animationName || !AnimationPlayer.IsPlaying())
+            AnimationPlayer.Play(animationName);
+
+        return true;
+    }
+
+    private void PlayWeaponAttackAnimation(bool isHeavy)
+    {
+        if (Weapon == null) return;
+
+        Vector2 mousePos = GetGlobalMousePosition();
+        Vector2 toMouse = mousePos - GlobalPosition;
+        string direction = GetDirectionFromVector(toMouse, out _);
+
+        Weapon.PlayAttackAnimation(direction, isHeavy);
+    }
+
+    public float GetCurrentAttackAnimationDuration(bool isHeavy)
+    {
+        if (AnimationPlayer == null || Weapon == null)
+            return 0.5f;
+
+        Vector2 mousePos = GetGlobalMousePosition();
+        Vector2 toMouse = mousePos - GlobalPosition;
+        string direction = GetDirectionFromVector(toMouse, out _);
+
+        return Weapon.GetAttackAnimationDuration(direction, isHeavy);
     }
 }

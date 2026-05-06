@@ -297,7 +297,7 @@ public partial class PlayerStateMachine : Node
         float chargeBonus = HeavyChargeProgress;
         HeavyChargeProgress = 0f;
         
-        _attackDuration = Player.Weapon.heavyAttackDuration;
+        _attackDuration = Player.GetCurrentAttackAnimationDuration(true);
         TransitionTo(PlayerState.HeavyAttacking);
         OnAttackStarted?.Invoke(true);
         
@@ -310,7 +310,7 @@ public partial class PlayerStateMachine : Node
         if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Moving)
         {
             Player.Instance.Stats.SetCurrent("Stamina", Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.staminaCost, 0f));
-            _attackDuration = Player.Weapon.attackDuration;
+            _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
             TransitionTo(PlayerState.Attacking);
             OnAttackStarted?.Invoke(false);
             

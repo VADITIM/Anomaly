@@ -13,7 +13,11 @@ public partial class PlayerUpgradePanel : Control
     public override void _Ready()
     {
         Player ??= GetTree().Root.FindChild("Player", true, false) as Player;
-        
+        CallDeferred(nameof(DeferredInitialize));
+    }
+
+    private void DeferredInitialize()
+    {
         InitializeStats();
         PopulateStatsPanel();
     }

@@ -4,9 +4,9 @@ using System;
 public static class Dodge
 {
     #region Configuration
-    public static float DashSpeed { get; set; } = 600f;
+    public const float DashSpeed = DodgeDistance / DodgeDurationTotalSeconds;
     public static bool HasIFrames { get; set; } = true;
-    public static float DodgeDistance { get; set; } = 100f;
+    public const float DodgeDistance = 70f;
     public static float DodgeStaminaCost { get; set; } = 20f;
     #endregion
 
@@ -16,12 +16,15 @@ public static class Dodge
     private static bool _staminaUsedForCurrentDodge = false;
     private static bool _isDodging = false;
     private static bool _hasDodged = false;
+    private static float _iFrameRemaining = 0f;
     #endregion
 
     #region Properties
-    public static float DefaultDodgeDuration { get; set; } = 0.50f;
-    public static float DodgeDurationTotal => Gui.dodgeAnimationSpeed > 0f ? Gui.dodgeAnimationSpeed : DefaultDodgeDuration;
+    public const float DodgeDurationTotalSeconds = 0.43f;
+    public const float IFrameDuration = 0.2f;
+    public static float DodgeDurationTotal => DodgeDurationTotalSeconds;
     public static float RemainingDuration => _dodgeDuration;
+    public static bool IsIFrameActive => HasIFrames && _iFrameRemaining > 0f;
     #endregion
 
     #region Query Methods
@@ -34,10 +37,8 @@ public static class Dodge
     
     public static Vector2 GetDodgeVelocity()
     {
-        float total = DodgeDurationTotal;
-        if (total <= 0f) return Vector2.Zero;
-        float speed = DodgeDistance / total;
-        return _dodgeDirection * speed;
+        if (DodgeDurationTotal <= 0f) return Vector2.Zero;
+        return _dodgeDirection * DashSpeed;
     }
     
     public static bool CanDodge()
@@ -65,6 +66,9 @@ public static class Dodge
         _dodgeDirection = movementVector;
         if (_dodgeDirection == Vector2.Zero)
             _dodgeDirection = Vector2.Right;
+
+        if (HasIFrames)
+            _iFrameRemaining = IFrameDuration;
         
         _isDodging = true;
         _hasDodged = false;
@@ -77,6 +81,12 @@ public static class Dodge
         if (!_isDodging) return;
         
         _dodgeDuration -= delta;
+        if (_iFrameRemaining > 0f)
+        {
+            _iFrameRemaining -= delta;
+            if (_iFrameRemaining < 0f)
+                _iFrameRemaining = 0f;
+        }
         if (_dodgeDuration <= 0)
         {
             EndDodge();
@@ -89,6 +99,8 @@ public static class Dodge
         _hasDodged = true;
         _dodgeDuration = 0f;
         _staminaUsedForCurrentDodge = false;
+        if (_iFrameRemaining < 0f)
+            _iFrameRemaining = 0f;
     }
     
     public static void ResetHasDodged()

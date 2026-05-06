@@ -16,11 +16,8 @@ public partial class UI : Control
             Player = GetTree().Root.FindChild("Player", true, false) as Player;
 
         BonfireMenu.Visible = false;
-        BonfireEquipmentButton.Pressed -= OnEquipmentButtonDown;
-        BonfireEquipmentButton.Pressed += OnEquipmentButtonDown;
-        
-        BonfireEquipmentCloseButton.Pressed -= OnEquipmentButtonDown;
-        BonfireEquipmentCloseButton.Pressed += OnEquipmentButtonDown;
+        ConnectPressed(BonfireEquipmentButton);
+        ConnectPressed(BonfireEquipmentCloseButton);
     }
 
     public override void _Process(double delta)
@@ -42,5 +39,18 @@ public partial class UI : Control
 
     public void OnEquipmentButtonDown()
     {
+    }
+
+    private void ConnectPressed(Button button)
+    {
+        if (button == null)
+            return;
+
+        Callable callable = Callable.From(OnEquipmentButtonDown);
+
+        if (button.IsConnected(Button.SignalName.Pressed, callable))
+            button.Disconnect(Button.SignalName.Pressed, callable);
+
+        button.Connect(Button.SignalName.Pressed, callable);
     }
 }

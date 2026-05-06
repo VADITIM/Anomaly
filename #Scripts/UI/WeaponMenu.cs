@@ -177,23 +177,23 @@ public partial class WeaponMenu : Control
         var tempWeapon = weaponScene.Instantiate();
         Texture2D texture = null;
         
-        // Try to find AnimatedSprite2D or Sprite2D
-        var animatedSprite = tempWeapon.FindChild("*", true, false) as AnimatedSprite2D;
-        if (animatedSprite != null && animatedSprite.SpriteFrames != null)
+        // Try to find Sprite2D (new AnimationPlayer style)
+        var sprite = tempWeapon.FindChild("*", true, false) as Sprite2D;
+        if (sprite != null && sprite.Texture != null)
         {
-            // Get the first frame of the default animation
-            var frames = animatedSprite.SpriteFrames;
-            if (frames.HasAnimation("default") && frames.GetFrameCount("default") > 0)
-            {
-                texture = frames.GetFrameTexture("default", 0);
-            }
+            texture = sprite.Texture;
         }
         else
         {
-            var sprite = tempWeapon.FindChild("*", true, false) as Sprite2D;
-            if (sprite != null)
+            // Fallback to AnimatedSprite2D (old style)
+            var animatedSprite = tempWeapon.FindChild("*", true, false) as AnimatedSprite2D;
+            if (animatedSprite != null && animatedSprite.SpriteFrames != null)
             {
-                texture = sprite.Texture;
+                var frames = animatedSprite.SpriteFrames;
+                if (frames.HasAnimation("default") && frames.GetFrameCount("default") > 0)
+                {
+                    texture = frames.GetFrameTexture("default", 0);
+                }
             }
         }
         

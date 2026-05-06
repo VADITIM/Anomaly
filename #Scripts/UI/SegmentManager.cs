@@ -1,281 +1,203 @@
 using Godot;
-using System.Collections.Generic;
 
 public partial class SegmentManager : Control
 {
 	[Export] public Player Player;
-	private readonly Dictionary<BarCases, BarConfig> _bars = new();
-	
-	[Export] public Control HealthSegmentsContainer;
-	[Export] public PackedScene HealthFullSegmentScene;
-	[Export] public PackedScene HealthEmptySegmentScene;
-	[Export] public TextureRect HealthAbilityTexture;
-	private Vector2 _healthEndSpriteOriginalPos;
-	private List<Node> _healthSegments = new List<Node>();
 
-	[Export] public Control StaminaSegmentsContainer;
-	[Export] public PackedScene StaminaFullSegmentScene;
-	[Export] public PackedScene StaminaEmptySegmentScene;
-	[Export] public PackedScene StaminaDodgeSegmentScene; // Special segment for dodge cost markers
-	[Export] public TextureRect StaminaEndTexture;
-	private Vector2 _staminaEndSpriteOriginalPos;
-	private List<Node> _staminaSegments = new List<Node>();
-	private List<Node> _staminaSpecialSegments = new List<Node>(); // Track special dodge cost markers
-	
-	[Export] public Control VesselSegmentsContainer;
-	[Export] public PackedScene VesselFullSegmentScene;
-	[Export] public PackedScene VesselEmptySegmentScene;
-	[Export] public TextureRect VesselEndTexture;
-	private Vector2 _xpEndSpriteOriginalPos;
-	private List<Node> _vesselSegments = new List<Node>();
-	
+	[Export] public TextureProgressBar HealthBar;
+	[Export] public TextureProgressBar HealthStar;
+	[Export] public TextureProgressBar VesselBar;
+	[Export] public TextureProgressBar StaminaBar;
+	[Export] public TextureProgressBar StaminaStar;
+
+	[Export] public float HealthBarMaxWidth = 100f;
+	private float HealthBarMaxValue = 100f;
+	private float HealthStatMaxValue = 200f;
+	private float HealthStarOffsetThreshold = 50f;
+
+	private Vector2 _healthBarBaseSize;
+	private Vector2 _vesselBarBaseSize;
+	private Vector2 _healthStarBasePos;
+
 	private int _lastMaxHealth = -1;
-	private int _lastMaxStamina = -1;
-	private int _lastMaxXp = -1;
 	private int _lastHealth = -1;
+	private int _lastMaxVessel = -1;
+	private int _lastVessel = -1;
+	private int _lastMaxStamina = -1;
 	private int _lastStamina = -1;
-	private int _lastXp = -1;
-	
-
-	private class BarConfig
-	{
-		public Control BarNode;
-		public PackedScene FullScene;
-		public PackedScene EmptyScene;
-		public TextureRect EndSprite;
-		public Vector2 OriginalEndPos;
-		public List<Node> Segments;
-		public string Name;
-		public int LastMax = -1;
-		public int LastValue = -1;
-	}
-
-	private void UpdateBar(BarCases bar, int maxValue, int currentValue)
-	{
-		if (!_bars.TryGetValue(bar, out var cfg) || cfg.BarNode == null)
-			return;
-
-		if (maxValue != cfg.LastMax)
-		{
-			cfg.LastMax = maxValue;
-			RebuildSegments(cfg.BarNode, cfg.Segments, maxValue, cfg.FullScene, cfg.EmptyScene, cfg.Name);
-			UpdateEndSpritePosition(cfg.EndSprite, cfg.OriginalEndPos, maxValue, cfg.FullScene);
-			switch (bar)
-			{
-				case BarCases.Health: _lastMaxHealth = maxValue; break;
-				case BarCases.Stamina: _lastMaxStamina = maxValue; break;
-				case BarCases.XP: _lastMaxXp = maxValue; break;
-			}
-		}
-
-		if (currentValue != cfg.LastValue)
-		{
-			cfg.LastValue = currentValue;
-			UpdateSegmentStates(cfg.Segments, currentValue, cfg.FullScene, cfg.EmptyScene);
-			switch (bar)
-			{
-				case BarCases.Health: _lastHealth = currentValue; break;
-				case BarCases.Stamina: _lastStamina = currentValue; break;
-				case BarCases.XP: _lastXp = currentValue; break;
-			}
-		}
-	}
-	
-	public enum BarCases
-	{
-		Health,
-		Stamina,
-		XP
-	}
-
-	private void InstantiateBarCases()
-	{
-		_bars[BarCases.Health] = new BarConfig
-		{
-			BarNode = HealthSegmentsContainer,
-			FullScene = HealthFullSegmentScene,
-			EmptyScene = HealthEmptySegmentScene,
-			EndSprite = HealthAbilityTexture,
-			OriginalEndPos = _healthEndSpriteOriginalPos,
-			Segments = _healthSegments,
-			Name = "Health",
-			LastMax = _lastMaxHealth,
-			LastValue = _lastHealth
-		};
-		
-		_bars[BarCases.Stamina] = new BarConfig
-		{
-			BarNode = StaminaSegmentsContainer,
-			FullScene = StaminaFullSegmentScene,
-			EmptyScene = StaminaEmptySegmentScene,
-			EndSprite = StaminaEndTexture,
-			OriginalEndPos = _staminaEndSpriteOriginalPos,
-			Segments = _staminaSegments,
-			Name = "Stamina",
-			LastMax = _lastMaxStamina,
-			LastValue = _lastStamina
-		};
-
-		_bars[BarCases.XP] = new BarConfig
-		{
-			BarNode = VesselSegmentsContainer,
-			FullScene = VesselFullSegmentScene,
-			EmptyScene = VesselEmptySegmentScene,
-			EndSprite = VesselEndTexture,
-			OriginalEndPos = _xpEndSpriteOriginalPos,
-			Segments = _vesselSegments,
-			Name = "XP",
-			LastMax = _lastMaxXp,
-			LastValue = _lastXp
-		};
-	}
 
 	public override void _Ready()
 	{
 		if (Player == null)
 			Player = GetTree().Root.FindChild("Player", true, false) as Player;
-		
-			_healthEndSpriteOriginalPos = HealthAbilityTexture.Position;
-			_staminaEndSpriteOriginalPos = StaminaEndTexture.Position;
-			_xpEndSpriteOriginalPos = VesselEndTexture.Position;
-			InstantiateBarCases();
-	}
 
+		ResolveBars();
+		CacheBaseLayout();
+		UpdateAll();
+	}
 
 	public override void _Process(double delta)
 	{
-            UpdateBar(BarCases.Health, (int)Player.Stats.GetCurrentMax("Health"), (int)Player.Stats.GetCurrent("Health"));
-            UpdateBar(BarCases.Stamina, (int)Player.Stats.GetCurrentMax("Stamina"), (int)Player.Stats.GetCurrent("Stamina"));
-            UpdateStaminaSpecialSegments();
-            UpdateBar(BarCases.XP, (int)Player.Stats.GetCurrentMax("Vessel"), (int)Player.Stats.GetCurrent("Vessel"));
-	}
-
-	private void RebuildSegments(Control barNode, List<Node> segments, int maxCount, PackedScene fullSegmentScene, PackedScene emptySegmentScene, string barName)
-	{
-		if (maxCount <= 0) return;
-		
-		foreach (var segment in segments)
-		{
-			segment.QueueFree();
-		}
-		segments.Clear();
-
-		float currentXPosition = 0;
-		
-		for (int i = 0; i < maxCount; i++)
-		{
-			var segmentInstance = emptySegmentScene.Instantiate();
-
-			if (segmentInstance is Node2D Segment)
-			{
-				Segment.Position = new Vector2(currentXPosition, 0);
-
-				float segmentWidth = 1;
-				currentXPosition += segmentWidth;
-			}
-			else if (segmentInstance is Control control)
-			{
-				control.Position = new Vector2(currentXPosition, 0);
-				float segmentWidth = 1;
-				currentXPosition += segmentWidth;
-			}
-			
-			barNode.AddChild(segmentInstance);
-			segments.Add(segmentInstance);
-		}
-	}
-	
-	private void UpdateSegmentStates(List<Node> segments, int currentValue, PackedScene fullSegmentScene, PackedScene emptySegmentScene)
-	{
-		if (fullSegmentScene == null || emptySegmentScene == null) return;
-		
-		for (int i = 0; i < segments.Count; i++)
-		{
-			var targetScene = (i < currentValue) ? fullSegmentScene : emptySegmentScene;
-			
-			var currentSegment = segments[i];
-			var currentScenePath = currentSegment.SceneFilePath;
-			var targetScenePath = targetScene.ResourcePath;
-			
-			if (currentScenePath != targetScenePath)
-			{
-				var position = Vector2.Zero;
-				
-				if (currentSegment is Node2D Segment)
-					position = Segment.Position;
-				else if (currentSegment is Control Control)
-					position = Control.Position;
-				
-				var newSegment = targetScene.Instantiate();
-				
-				if (newSegment is Node2D NewSegment)
-					NewSegment.Position = position;
-				else if (newSegment is Control NewControl)
-					NewControl.Position = position;
-				
-				var parent = currentSegment.GetParent();
-				var index = currentSegment.GetIndex();
-				currentSegment.QueueFree();
-				parent.AddChild(newSegment);
-				parent.MoveChild(newSegment, index);
-				segments[i] = newSegment;
-			}
-		}
-	}
-	
-	private void UpdateEndSpritePosition(TextureRect endSprite, Vector2 originalPos, int maxCount, PackedScene segmentScene)
-	{
-		if (segmentScene == null) return;
-		
-		var tempSegment = segmentScene.Instantiate();
-		float segmentWidth = 1;
-		tempSegment.QueueFree();
-		
-		float xOffset = maxCount * segmentWidth;
-		endSprite.Position = originalPos + new Vector2(xOffset, 0);
-	}
-	
-	private void UpdateStaminaSpecialSegments()
-	{
-		if (StaminaSegmentsContainer == null || StaminaDodgeSegmentScene == null || Player == null)
+		if (Player?.Stats == null)
 			return;
-		
-		// Get dodge cost from Dodge class
-		float dodgeCost = Dodge.DodgeStaminaCost;
-int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
-		
-		// Calculate how many special segments we need (one at each dodge cost interval)
-		List<int> specialPositions = new List<int>();
-		for (float pos = dodgeCost; pos < maxStamina; pos += dodgeCost)
+
+		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
+		int health = (int)Player.Stats.GetCurrent("Health");
+		int maxVessel = (int)Player.Stats.GetCurrentMax("Vessel");
+		int vessel = (int)Player.Stats.GetCurrent("Vessel");
+		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
+		int stamina = (int)Player.Stats.GetCurrent("Stamina");
+
+		if (maxHealth != _lastMaxHealth || health != _lastHealth)
 		{
-			specialPositions.Add((int)pos);
+			_lastMaxHealth = maxHealth;
+			_lastHealth = health;
+			UpdateHealthUI(maxHealth, health);
+			UpdateVesselSizeForHealth(maxHealth);
 		}
-		
-		// Remove old special segments
-		foreach (var segment in _staminaSpecialSegments)
+
+		if (maxVessel != _lastMaxVessel || vessel != _lastVessel)
 		{
-			segment.QueueFree();
+			_lastMaxVessel = maxVessel;
+			_lastVessel = vessel;
+			UpdateVesselUI(maxVessel, vessel);
 		}
-		_staminaSpecialSegments.Clear();
-		
-		// Create special segments at dodge cost positions
-		foreach (int position in specialPositions)
+
+		if (maxStamina != _lastMaxStamina || stamina != _lastStamina)
 		{
-			var specialSegment = StaminaDodgeSegmentScene.Instantiate();
-			
-			float xPosition = position * 1; // 1 is segment width
-			
-			if (specialSegment is Node2D node2D)
-			{
-				node2D.Position = new Vector2(xPosition, 0);
-			}
-			else if (specialSegment is Control control)
-			{
-				control.Position = new Vector2(xPosition, 0);
-			}
-			
-			StaminaSegmentsContainer.AddChild(specialSegment);
-			_staminaSpecialSegments.Add(specialSegment);
+			_lastMaxStamina = maxStamina;
+			_lastStamina = stamina;
+			UpdateStaminaUI(maxStamina, stamina);
 		}
+	}
+
+	private void ResolveBars()
+	{
+		Node root = GetParent() ?? this;
+
+		HealthBar ??= root.FindChild("Health Bar", true, false) as TextureProgressBar;
+		HealthStar ??= root.FindChild("Health Star", true, false) as TextureProgressBar;
+		VesselBar ??= root.FindChild("Vessel Bar", true, false) as TextureProgressBar;
+		StaminaBar ??= root.FindChild("Stamina Bar", true, false) as TextureProgressBar;
+		StaminaStar ??= root.FindChild("Stamina Star", true, false) as TextureProgressBar;
+	}
+
+	private void CacheBaseLayout()
+	{
+		if (HealthBar != null)
+			_healthBarBaseSize = HealthBar.Size;
+		if (VesselBar != null)
+			_vesselBarBaseSize = VesselBar.Size;
+		if (HealthStar != null)
+			_healthStarBasePos = HealthStar.Position;
+	}
+
+	private void UpdateAll()
+	{
+		if (Player?.Stats == null)
+			return;
+
+		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
+		int health = (int)Player.Stats.GetCurrent("Health");
+		int maxVessel = (int)Player.Stats.GetCurrentMax("Vessel");
+		int vessel = (int)Player.Stats.GetCurrent("Vessel");
+		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
+		int stamina = (int)Player.Stats.GetCurrent("Stamina");
+
+		_lastMaxHealth = maxHealth;
+		_lastHealth = health;
+		_lastMaxVessel = maxVessel;
+		_lastVessel = vessel;
+		_lastMaxStamina = maxStamina;
+		_lastStamina = stamina;
+
+		UpdateHealthUI(maxHealth, health);
+		UpdateVesselSizeForHealth(maxHealth);
+		UpdateVesselUI(maxVessel, vessel);
+		UpdateStaminaUI(maxStamina, stamina);
+	}
+
+	private void UpdateHealthUI(int maxHealth, int health)
+	{
+		if (HealthBar != null)
+		{
+			HealthBar.MaxValue = HealthBarMaxValue;
+			HealthBar.Value = MapHealthToUiValue(health);
+			HealthBar.Size = new Vector2(GetHealthBarWidthFromMax(maxHealth), HealthBar.Size.Y);
+		}
+
+		if (HealthStar != null)
+		{
+			HealthStar.MaxValue = HealthBarMaxValue;
+			HealthStar.Value = MapHealthToUiValue(health);
+			float extraOffset = Mathf.Max(0f, GetHealthBarWidthFromMax(maxHealth) - HealthStarOffsetThreshold);
+			HealthStar.Position = _healthStarBasePos + new Vector2(extraOffset, 0f);
+		}
+	}
+
+	private void UpdateVesselUI(int maxVessel, int vessel)
+	{
+		if (VesselBar == null)
+			return;
+
+		VesselBar.MaxValue = maxVessel;
+		VesselBar.Value = vessel;
+	}
+
+	private void UpdateStaminaUI(int maxStamina, int stamina)
+	{
+		if (StaminaBar != null)
+		{
+			StaminaBar.MaxValue = GetStaminaBarWidthFromMax(maxStamina);
+			StaminaBar.Value = GetStaminaBarWidthFromValue(stamina);
+			StaminaBar.Size = new Vector2(GetStaminaBarWidthFromMax(maxStamina), StaminaBar.Size.Y);
+		}
+
+		if (StaminaStar != null)
+		{
+			StaminaStar.MaxValue = maxStamina;
+			StaminaStar.Value = stamina;
+		}
+	}
+
+	private void UpdateVesselSizeForHealth(int maxHealth)
+	{
+		if (VesselBar == null || HealthBar == null)
+			return;
+
+		float healthWidth = GetHealthBarWidthFromMax(maxHealth);
+		float healthDelta = healthWidth - _healthBarBaseSize.X;
+		float vesselWidth = _vesselBarBaseSize.X + healthDelta;
+		VesselBar.Size = new Vector2(Mathf.Max(0f, vesselWidth), VesselBar.Size.Y);
+	}
+
+	private float GetHealthBarWidthFromMax(int maxHealth)
+	{
+		if (HealthStatMaxValue <= 0f)
+			return _healthBarBaseSize.X;
+
+		float width = Mathf.Clamp(maxHealth * 0.5f, 0f, HealthBarMaxWidth);
+		return Mathf.Max(0f, width);
+	}
+
+	private float GetStaminaBarWidthFromValue(int stamina)
+	{
+		float width = Mathf.Max(0f, stamina * 0.5f);
+		return width;
+	}
+
+	private float GetStaminaBarWidthFromMax(int maxStamina)
+	{
+		float width = Mathf.Max(0f, maxStamina * 0.5f);
+		return width;
+	}
+
+	private float MapHealthToUiValue(float health)
+	{
+		if (HealthStatMaxValue <= 0f)
+			return 0f;
+
+		float t = Mathf.Clamp(health, 0f, HealthStatMaxValue) / HealthStatMaxValue;
+		return t * HealthBarMaxValue;
 	}
 }
