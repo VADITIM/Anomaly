@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dpw5xycjoyqy4"]
 
 [ext_resource type="Script" uid="uid://6jkta12jpl1l" path="res://#Scripts/UI/SegmentManager.cs" id="2_4ep0o"]
+[ext_resource type="Texture2D" uid="uid://drr4tt8jqlj6m" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Bar_Under.png" id="5_anwd2"]
+[ext_resource type="Texture2D" uid="uid://bc6pwhihuoe55" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Bar_Over.png" id="6_h0kwx"]
+[ext_resource type="Texture2D" uid="uid://cmjba61fniccy" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Bar_Progress.png" id="7_7cm8p"]
 [ext_resource type="Texture2D" uid="uid://d4nsoixhcyyud" path="res://#Assets/UI/Resources UI/Corruption Bar/Corruption_Bar_Under.png" id="10_4fbix"]
 [ext_resource type="Texture2D" uid="uid://bt2s6o0bpfwv1" path="res://#Assets/UI/Resources UI/Corruption Bar/Corruption_Bar_Overr.png" id="11_bkxok"]
 [ext_resource type="Texture2D" uid="uid://1gvrsf31ppot" path="res://#Assets/UI/Resources UI/Corruption Bar/Corruption_Bar_Progress.png" id="12_wn8ek"]
@@ -16,15 +19,6 @@
 [ext_resource type="Texture2D" uid="uid://e2dbtl0ba2uc" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Star_Under.png" id="25_j2yhf"]
 [ext_resource type="Texture2D" uid="uid://f1xbf10b2sih" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Star_Over.png" id="26_k80gb"]
 [ext_resource type="Texture2D" uid="uid://b5gkdrcll1v4j" path="res://#Assets/UI/Resources UI/Stamina Bar/Stamina_Star_Progress.png" id="27_fmeed"]
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_uo63d"]
-load_path = "res://.godot/imported/Stamina_Bar_Under.png-b86051d34812d6344a6ef871c0b54463.ctex"
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_yofde"]
-load_path = "res://.godot/imported/Stamina_Bar_Over.png-b8d67d6dc98a8c2de37b2725ef8727ed.ctex"
-
-[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_hpf54"]
-load_path = "res://.godot/imported/Stamina_Bar_Progress.png-b6660a3cd393c4933bae49bc606bd9a8.ctex"
 
 [node name="Resoruces UI" type="Control" unique_id=2052102617]
 layout_direction = 1
@@ -47,24 +41,12 @@ VesselBar = NodePath("Vessel Bar")
 StaminaBar = NodePath("Stamina Bar")
 StaminaStar = NodePath("Stamina Star")
 
-[node name="Corruption Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1214269965]
-layout_mode = 0
-offset_left = 4.0
-offset_top = 5.0
-offset_right = 40.0
-offset_bottom = 45.0
-value = 83.0
-fill_mode = 3
-texture_under = ExtResource("10_4fbix")
-texture_over = ExtResource("11_bkxok")
-texture_progress = ExtResource("12_wn8ek")
-
 [node name="Vessel Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1034278239]
 layout_mode = 0
-offset_left = 39.0
-offset_top = 10.0
-offset_right = 89.0
-offset_bottom = 13.0
+offset_left = 28.2
+offset_top = 11.799999
+offset_right = 70.2
+offset_bottom = 14.799999
 value = 33.0
 nine_patch_stretch = true
 stretch_margin_left = 20
@@ -75,24 +57,24 @@ texture_progress = ExtResource("15_0chg4")
 
 [node name="Stamina Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1176170464]
 layout_mode = 0
-offset_left = 50.0
-offset_top = 25.0
-offset_right = 130.0
-offset_bottom = 32.0
+offset_left = 34.4
+offset_top = 20.0
+offset_right = 114.4
+offset_bottom = 27.000002
 value = 30.0
 nine_patch_stretch = true
 stretch_margin_left = 20
 stretch_margin_right = 20
-texture_under = SubResource("CompressedTexture2D_uo63d")
-texture_over = SubResource("CompressedTexture2D_yofde")
-texture_progress = SubResource("CompressedTexture2D_hpf54")
+texture_under = ExtResource("5_anwd2")
+texture_over = ExtResource("6_h0kwx")
+texture_progress = ExtResource("7_7cm8p")
 
 [node name="Stamina Star" type="TextureProgressBar" parent="Segment Manager" unique_id=1617142681]
 layout_mode = 0
-offset_left = 41.0
-offset_top = 19.0
-offset_right = 54.0
-offset_bottom = 32.0
+offset_left = 25.0
+offset_top = 19.2
+offset_right = 38.0
+offset_bottom = 32.2
 value = 60.0
 fill_mode = 3
 texture_under = ExtResource("25_j2yhf")
@@ -101,10 +83,10 @@ texture_progress = ExtResource("27_fmeed")
 
 [node name="Health Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1273094660]
 layout_mode = 0
-offset_left = 33.0
-offset_top = 10.0
-offset_right = 83.0
-offset_bottom = 20.0
+offset_left = 22.2
+offset_top = 11.199999
+offset_right = 72.2
+offset_bottom = 21.2
 value = 39.0
 nine_patch_stretch = true
 stretch_margin_left = 20
@@ -115,12 +97,22 @@ texture_progress = ExtResource("18_e2udj")
 
 [node name="Health Star" type="TextureProgressBar" parent="Segment Manager" unique_id=2028017438]
 layout_mode = 0
-offset_left = 79.0
-offset_top = 2.0
-offset_right = 106.0
-offset_bottom = 29.0
+offset_left = 63.599995
+offset_top = 1.0000005
+offset_right = 90.59999
+offset_bottom = 28.0
 value = 96.0
 fill_mode = 3
 texture_under = ExtResource("19_3luyf")
 texture_over = ExtResource("20_g4vxx")
 texture_progress = ExtResource("21_fls33")
+
+[node name="Corruption Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1214269965]
+layout_mode = 0
+offset_right = 36.0
+offset_bottom = 40.0
+value = 83.0
+fill_mode = 3
+texture_under = ExtResource("10_4fbix")
+texture_over = ExtResource("11_bkxok")
+texture_progress = ExtResource("12_wn8ek")

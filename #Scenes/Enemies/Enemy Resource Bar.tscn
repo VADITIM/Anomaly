@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://d2ixetyos5840"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdx4c"]
+bg_color = Color(0, 0, 0, 0.39215687)
+border_color = Color(0.12781036, 0.12637094, 0.117194556, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s7wrk"]
+bg_color = Color(0.826247, 0.1357018, 0.37746194, 1)
+border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_10p8t"]
+bg_color = Color(0, 0, 0, 0.39215687)
+border_color = Color(0.12781036, 0.12637094, 0.117194556, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d0fy5"]
+bg_color = Color(0.94911104, 0.7997122, 0, 1)
+border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
+corner_radius_top_left = 6
+corner_radius_bottom_left = 6
+
+[node name="Enemy Resource Bar" type="Control" unique_id=1987811369]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Health Bar" type="ProgressBar" parent="." unique_id=1470533157]
+layout_mode = 0
+offset_left = -9.0
+offset_top = -19.0
+offset_right = 9.0
+offset_bottom = -17.0
+theme_override_font_sizes/font_size = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_rdx4c")
+theme_override_styles/fill = SubResource("StyleBoxFlat_s7wrk")
+value = 50.0
+show_percentage = false
+
+[node name="Tenacity Bar" type="ProgressBar" parent="." unique_id=624749322]
+layout_mode = 0
+offset_left = -8.0
+offset_top = -17.0
+offset_right = 8.0
+offset_bottom = -16.0
+theme_override_font_sizes/font_size = 1
+theme_override_styles/background = SubResource("StyleBoxFlat_10p8t")
+theme_override_styles/fill = SubResource("StyleBoxFlat_d0fy5")
+value = 50.0
+show_percentage = false

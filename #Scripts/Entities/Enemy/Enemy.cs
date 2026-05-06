@@ -10,9 +10,14 @@ public abstract partial class Enemy : Entity
     private Weapon Weapon => Player?.Weapon;
     private EnemyStateMachine StateMachine;
     public TenacitySystem TenacitySystem;
+    private AnimationPlayer AnimationPlayer;
+    private Control ResourceBarControl;
+    private StyleBox TenacityBarNormalFill;
+    private StyleBox TenacityBarKnockbackFill;
     
     private RichTextLabel testDisplay;
-    private ProgressBar _healthBar;
+    private ProgressBar HealthBar;
+    private ProgressBar TenacityBar;
     public AnimatedSprite2D TenacityCooldownCue { get; private set; }
 
     [Export] public float armor { get; set; } = 0f;
@@ -36,9 +41,9 @@ public abstract partial class Enemy : Entity
     public enum WeaknessType { Piercing, Slashing, Smashing }
     public enum DificultyScaling { Regular, Corrupted }
 
-    [Export] public float DefaultStaggerDuration { get; set; } = 1.2f;
-    [Export] public float DefaultRecoveryDuration { get; set; } = 2.5f;
-    [Export] public float DefaultKnockbackDuration { get; set; } = 0.3f;
+    [Export] public float DefaultStaggerDuration { get; set; } = .5f;
+    [Export] public float DefaultRecoveryDuration { get; set; } = 5f;
+    [Export] public float DefaultKnockbackDuration { get; set; } = 0.2f;
     [Export] public float ChaseRange { get; set; } = 500f;
     [Export] public float AttackRange { get; set; } = 50f;
     [Export] public float StopDistance { get; set; } = 20f;
@@ -66,7 +71,6 @@ public abstract partial class Enemy : Entity
         }
 
         InitializeEnemy();
-        InitiateHealthBar();
     }
 
     public override void _ExitTree()
@@ -77,10 +81,17 @@ public abstract partial class Enemy : Entity
     public void InitializeEnemy()
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
-        testDisplay = GetNode<RichTextLabel>("Label");
-        testDisplay.BbcodeEnabled = true;
-        TenacityCooldownCue = GetNode<AnimatedSprite2D>("AnimatedSprite2D");
+        testDisplay = GetNodeOrNull<RichTextLabel>("Label")
+                      ?? GetNodeOrNull<RichTextLabel>("CanvasLayer/Label")
+                      ?? GetTree().CurrentScene?.FindChild("Label", true, false) as RichTextLabel;
+
+        if (testDisplay != null)
+            testDisplay.BbcodeEnabled = true;
+
+        AnimationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
+        TenacityCooldownCue = GetNodeOrNull<AnimatedSprite2D>("Tenacity Broken Animation");
         TenacityCooldownCue.Visible = false;
+        InitiateResourceBars();
         
         maxTenacity = tenacity;
         maxHealth = health;
@@ -100,15 +111,19 @@ public abstract partial class Enemy : Entity
         StateMachine.OnStateChanged += OnStateChangedHandler;
         
         TenacitySystem = new TenacitySystem(this, this, StateMachine);
+
+        PlayEnemyAnimation(GetCurrentEnemyAnimation());
     }
 
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
-        if (IsDead) return;
+        if (IsDead || TenacitySystem == null || StateMachine == null)
+            return;
         
         UpdateHitTimer((float)delta);
         TenacitySystem.Process((float)delta);
+        UpdateResourceBars();
         DisplayStats();
     }
 
@@ -150,8 +165,35 @@ public abstract partial class Enemy : Entity
     }
 
 
-    private void OnStateChangedHandler(EnemyState oldState, EnemyState newState) {  OnStateChanged(oldState, newState); }
+    private void OnStateChangedHandler(EnemyState oldState, EnemyState newState)
+    {
+        OnStateChanged(oldState, newState);
+        PlayEnemyAnimation(GetCurrentEnemyAnimation());
+    }
     protected virtual void OnStateChanged(EnemyState oldState, EnemyState newState) { }
+
+    private string GetCurrentEnemyAnimation()
+    {
+        if (StateMachine == null)
+            return null;
+
+        if (StateMachine.IsDead)
+            return "Die_Down";
+
+        if (AnimationPlayer != null && AnimationPlayer.HasAnimation("Move_Down"))
+            return "Move_Down";
+
+        return null;
+    }
+
+    private void PlayEnemyAnimation(string animationName)
+    {
+        if (AnimationPlayer == null || string.IsNullOrEmpty(animationName) || !AnimationPlayer.HasAnimation(animationName))
+            return;
+
+        if (AnimationPlayer.CurrentAnimation != animationName)
+            AnimationPlayer.Play(animationName);
+    }
 
     protected virtual void OnDeath()
     {
@@ -167,6 +209,17 @@ public abstract partial class Enemy : Entity
     private void OnDeathHandler()
     {
         OnDeath();
+
+        if (AnimationPlayer != null && AnimationPlayer.HasAnimation("Die_Down"))
+        {
+            AnimationPlayer.Play("Die_Down");
+
+            float animationLength = AnimationPlayer.GetAnimation("Die_Down").Length;
+            SceneTreeTimer timer = GetTree().CreateTimer((double)Mathf.Max(animationLength, 0.1f));
+            timer.Timeout += QueueFree;
+            return;
+        }
+
         QueueFree();
     }
 
@@ -189,7 +242,7 @@ public abstract partial class Enemy : Entity
         
         float calculatedDamage = weapon.ApplyDamage(this);
         health -= calculatedDamage;
-        _healthBar.Value = health;
+        UpdateResourceBars();
         
         StateMachine.NotifyDamageTaken(calculatedDamage);
 
@@ -220,6 +273,8 @@ public abstract partial class Enemy : Entity
             camera?.ShakeCamera(5f);
             TenacityCooldownCue.Visible = true;
         }
+
+        UpdateResourceBars();
     }
 
     private void ApplySubtleKnockback(Vector2 playerPosition, Weapon weapon)
@@ -249,6 +304,11 @@ public abstract partial class Enemy : Entity
     private void DisplayStats()
     {
         if (testDisplay == null) return;
+
+        bool shouldShowStats = HasCameraFocus;
+        testDisplay.Visible = shouldShowStats;
+        if (!shouldShowStats)
+            return;
         
         string stateInfo = StateMachine != null ? StateMachine.CurrentState.ToString() : "Unknown";
         
@@ -258,23 +318,94 @@ public abstract partial class Enemy : Entity
                            $"\n[color=cyan]Weakness:[/color] {weaknessType}";
     }
 
-    private void InitiateHealthBar()
+    private void InitiateResourceBars()
     {
-        _healthBar = FindChildProgressBar();
-        if (_healthBar == null)
+        ResourceBarControl = GetNodeOrNull<Control>("Enemy Resource Bar")
+                             ?? GetNodeOrNull<Control>("Enemy Health Bar")
+                             ?? FindChildControl(this, "Enemy Resource Bar")
+                             ?? FindChildControl(this, "Enemy Health Bar");
+
+        HealthBar = FindProgressBar(ResourceBarControl, "Health Bar")
+                    ?? FindProgressBar(this, "Enemy Resource Bar/Health Bar")
+                    ?? FindProgressBar(this, "Enemy Health Bar");
+
+        TenacityBar = FindProgressBar(ResourceBarControl, "Tenacity Bar")
+                      ?? FindProgressBar(this, "Enemy Resource Bar/Tenacity Bar");
+
+        if (HealthBar == null && TenacityBar == null)
             return;
-        _healthBar.MaxValue = health;
-        _healthBar.Value = health;
+
+        UpdateResourceBars();
     }
 
-    private ProgressBar FindChildProgressBar()
+    private void UpdateResourceBars()
     {
-        foreach (Node child in GetChildren())
+        if (HealthBar != null)
         {
-            if (child is ProgressBar bar)
-                return bar;
+            float healthMax = Mathf.Max(maxHealth, 1f);
+            HealthBar.MaxValue = healthMax;
+            HealthBar.Value = Mathf.Clamp(health, 0f, healthMax);
+        }
 
-            ProgressBar nested = FindProgressBarRecursive(child);
+        if (TenacityBar != null)
+        {
+            float tenacityMax = Mathf.Max(maxTenacity, 1f);
+            TenacityBar.MaxValue = tenacityMax;
+            float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
+            TenacityBar.Value = tenacityMax - clampedTenacity;
+            UpdateTenacityBarFillStyle();
+        }
+    }
+
+    private void UpdateTenacityBarFillStyle()
+    {
+        if (TenacityBar == null)
+            return;
+
+        bool canBeKnockbacked = TenacitySystem?.CanBeStaggered() ?? false;
+
+        if (canBeKnockbacked)
+        {
+            EnsureTenacityBarStyles();
+            if (TenacityBarKnockbackFill != null)
+                TenacityBar.AddThemeStyleboxOverride("fill", TenacityBarKnockbackFill);
+        }
+        else
+        {
+            EnsureTenacityBarStyles();
+            if (TenacityBarNormalFill != null)
+                TenacityBar.AddThemeStyleboxOverride("fill", TenacityBarNormalFill);
+        }
+    }
+
+    private void EnsureTenacityBarStyles()
+    {
+        if (TenacityBarNormalFill != null && TenacityBarKnockbackFill != null)
+            return;
+
+        StyleBox originalFill = TenacityBar?.GetThemeStylebox("fill");
+        StyleBoxFlat originalFlat = originalFill as StyleBoxFlat;
+
+        TenacityBarNormalFill = originalFlat != null
+            ? originalFlat.Duplicate() as StyleBox
+            : new StyleBoxFlat();
+
+        TenacityBarKnockbackFill = originalFlat != null
+            ? originalFlat.Duplicate() as StyleBox
+            : new StyleBoxFlat();
+
+        if (TenacityBarKnockbackFill is StyleBoxFlat knockbackFlat)
+            knockbackFlat.BgColor = Colors.White;
+    }
+
+    private Control FindChildControl(Node node, string nodeName)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is Control control && child.Name == nodeName)
+                return control;
+
+            Control nested = FindChildControl(child, nodeName);
             if (nested != null)
                 return nested;
         }
@@ -282,14 +413,21 @@ public abstract partial class Enemy : Entity
         return null;
     }
 
-    private ProgressBar FindProgressBarRecursive(Node node)
+    private ProgressBar FindProgressBar(Node node, string nodePath)
     {
+        if (node == null)
+            return null;
+
+        ProgressBar direct = node.GetNodeOrNull<ProgressBar>(nodePath);
+        if (direct != null)
+            return direct;
+
         foreach (Node child in node.GetChildren())
         {
-            if (child is ProgressBar bar)
+            if (child is ProgressBar bar && bar.Name == nodePath)
                 return bar;
 
-            ProgressBar nested = FindProgressBarRecursive(child);
+            ProgressBar nested = FindProgressBar(child, nodePath);
             if (nested != null)
                 return nested;
         }

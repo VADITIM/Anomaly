@@ -1,16 +1,12 @@
 using Godot;
 using System;
 
-public partial class PlayerStateMachine : Node
+public partial class PlayerStateMachine : StateMachineBase
 {
+    Player Player;
     public static PlayerStateMachine Instance { get; private set; }
-    private Player Player;
-
-    public PlayerState CurrentState { get; private set; } = PlayerState.Idle;
-    public PlayerState PreviousState { get; private set; } = PlayerState.Idle;
-
-    public event Action<PlayerState, PlayerState> OnStateChanged;
-    public event Action<MovementDirection> OnMovementDirectionChanged;
+    
+    public event Action<Player.MovementDirection> OnMovementDirectionChanged;
     public event Action<bool> OnAttackStarted; 
     public event Action OnAttackEnded;
     public event Action<Vector2> OnDodgeStarted; 
@@ -22,43 +18,26 @@ public partial class PlayerStateMachine : Node
     public event Action OnDied;
     public event Action OnRevived;
 
-    public float StateTime { get; private set; } = 0f;
+
+    private float staggerDuration = 0f;
+    private float knockbackDuration = 0f;
+    private float attackDuration = 0f;
+    private float attackCooldown = 0f;
+    private float heavyChargeDuration = 1f;
+    private float healDuration = 0f;
+    private const float HEAL_DURATION = 1.5f;
+    private Vector2 knockbackVelocity = Vector2.Zero;
+    
+    public float HealProgress => CurrentState == PlayerState.Healing  ? 1f - (healDuration / HEAL_DURATION)  : 0f;
     public float HeavyChargeProgress { get; private set; } = 0f;
 
-    private float _staggerDuration = 0f;
-    private float _knockbackDuration = 0f;
-    private float _attackDuration = 0f;
-    private float _attackCooldown = 0f;
-    private float _heavyChargeDuration = 1f;
-    private float _healDuration = 0f;
-    private const float HEAL_DURATION = 1.5f;
-    private Vector2 _knockbackVelocity = Vector2.Zero;
-    
-    public float HealProgress => CurrentState == PlayerState.Healing  ? 1f - (_healDuration / HEAL_DURATION)  : 0f;
-
-    public bool CanAct { get; set; } = true;
-    public bool CanMove { get; set; } = true;
-    public bool CanAttack { get; set; } = true;
-    public bool IsPaused { get; set; } = false;
-    public bool IsIdle => CurrentState == PlayerState.Idle;
-    public bool IsMoving => CurrentState == PlayerState.Moving;
-    public bool IsAttacking => CurrentState == PlayerState.Attacking || CurrentState == PlayerState.HeavyAttacking;
-    public bool IsHeavyAttacking => CurrentState == PlayerState.HeavyAttacking;
-    public bool IsChargingHeavy => CurrentState == PlayerState.HeavyCharging;
-    public bool IsDodging => CurrentState == PlayerState.Dodging;
-    public bool HasDodged => PreviousState == PlayerState.Dodging && CurrentState != PlayerState.Dodging;
-    public bool IsHealing => CurrentState == PlayerState.Healing;
-    public bool IsStaggered => CurrentState == PlayerState.Staggered;
-    public bool IsKnockedBack => CurrentState == PlayerState.Knockback;
-    public bool IsDead => CurrentState == PlayerState.Dead;
-    public bool CanPerformAction => !IsInLockedState() && CanAct;
-
-    public Vector2 GetKnockbackVelocity() => _knockbackVelocity;
+    public Vector2 GetKnockbackVelocity() => knockbackVelocity;
     public Vector2 GetDodgeDirection() => Dodge.GetDodgeDirection();
 
     public override void _Ready()
     {
         Instance = this;
+        SetInitialState(PlayerState.Idle);
         Player = GetParent<Player>();
     }
 
@@ -66,7 +45,7 @@ public partial class PlayerStateMachine : Node
     {
         if (IsPaused) return;
         
-        StateTime += (float)delta;
+        AdvanceStateTime((float)delta);
         ProcessCurrentState((float)delta);
         ProcessInput();
     }
@@ -76,20 +55,20 @@ public partial class PlayerStateMachine : Node
         switch (CurrentState)
         {
             case PlayerState.Staggered:
-                _staggerDuration -= delta;
-                if (_staggerDuration <= 0)
+                staggerDuration -= delta;
+                if (staggerDuration <= 0)
                 {
-                    _knockbackVelocity = Vector2.Zero;
+                    knockbackVelocity = Vector2.Zero;
                     TransitionTo(PlayerState.Idle);
                 }
                 break;
                 
             case PlayerState.Knockback:
-                _knockbackDuration -= delta;
-                _knockbackVelocity = _knockbackVelocity.MoveToward(Vector2.Zero, 800f * delta);
-                if (_knockbackDuration <= 0)
+                knockbackDuration -= delta;
+                knockbackVelocity = knockbackVelocity.MoveToward(Vector2.Zero, 800f * delta);
+                if (knockbackDuration <= 0)
                 {
-                    _knockbackVelocity = Vector2.Zero;
+                    knockbackVelocity = Vector2.Zero;
                     TransitionTo(PlayerState.Idle);
                 }
                 break;
@@ -105,8 +84,8 @@ public partial class PlayerStateMachine : Node
                 
             case PlayerState.Attacking:
             case PlayerState.HeavyAttacking:
-                _attackDuration -= delta;
-                if (_attackDuration <= 0)
+                attackDuration -= delta;
+                if (attackDuration <= 0)
                 {
                     OnAttackEnded?.Invoke();
                     TransitionTo(PlayerState.Idle);
@@ -114,7 +93,7 @@ public partial class PlayerStateMachine : Node
                 break;
                 
             case PlayerState.HeavyCharging:
-                HeavyChargeProgress += delta / _heavyChargeDuration;
+                HeavyChargeProgress += delta / heavyChargeDuration;
                 HeavyChargeProgress = Mathf.Clamp(HeavyChargeProgress, 0f, 1f);
                 if (HeavyChargeProgress >= 1f)
                 {
@@ -123,8 +102,8 @@ public partial class PlayerStateMachine : Node
                 break;
                 
             case PlayerState.Healing:
-                _healDuration -= delta;
-                if (_healDuration <= 0)
+                healDuration -= delta;
+                if (healDuration <= 0)
                 {
                     OnHealEnded?.Invoke();
                     TransitionTo(PlayerState.Idle);
@@ -132,15 +111,15 @@ public partial class PlayerStateMachine : Node
                 break;
         }
         
-        if (_attackCooldown > 0)
-            _attackCooldown -= delta;
+        if (attackCooldown > 0)
+            attackCooldown -= delta;
     }
 
     private void ProcessInput()
     {
         if (!CanAct) return;
         
-        if (Input.IsActionJustPressed("dodge") && CanMove)
+        if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
         {
             if (CurrentState == PlayerState.Healing)
             {
@@ -160,13 +139,13 @@ public partial class PlayerStateMachine : Node
         
         UpdateMovementDirection();
         
-        if (Input.IsActionJustPressed("heal") && CanAct)
+        if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
         {
             TryHeal();
             return;
         }
         
-        if (Input.IsActionPressed("heavy") && CanAttack && _attackCooldown <= 0)
+        if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && attackCooldown <= 0)
         {
             if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.staminaCost)
             {
@@ -176,13 +155,13 @@ public partial class PlayerStateMachine : Node
             return;
         }
         
-        if (Input.IsActionJustReleased("heavy") && CurrentState == PlayerState.HeavyCharging)
+        if (Input.IsActionJustReleased(Keybinds.Heavy) && CurrentState == PlayerState.HeavyCharging)
         {
             ExecuteHeavyAttack();
             return;
         }
         
-        if (Input.IsActionJustPressed("attack") && CanAttack && _attackCooldown <= 0)
+        if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && attackCooldown <= 0)
         {
             if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.staminaCost)
             {
@@ -191,7 +170,7 @@ public partial class PlayerStateMachine : Node
             return;
         }
         
-        if (Movement.CurrentMovementDirection != MovementDirection.None && CanMove)
+        if (Movement.CurrentMovementDirection != Player.MovementDirection.None && CanMove)
         {
             if (CurrentState == PlayerState.Idle)
                 TransitionTo(PlayerState.Moving);
@@ -204,12 +183,12 @@ public partial class PlayerStateMachine : Node
     
     private void UpdateMovementDirection()
     {
-        MovementDirection newDirection = MovementDirection.None;
+        Player.MovementDirection newDirection = Player.MovementDirection.None;
         
-        if (Input.IsActionPressed("up")) newDirection |= MovementDirection.Up;
-        if (Input.IsActionPressed("down")) newDirection |= MovementDirection.Down;
-        if (Input.IsActionPressed("left")) newDirection |= MovementDirection.Left;
-        if (Input.IsActionPressed("right")) newDirection |= MovementDirection.Right;
+        if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
+        if (Input.IsActionPressed(Keybinds.MoveDown)) newDirection |= Player.MovementDirection.Down;
+        if (Input.IsActionPressed(Keybinds.MoveLeft)) newDirection |= Player.MovementDirection.Left;
+        if (Input.IsActionPressed(Keybinds.MoveRight)) newDirection |= Player.MovementDirection.Right;
         
         if (newDirection != Movement.CurrentMovementDirection)
         {
@@ -218,28 +197,7 @@ public partial class PlayerStateMachine : Node
         }
     }
 
-    public bool TransitionTo(PlayerState newState)
-    {
-        if (CurrentState == newState) return false;
-        if (!CanTransitionTo(newState)) return false;
-        
-        bool wasInLockedState = IsInLockedState();
-        
-        PreviousState = CurrentState;
-        CurrentState = newState;
-        StateTime = 0f;
-        
-        if (wasInLockedState && newState == PlayerState.Idle)
-        {
-            Movement.CurrentMovementDirection = MovementDirection.None;
-        }
-        
-        OnStateChanged?.Invoke(PreviousState, CurrentState);
-        
-        return true;
-    }
-    
-    private bool CanTransitionTo(PlayerState newState)
+    protected override bool CanTransitionTo(PlayerState newState)
     {
         if (CurrentState == PlayerState.Dead && newState != PlayerState.Idle)
             return false;
@@ -249,13 +207,21 @@ public partial class PlayerStateMachine : Node
             
         return true;
     }
-    
-    private bool IsInLockedState()
+
+    protected override bool IsLockedState(PlayerState state)
     {
-        return CurrentState == PlayerState.Staggered ||
-               CurrentState == PlayerState.Knockback ||
-               CurrentState == PlayerState.Dodging ||
-               CurrentState == PlayerState.Dead;
+        return state == PlayerState.Staggered ||
+               state == PlayerState.Knockback ||
+               state == PlayerState.Dodging ||
+               state == PlayerState.Dead;
+    }
+
+    protected override void OnTransitioned(PlayerState previousState, PlayerState newState, bool wasInLockedState)
+    {
+        if (wasInLockedState && newState == PlayerState.Idle)
+        {
+            Movement.CurrentMovementDirection = Player.MovementDirection.None;
+        }
     }
     
     private bool IsExitingLockedState(PlayerState newState)
@@ -267,7 +233,7 @@ public partial class PlayerStateMachine : Node
     {
         if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Moving)
         {
-            _healDuration = HEAL_DURATION;
+            healDuration = HEAL_DURATION;
             TransitionTo(PlayerState.Healing);
             OnHealStarted?.Invoke(HEAL_DURATION);
         }
@@ -297,12 +263,12 @@ public partial class PlayerStateMachine : Node
         float chargeBonus = HeavyChargeProgress;
         HeavyChargeProgress = 0f;
         
-        _attackDuration = Player.GetCurrentAttackAnimationDuration(true);
+        attackDuration = Player.GetCurrentAttackAnimationDuration(true);
         TransitionTo(PlayerState.HeavyAttacking);
         OnAttackStarted?.Invoke(true);
         
         if (Player?.Weapon != null)
-            _attackCooldown = 1f / Player.Weapon.attackSpeed;
+            attackCooldown = 1f / Player.Weapon.attackSpeed;
     }
     
     private void ExecuteNormalAttack()
@@ -310,12 +276,12 @@ public partial class PlayerStateMachine : Node
         if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Moving)
         {
             Player.Instance.Stats.SetCurrent("Stamina", Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.staminaCost, 0f));
-            _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+            attackDuration = Player.GetCurrentAttackAnimationDuration(false);
             TransitionTo(PlayerState.Attacking);
             OnAttackStarted?.Invoke(false);
             
             if (Player?.Weapon != null)
-                _attackCooldown = 1f / Player.Weapon.attackSpeed;
+                attackCooldown = 1f / Player.Weapon.attackSpeed;
         }
     }
 
@@ -323,7 +289,7 @@ public partial class PlayerStateMachine : Node
     {
         if (CurrentState == PlayerState.Dead) return;
         
-        _staggerDuration = duration;
+        staggerDuration = duration;
         TransitionTo(PlayerState.Staggered);
         OnStaggered?.Invoke(duration);
     }
@@ -332,8 +298,8 @@ public partial class PlayerStateMachine : Node
     {
         if (CurrentState == PlayerState.Dead) return;
         
-        _knockbackVelocity = direction.Normalized() * force;
-        _knockbackDuration = duration;
+        knockbackVelocity = direction.Normalized() * force;
+        knockbackDuration = duration;
         TransitionTo(PlayerState.Knockback);
         OnKnockback?.Invoke(direction, force);
     }

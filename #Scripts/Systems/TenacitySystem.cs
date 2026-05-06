@@ -3,17 +3,17 @@ using System;
 
 public class TenacitySystem
 {
-    public TenacitySystem(Enemy enemy, Node parent, EnemyStateMachine stateMachine)
+    public TenacitySystem(Enemy enemy, Node parent, StateMachineBase stateMachine)
     {
         Enemy = enemy;
         Parent = parent;
-        EnemyStateMachine = stateMachine;
+        StateMachine = stateMachine;
         MaxStaggers = enemy.maxStaggers;
     }
     
     private Enemy Enemy;
     private Node Parent;
-    private EnemyStateMachine EnemyStateMachine;
+    private StateMachineBase StateMachine;
 
     public event Action<Vector2, float> OnKnockbackStarted;
     public event Action OnKnockbackEnded;
@@ -58,7 +58,7 @@ public class TenacitySystem
     public float GetRemainingStaggerTime() => isStaggered ? staggerDuration : 0f;
     public float GetRemainingKnockbackTime() => isKnockbackActive ? knockbackDuration : 0f;
     public float GetRemainingRecoveryTime() => isRecovering ? recoveryDuration : 0f;
-    public bool IsInLockedState() { return isStaggered || isKnockbackActive || EnemyStateMachine.IsDead; }
+    public bool IsInLockedState() { return isStaggered || isKnockbackActive || StateMachine.IsDead; }
 
 
     public void Process(float delta)
@@ -78,7 +78,7 @@ public class TenacitySystem
         if (staggerDuration <= 0)
         {
             isStaggered = false;
-            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+            StateMachine.TransitionTo(State.Idle);
             OnStaggerEnded?.Invoke();
         }
     }
@@ -93,7 +93,7 @@ public class TenacitySystem
         if (knockbackDuration <= 0)
         {
             isKnockbackActive = false;
-            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+            StateMachine.TransitionTo(State.Idle);
             OnKnockbackEnded?.Invoke();
         }
     }
@@ -117,7 +117,7 @@ public class TenacitySystem
         
         pendingWeaponReset = weapon;
         float tenacityDamage;
-        if (global::StateMachine.CurrentState == PlayerState.HeavyAttacking)
+        if (Combat.IsHeavyAttacking())
         {
             tenacityDamage = weapon.CalculateTenacityDamage(weapon.tenacityDamage) * 1.30f;
         }
@@ -154,7 +154,7 @@ public class TenacitySystem
 
     public bool CanBeStaggered()
     {
-        if (isRecovering || EnemyStateMachine.IsDead)
+        if (isRecovering || StateMachine.IsDead)
             return false;
         return CurrentStaggerCount < MaxStaggers;
     }
@@ -167,7 +167,7 @@ public class TenacitySystem
         CurrentStaggerCount++;
         isStaggered = true;
         
-        EnemyStateMachine.TransitionTo(EnemyState.Staggered);
+        StateMachine.TransitionTo(State.Staggered);
         OnStaggerStarted?.Invoke(staggerDuration);
         
         return true;
@@ -227,7 +227,7 @@ public class TenacitySystem
 
     public void RequestRecovery(float duration = -1f)
     {
-        if (EnemyStateMachine.IsDead) return;
+        if (StateMachine.IsDead) return;
         if (isRecovering) return;
         
         recoveryDuration = duration > 0 ? duration : Enemy.DefaultRecoveryDuration;
@@ -236,7 +236,7 @@ public class TenacitySystem
         if (isStaggered)
         {
             isStaggered = false;
-            EnemyStateMachine.TransitionTo(EnemyState.Idle);
+            StateMachine.TransitionTo(State.Idle);
         }
         
         OnRecoveryStarted?.Invoke(recoveryDuration);
@@ -272,7 +272,7 @@ public class TenacitySystem
 
     public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
     {
-        if (EnemyStateMachine.IsDead) return;
+        if (StateMachine.IsDead) return;
         
         knockbackVelocity = direction.Normalized() * force;
         knockbackDuration = duration > 0 ? duration : Enemy.DefaultKnockbackDuration;
@@ -284,7 +284,7 @@ public class TenacitySystem
         }
         
         isKnockbackActive = true;
-        EnemyStateMachine.TransitionTo(EnemyState.Knockback);
+        StateMachine.TransitionTo(State.Knockback);
         OnKnockbackStarted?.Invoke(direction, force);
     }
 
@@ -379,7 +379,7 @@ public class TenacitySystem
         ClearStackResetTimer();
         ClearStaggerWindowTimer();
         
-        if (EnemyStateMachine != null)
+        if (StateMachine != null)
         {
             OnRecoveryEnded -= OnRecoveryComplete;
         }

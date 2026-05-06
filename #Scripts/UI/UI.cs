@@ -22,7 +22,7 @@ public partial class UI : Control
 
     public override void _Process(double delta)
     {
-        if (Input.IsActionJustReleased("Toggle Escape"))
+        if (Input.IsActionJustReleased(Keybinds.ToggleEscape))
         {
             if (BonfireMenu.Visible)
                 DisableAllMenus();

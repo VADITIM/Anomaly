@@ -1,32 +1,19 @@
 using Godot;
 using System;
 
-public partial class EnemyStateMachine : Node
+public partial class EnemyStateMachine : StateMachineBase
 {
     private Enemy Enemy;
     public Node2D Target { get; set; }
-    public EnemyState CurrentState { get; private set; } = EnemyState.Idle;
-    public EnemyState PreviousState { get; private set; } = EnemyState.Idle;
     public EnemyAttackPhase CurrentAttackPhase { get; private set; } = EnemyAttackPhase.None;
-
-    public float StateTime { get; private set; } = 0f;
     public int MaxStaggers { get; set; } = 3;
 
     private float _attackDuration = 0f;
 
-    public event Action<EnemyState, EnemyState> OnStateChanged;
     public event Action OnAttackStarted;
     public event Action OnAttackEnded;
     public event Action OnDied;
     public event Action<float> OnDamageTaken; 
-
-    public bool IsIdle => CurrentState == EnemyState.Idle;
-    public bool IsChasing => CurrentState == EnemyState.Chasing;
-    public bool IsAttacking => CurrentState == EnemyState.Attacking;
-    public bool IsStaggered => CurrentState == EnemyState.Staggered;
-    public bool IsKnockedBack => CurrentState == EnemyState.Knockback;
-    public bool IsDead => CurrentState == EnemyState.Dead;
-    public bool CanAct => !IsInLockedState();
 
     public float GetRemainingStateTime()
     {
@@ -39,13 +26,14 @@ public partial class EnemyStateMachine : Node
 
     public override void _Ready()
     {
+        SetInitialState(EnemyState.Idle);
         Enemy = GetParent<Enemy>();
         Target = GetTree().Root.FindChild("Player", true, false) as Node2D;
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        StateTime += (float)delta;
+        AdvanceStateTime((float)delta);
         ProcessCurrentState((float)delta);
         ProcessAI((float)delta);
     }
@@ -108,21 +96,7 @@ public partial class EnemyStateMachine : Node
         }
     }
 
-    public bool TransitionTo(EnemyState newState)
-    {
-        if (CurrentState == newState) return false;
-        if (!CanTransitionTo(newState)) return false;
-        
-        PreviousState = CurrentState;
-        CurrentState = newState;
-        StateTime = 0f;
-        
-        OnStateChanged?.Invoke(PreviousState, CurrentState);
-        
-        return true;
-    }
-    
-    private bool CanTransitionTo(EnemyState newState)
+    protected override bool CanTransitionTo(EnemyState newState)
     {
         if (CurrentState == EnemyState.Dead)
             return false;
@@ -132,12 +106,12 @@ public partial class EnemyStateMachine : Node
             
         return true;
     }
-    
-    public bool IsInLockedState()
+
+    protected override bool IsLockedState(EnemyState state)
     {
-        return CurrentState == EnemyState.Staggered ||
-               CurrentState == EnemyState.Knockback ||
-               CurrentState == EnemyState.Dead;
+        return state == EnemyState.Staggered ||
+               state == EnemyState.Knockback ||
+               state == EnemyState.Dead;
     }
 
     public void RequestDeath()

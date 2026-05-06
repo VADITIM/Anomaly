@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class PlayerStats
 {
-    // Stat class to hold current, max, total max, and upgrade levels
     public class Stat
     {
         public float Current { get; set; }
@@ -14,16 +13,18 @@ public class PlayerStats
     }
 
     private Dictionary<string, Stat> Stats = new Dictionary<string, Stat>();
+    private float staminaRegenTimer = 0f;
+    private const float STAMINA_REGEN_COOLDOWN = .9f;
 
     public PlayerStats()
     {
-        Stats["Speed"] = new Stat { Current = 150f, CurrentMax = 130f, TotalMax = 150f };
+        Stats["Speed"] = new Stat { Current = 130f, CurrentMax = 130f, TotalMax = 150f };
         Stats["Armor"] = new Stat { Current = 20f, CurrentMax = 20f, TotalMax = 100f };
         Stats["Tenacity"] = new Stat { Current = 5f, CurrentMax = 5f, TotalMax = 20f };
         
-        Stats["Health"] = new Stat { Current = 200f, CurrentMax = 200f, TotalMax = 200f };
+        Stats["Health"] = new Stat { Current = 100f, CurrentMax = 200f, TotalMax = 200f };
         
-        Stats["Stamina"] = new Stat { Current = 300f, CurrentMax = 300f, TotalMax = 300f };
+        Stats["Stamina"] = new Stat { Current = 100f, CurrentMax = 100f, TotalMax = 300f };
         Stats["Stamina Regen"] = new Stat { Current = 10f, CurrentMax = 10f, TotalMax = 50f };
         
         Stats["Vessel"] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 100f };
@@ -35,6 +36,29 @@ public class PlayerStats
         Stats["Crush Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
         
         Stats["Soul"] = new Stat { Current = 0f, CurrentMax = 0f, TotalMax = 100f };
+    }
+
+    public void NotifyActionPerformed()
+    {
+        staminaRegenTimer = STAMINA_REGEN_COOLDOWN;
+    }
+
+    public void ProcessStaminaRegeneration(float delta)
+    {
+        staminaRegenTimer -= delta;
+
+        if (staminaRegenTimer > 0f)
+            return;
+
+        float currentStamina = GetCurrent("Stamina");
+        float maxStamina = GetCurrentMax("Stamina");
+        float regenRate = GetCurrentMax("Stamina Regen");
+
+        if (currentStamina < maxStamina)
+        {
+            float newStamina = Mathf.Min(currentStamina + regenRate * delta, maxStamina);
+            SetCurrent("Stamina", newStamina);
+        }
     }
 
     public Stat GetStat(string statName)

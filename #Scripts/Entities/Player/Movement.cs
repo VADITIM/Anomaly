@@ -3,17 +3,17 @@ using System;
 
 public static class Movement
 {
-    public static MovementDirection CurrentMovementDirection { get;  set; } = MovementDirection.None;
+    public static Player.MovementDirection CurrentMovementDirection { get;  set; } = Player.MovementDirection.None;
     private const float HEAL_SPEED_MODIFIER = 0.2f;
 
     public static Vector2 GetMovementVector()
     {
         Vector2 movement = Vector2.Zero;
         
-        if ((CurrentMovementDirection & MovementDirection.Up) != 0) movement.Y -= 1;
-        if ((CurrentMovementDirection & MovementDirection.Down) != 0) movement.Y += 1;
-        if ((CurrentMovementDirection & MovementDirection.Left) != 0) movement.X -= 1;
-        if ((CurrentMovementDirection & MovementDirection.Right) != 0) movement.X += 1;
+        if ((CurrentMovementDirection & Player.MovementDirection.Up) != 0) movement.Y -= 1;
+        if ((CurrentMovementDirection & Player.MovementDirection.Down) != 0) movement.Y += 1;
+        if ((CurrentMovementDirection & Player.MovementDirection.Left) != 0) movement.X -= 1;
+        if ((CurrentMovementDirection & Player.MovementDirection.Right) != 0) movement.X += 1;
         
         return movement.Normalized();
     }

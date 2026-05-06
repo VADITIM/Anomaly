@@ -118,7 +118,7 @@ public partial class Weapon : Node2D
         string[] animationNames;
         if (isHeavy)
         {
-            animationNames = new[] { "Sword_Attack_Spin", $"Sword_Attack_{direction}", "Attack1", "default" };
+            animationNames = new[] { "Weapon_Spin", "Sword_Attack_Spin", $"Sword_Attack_{direction}", "Attack1", "default" };
         }
         else
         {

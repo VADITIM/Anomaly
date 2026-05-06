@@ -1,7 +1,6 @@
-[gd_scene format=3 uid="uid://bo8wy1jc7h2bo"]
+[gd_scene format=4 uid="uid://bo8wy1jc7h2bo"]
 
-[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Enemy/Types/Enemy4.cs" id="1_micq5"]
-[ext_resource type="Texture2D" uid="uid://dq0xti6ehs3ln" path="res://#Assets/Entities/Enemies/4/D_Walk.png" id="2_bj8pf"]
+[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Entities/Enemy/Types/Enemy4.cs" id="1_micq5"]
 [ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="3_4upu0"]
 [ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="4_5b6a6"]
 [ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="5_keduy"]
@@ -19,60 +18,52 @@
 [ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="17_8ret6"]
 [ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="18_t4woj"]
 [ext_resource type="PackedScene" uid="uid://bualcr85nt0rd" path="res://#Scenes/UI/EnemyStateDisplay.tscn" id="19_bj8pf"]
-[ext_resource type="PackedScene" uid="uid://mefssmsl54s2" path="res://#Scenes/Enemies/lower_enemy_health_bar.tscn" id="20_wsip8"]
+[ext_resource type="PackedScene" uid="uid://d2ixetyos5840" path="res://#Scenes/Enemies/Enemy Resource Bar.tscn" id="19_ggf2l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
-size = Vector2(50, 37.5)
+size = Vector2(12.5, 18.75)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_4upu0"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(0, 0, 48, 48)
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_wsip8"]
+_data = PackedByteArray("AAADAAUAAAABAAAAwAAAAMAAAAA6AwAAUklGRjIDAABXRUJQVlA4TCUDAAAvv8AvED9AtAHR/EDSzP/Hid5Q1EgKI+Re9KYA/44wgOJIMqBdROAnFfknxPua//i/XSVSNaCMyHlGtkHOtu1tU32yT1n10rI6oq0G5ZAZcGCt38XMqSv9+/+RcvmNrbO1iP5LlCRZaJt+YDuAVKPTq3yE/H21PETgij6TAQ+PHFy5nIQgntKEUFGlQAgA0e/yTu+IMTRdVwGOGOfZ3WKPGihwt1hijtTpHTOGM9U9gPi4006120A/56EK55njVHXLUXN+MNuBEAAzgBjoktmS69d8N7uoCKudw5EmqYQBM1C+QhUH/XNOVBPplXcy8k7m31/T93uAfis9TGneI8yZLgOE0Jl1gfnAeY8M1gMg9YA4fPNqdlk5ZhCpB4y8kzFNPRvMr+fjl/nuofTzT6ln4oTtZOQ9a+D7h+NynhCap0kVRMrtkWa6UUnZPVVTUs//T5aHW3knRghDWu32ILQx1gTvpOm6SrwjNCFUDEjqFxBwrjoDnPQfZ6p71Clnd4s9iju/W8x8PwHuVBcA841dq25TZ9OpdhUDqQcEj9QPavyvZpcVUYnpd7OLDWLQwIPZDjUfPJlNIAyYgYLUA4LkPdyLzbhXA6oAR5XzLfWcLA3VA5yqbgGEr+n7PaCkHsq5LteM2ydm1D6RkHoC0x9TT6S8md1TpumRDYDdb4w29dRUz7vZr5rxfPwy3z1k5D2Ml/gyj/PheuByvlgioXmaVGHIntg+TWrqckyoHmmmG5UM2tMebdZcT3yaROFUDatqWHXLyf+//ffb8q54KATcGkWFzB29hx/tA4B/3/F5gJw/5OrjKBsBjqLi4cbfnkAbYw3mCxAtxq3qF4aIDr3Lr2SNpdtw5GiMssaNddgapBQTcv7Kf4AR4KhwuoYrHV97AVV8r+nNWMAD3zpdrtkJPdLMuG8fuzez+1lc46HRyTczsxPuvU3GWVe9l3/Fl3l8rwlCGmGfvcQkzskoswLENqkjoa3l0ewzlfqYrn8e8o+nSaRy5rWYRTJ/aG2MNflYrtz1mBj9vi9WygXqt2VBmbJn+vutzyvbreCX/iZE/vvvzykCAA==")
+size_override = Vector2(192, 192)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_5b6a6"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(48, 0, 48, 48)
+[sub_resource type="Animation" id="Animation_xjnca"]
+length = 0.7
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [6, 7, 8, 9, 10, 11, 12]
+}
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_keduy"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(96, 0, 48, 48)
+[sub_resource type="Animation" id="Animation_jvqkt"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3, 4, 5]
+}
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_dmnrg"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(144, 0, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_e12vo"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(192, 0, 48, 48)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_vrglb"]
-atlas = ExtResource("2_bj8pf")
-region = Rect2(240, 0, 48, 48)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_p6l7g"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4upu0")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_5b6a6")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_keduy")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_dmnrg")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_e12vo")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_vrglb")
-}],
-"loop": true,
-"name": &"default",
-"speed": 5.0
-}]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lhous"]
+_data = {
+&"Die_Down": SubResource("Animation_xjnca"),
+&"Move_Down": SubResource("Animation_jvqkt")
+}
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vu8ro"]
 animations = [{
@@ -184,35 +175,60 @@ animations = [{
 }]
 
 [node name="Enemy4" type="CharacterBody2D" unique_id=1778528792]
-scale = Vector2(0.32, 0.32)
 collision_layer = 8
 collision_mask = 39
 script = ExtResource("1_micq5")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1240647017]
-position = Vector2(0, 12.5)
+[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")
 
-[node name="AnimatedSprite2D2" type="AnimatedSprite2D" parent="." unique_id=1626802038]
-scale = Vector2(2.6041667, 2.604167)
-sprite_frames = SubResource("SpriteFrames_p6l7g")
-autoplay = "default"
+[node name="Body" type="Sprite2D" parent="." unique_id=2095261304]
+texture_filter = 1
+position = Vector2(0, -3.125)
+texture = SubResource("PortableCompressedTexture2D_wsip8")
+hframes = 4
+vframes = 4
+frame = 6
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "AnimationPlayer",
+"scale": "1.0",
+"slice": "",
+"source": "res://#Assets/Entities/Enemies/4/Bee.aseprite",
+"source_uid": 240037519164549629
+}
+metadata/_aseprite_wizard_source_file_hash_ = "f75002a07b66c9ed6456caa66d8f2f6e"
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=766473252]
-position = Vector2(0, 9.375001)
-scale = Vector2(0.33735797, 0.337358)
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1594877807]
+libraries/ = SubResource("AnimationLibrary_lhous")
+
+[node name="Tenacity Broken Animation" type="AnimatedSprite2D" parent="." unique_id=766473252]
+position = Vector2(0, -4.7683716e-07)
+scale = Vector2(0.1953125, 0.19531254)
 sprite_frames = SubResource("SpriteFrames_vu8ro")
 animation = &"tenacity recovered"
 
-[node name="Label" parent="." unique_id=1362593918 instance=ExtResource("19_bj8pf")]
-offset_left = -112.49997
-offset_top = -121.875
-offset_right = 684.8447
-offset_bottom = 312.05414
-scale = Vector2(0.25810045, 0.25810045)
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1075992845]
 
-[node name="Lower Enemy Health Bar" parent="." unique_id=1470533157 instance=ExtResource("20_wsip8")]
-offset_left = -37.5
-offset_top = -25.0
-offset_right = 35.5
-offset_bottom = -16.0
+[node name="Label" parent="CanvasLayer" unique_id=1362593918 instance=ExtResource("19_bj8pf")]
+offset_left = 1482.0
+offset_top = 9.0
+offset_right = 3143.349
+offset_bottom = 911.7493
+scale = Vector2(0.25810045, 0.25810045)
+theme_override_font_sizes/normal_font_size = 100
+
+[node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("19_ggf2l")]

@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://mefssmsl54s2"]
+[gd_scene format=3 uid="uid://cnuuh6hqys1i8"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdx4c"]
 bg_color = Color(0, 0, 0, 0.39215687)
@@ -14,7 +14,7 @@ border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
 corner_radius_top_left = 6
 corner_radius_bottom_left = 6
 
-[node name="Lower Enemy Health Bar" type="ProgressBar" unique_id=1470533157]
+[node name="Enemy Health Bar" type="ProgressBar" unique_id=1470533157]
 offset_left = -9.0
 offset_top = -18.0
 offset_right = 9.0

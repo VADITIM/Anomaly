@@ -1,20 +1,29 @@
 using Godot;
 using System;
-using System.Collections.Generic;
 
 public partial class Player : Entity
 {
+    public enum MovementDirection
+    {
+        None = 0,
+        Up = 1,
+        Down = 2,
+        Left = 4,
+        Right = 8
+    }
+
     public static Player Instance;
     public PlayerStateMachine StateMachine { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
     [Export]public Weapon Weapon { get; set; }
     [Export] public Node2D WeaponSlot;
     
-    // Animation
     [Export] public Sprite2D BodySprite { get; set; }
     [Export] public AnimationPlayer AnimationPlayer { get; set; }
     private PlayerState lastAnimation = (PlayerState)(-1);
     private string lastAnimationDirection = "";
+    private bool _lastAirborne = false;
+    private string _lastDamageDirection = "Down";
 
     private Vector2 _bodySpriteBasePosition;
     private Vector2 _weaponSlotBasePosition;
@@ -94,7 +103,7 @@ public partial class Player : Entity
         base._PhysicsProcess(delta);
         if (StateMachine.IsDead) return;
 
-        if (Input.IsActionJustPressed("jump") && canMove)
+        if (Input.IsActionJustPressed(Keybinds.Jump) && canMove)
         {
             TryJump();
         }
@@ -164,6 +173,7 @@ public partial class Player : Entity
         float armor = Stats.GetCurrentMax("Armor");
         float effectiveDamage = damage * (1f - armor / 100f);
         Vector2 knockbackDir = (GlobalPosition - sourcePosition).Normalized();
+        _lastDamageDirection = GetDirectionFromVector(sourcePosition - GlobalPosition, out _);
         
         float currentHealth = Stats.GetCurrentMax("Health");
         float newHealth = currentHealth - effectiveDamage;
@@ -220,6 +230,11 @@ public partial class Player : Entity
             Vector2 dodgeVel = Dodge.GetDodgeVelocity();
             direction = GetDirectionFromVector(dodgeVel, out flipH);
         }
+        else if (currentState == PlayerState.Staggered || currentState == PlayerState.Knockback || currentState == PlayerState.Dead)
+        {
+            direction = _lastDamageDirection;
+            flipH = false;
+        }
         else
         {
             Vector2 mousePos = GetGlobalMousePosition();
@@ -227,12 +242,15 @@ public partial class Player : Entity
             direction = GetDirectionFromVector(toMouse, out flipH);
         }
         
-        if (currentState == lastAnimation && direction == lastAnimationDirection && flipH == _lastFlipH)
+        bool airborne = IsAirborne;
+
+        if (currentState == lastAnimation && direction == lastAnimationDirection && flipH == _lastFlipH && airborne == _lastAirborne)
             return;
         
         lastAnimation = currentState;
         lastAnimationDirection = direction;
         _lastFlipH = flipH;
+        _lastAirborne = airborne;
         
         if (BodySprite != null)
             BodySprite.FlipH = flipH;
@@ -241,7 +259,9 @@ public partial class Player : Entity
         {
             if (AnimationPlayer.HasAnimation(animationName))
             {
-                bool isAttackAnimation = animationName.StartsWith("Sword_Attack") || animationName.StartsWith("Attack");
+                bool isAttackAnimation = animationName.StartsWith("Sword_Attack") ||
+                                         animationName.StartsWith("Attack") ||
+                                         animationName == "Weapon_Spin";
                 if (isAttackAnimation && Weapon != null)
                 {
                     float desiredDuration = Weapon.GetAttackAnimationDuration(direction, currentState == PlayerState.HeavyAttacking);
@@ -295,15 +315,15 @@ public partial class Player : Entity
 
         return state switch
         {
-            PlayerState.Idle => new[] { idle },
-            PlayerState.Moving => new[] { $"Weapon_Move_{direction}", idle },
+            PlayerState.Idle => IsAirborne ? new[] { "Jump_Down" } : new[] { idle },
+            PlayerState.Moving => IsAirborne ? new[] { "Jump_Down" } : new[] { $"Weapon_Move_{direction}", idle },
             PlayerState.Attacking => new[] { $"Sword_Attack_{direction}", idle },
-            PlayerState.HeavyAttacking => new[] { "Sword_Attack_Spin", $"Sword_Attack_{direction}", idle },
-            PlayerState.Dodging => new[] { $"Weapon_Move_{direction}", idle },
-            PlayerState.Healing => new[] { idle },
-            PlayerState.Staggered => new[] { idle },
-            PlayerState.Knockback => new[] { idle },
-            PlayerState.Dead => new[] { "Weapon_Idle_Down", idle },
+            PlayerState.HeavyAttacking => new[] { "Weapon_Spin", "Sword_Attack_Spin", $"Sword_Attack_{direction}", idle },
+            PlayerState.Dodging => new[] { $"Dodge_{direction}", $"Weapon_Move_{direction}", idle },
+            PlayerState.Healing => IsAirborne ? new[] { "Jump_Down" } : new[] { idle },
+            PlayerState.Staggered => new[] { $"Take_Damage_{direction}", idle },
+            PlayerState.Knockback => new[] { $"Take_Damage_{direction}", idle },
+            PlayerState.Dead => new[] { "Die", "Weapon_Idle_Down", idle },
             _ => new[] { idle }
         };
     }

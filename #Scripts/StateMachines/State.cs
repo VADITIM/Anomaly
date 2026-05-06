@@ -1,7 +1,8 @@
-    public enum PlayerState
+    public enum State
     {
         Idle,
         Moving,
+        Chasing,
         Attacking,
         HeavyCharging,
         HeavyAttacking,

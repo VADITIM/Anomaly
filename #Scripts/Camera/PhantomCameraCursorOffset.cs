@@ -4,8 +4,8 @@ public partial class PhantomCameraCursorOffset : Node2D
 {
 	[Export] private NodePath phantomCameraPath;
 	[Export] private NodePath cursorDeadzonePath;
-	[Export] private Vector2 maxCursorOffset = new Vector2(96f, 64f);
-	[Export] private float offsetLerpSpeed = 8f;
+	[Export] private Vector2 maxCursorOffset = new Vector2(64f, 32f);
+	[Export] private float offsetLerpSpeed = 20f;
 	[Export] private float returnLerpSpeed = 10f;
 
 	private Node2D phantomCamera;

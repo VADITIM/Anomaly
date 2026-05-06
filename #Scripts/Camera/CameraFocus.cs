@@ -3,9 +3,9 @@ using System;
 
 public partial class CameraFocus : Camera2D
 {
-    [Export] protected float focusSpeed = 2f;
-    [Export] protected float offsetRadius = 30;
-    [Export] protected bool showDebugSphere = true;
+    [Export] protected float focusSpeed = 4f;
+    [Export] protected float offsetRadius = 100;
+    [Export] protected bool showDebugSphere = false;
 
     protected Vector2 focusOffset = Vector2.Zero;
     protected Player Player;
@@ -32,18 +32,16 @@ public partial class CameraFocus : Camera2D
         UpdateFocusOffset((float)delta);
         Offset = focusOffset;
         
-        // Update debug sphere position
         if (debugSphere != null && Player != null)
         {
             Vector2 focusPoint = Player.GlobalPosition + focusOffset;
-            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4); // Center the 8x8 sphere
+            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4);
             debugSphere.Visible = showDebugSphere;
         }
     }
 
     protected virtual void UpdateFocusOffset(float delta)
     {
-        focusOffset = focusOffset.Lerp(Vector2.Zero, 1f - Mathf.Exp(-focusSpeed * delta));
         Vector2 cursorPosition = GetGlobalMousePosition();
         Enemy targetEnemy = Enemy.GetBestCameraTarget(cursorPosition);
         Enemy = targetEnemy;
@@ -52,13 +50,10 @@ public partial class CameraFocus : Camera2D
         if (targetEnemy != null)
         {
             Vector2 toEnemy = targetEnemy.GlobalPosition - Player.GlobalPosition;
-            float distance = toEnemy.Length();
+            desiredOffset = toEnemy * 0.5f;
 
-            if (distance > 0.001f)
-            {
-                Vector2 direction = toEnemy / distance;
-                desiredOffset = direction * offsetRadius;
-            }
+            if (desiredOffset.Length() > offsetRadius)
+                desiredOffset = desiredOffset.Normalized() * offsetRadius;
         }
 
         float lerpWeight = 1f - Mathf.Exp(-focusSpeed * delta);

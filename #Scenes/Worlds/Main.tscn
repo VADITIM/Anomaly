@@ -1,10 +1,6 @@
 [gd_scene format=3 uid="uid://dhu4vdo7bvbux"]
 
 [ext_resource type="PackedScene" uid="uid://dku5svk7lmour" path="res://#Scenes/Worlds/Overworld.tscn" id="1_klt0f"]
-[ext_resource type="PackedScene" uid="uid://ddlss2r0wtpdh" path="res://#Scenes/Tile Map/TileMap.tscn" id="2_3kj4q"]
-[ext_resource type="PackedScene" uid="uid://bq8hx3q8rcvy0" path="res://#Scenes/Enemies/Enemy2.tscn" id="3_1aftv"]
-[ext_resource type="PackedScene" uid="uid://b4t5ugpnrewrf" path="res://#Scenes/Enemies/Enemy1.tscn" id="4_7tn8n"]
-[ext_resource type="PackedScene" uid="uid://djeis3nvodch7" path="res://#Scenes/Enemies/Enemy3.tscn" id="5_2wusn"]
 [ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Enemies/Enemy4.tscn" id="6_0ennt"]
 [ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Player.tscn" id="7_mjgta"]
 
@@ -13,32 +9,10 @@
 [node name="Node2D" parent="." unique_id=747993253 instance=ExtResource("1_klt0f")]
 position = Vector2(537, 484)
 
-[node name="TileMapLayer" parent="." unique_id=1695500578 instance=ExtResource("2_3kj4q")]
-visible = false
-position = Vector2(100, 700)
-
 [node name="Enemies" type="Node2D" parent="." unique_id=411547642]
 
-[node name="Enemy2" parent="Enemies" unique_id=347030271 instance=ExtResource("3_1aftv")]
-position = Vector2(1636.0001, 157.00006)
-
-[node name="Enemy1" parent="Enemies" unique_id=676023061 instance=ExtResource("4_7tn8n")]
-position = Vector2(661, 1279)
-
-[node name="Enemy7" parent="Enemies" unique_id=801131451 instance=ExtResource("5_2wusn")]
-position = Vector2(1226, 72)
-
-[node name="Enemy10" parent="Enemies" unique_id=1571334115 instance=ExtResource("6_0ennt")]
-position = Vector2(1578, 719)
-
-[node name="Enemy11" parent="Enemies" unique_id=207420178 instance=ExtResource("6_0ennt")]
-position = Vector2(-281, 471)
-
-[node name="Enemy12" parent="Enemies" unique_id=766688471 instance=ExtResource("6_0ennt")]
-position = Vector2(567, -154)
-
-[node name="Enemy13" parent="Enemies" unique_id=148211124 instance=ExtResource("6_0ennt")]
-position = Vector2(1029, 579)
+[node name="Enemy4" parent="Enemies" unique_id=1778528792 instance=ExtResource("6_0ennt")]
+position = Vector2(810, 218)
 
 [node name="Player" parent="." unique_id=996730977 instance=ExtResource("7_mjgta")]
 position = Vector2(592, 555)

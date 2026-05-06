@@ -10,7 +10,7 @@ public partial class Entity : CharacterBody2D
 
     [ExportGroup("Z Axis")]
     [Export(PropertyHint.Range, "0,4096,1")] public float FloorZ { get; private set; } = 0f;
-    [Export(PropertyHint.Range, "0,4096,1")] public float JumpImpulse { get; set; } = 200f;
+    [Export(PropertyHint.Range, "0,256,1")] public float JumpHeight { get; set; } = 20f;
     [Export(PropertyHint.Range, "0,4096,1")] public float Gravity { get; set; } = 900f;
     [Export(PropertyHint.Range, "0,8192,1")] public float TerminalVelocity { get; set; } = 3000f;
 
@@ -62,7 +62,13 @@ public partial class Entity : CharacterBody2D
         if (!IsGrounded)
             return false;
 
-        ZVelocity = impulse ?? JumpImpulse;
+        float desiredHeight = Mathf.Max(0f, JumpHeight);
+        float jumpSpeed = Mathf.Sqrt(2f * Gravity * desiredHeight);
+
+        if (impulse.HasValue)
+            jumpSpeed = impulse.Value;
+
+        ZVelocity = jumpSpeed;
         Z = Mathf.Max(Z, FloorZ);
         UpdateWallCollisionMask();
         OnZChanged();
@@ -88,6 +94,13 @@ public partial class Entity : CharacterBody2D
             ZVelocity = -TerminalVelocity;
 
         Z += ZVelocity * delta;
+
+        float targetZ = FloorZ + Mathf.Max(0f, JumpHeight);
+        if (ZVelocity > 0f && Z >= targetZ)
+        {
+            Z = targetZ;
+            ZVelocity = 0f;
+        }
 
         if (Z <= FloorZ)
         {
