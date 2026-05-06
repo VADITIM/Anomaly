@@ -32,6 +32,7 @@ window/size/initial_position_type=0
 window/size/initial_position=Vector2i(0, 200)
 window/stretch/mode="canvas_items"
 window/per_pixel_transparency/allowed=true
+window/vsync/vsync_mode=0
 
 [dotnet]
 
@@ -136,5 +137,6 @@ common/physics_interpolation=true
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0
+renderer/rendering_method="gl_compatibility"
 textures/decals/filter=0
 textures/light_projectors/filter=0
