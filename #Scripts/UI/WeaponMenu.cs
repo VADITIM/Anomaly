@@ -115,7 +115,6 @@ public partial class WeaponMenu : Control
             string displayName = GetDisplayName(scene);
             bool isEquipped = WeaponManager?.IsSceneEquipped(scene) ?? false;
 
-            // Instantiate the weapon button scene
             Control weaponItemControl = WeaponButtonScene.Instantiate<Control>();
             Button button = weaponItemControl.GetNode<Button>("Button");
             TextureRect textureRect = weaponItemControl.GetNode<TextureRect>("Button/TextureRect");
@@ -127,12 +126,10 @@ public partial class WeaponMenu : Control
                 continue;
             }
 
-            // Set up the button
             button.Disabled = isEquipped;
             button.MouseFilter = MouseFilterEnum.Stop;
             button.FocusMode = FocusModeEnum.All;
             
-            // Load and set weapon sprite
             Texture2D weaponTexture = GetWeaponTexture(scene);
             if (weaponTexture != null)
             {
@@ -173,11 +170,9 @@ public partial class WeaponMenu : Control
     {
         if (weaponScene == null) return null;
         
-        // Instantiate the weapon temporarily to get its sprite
         var tempWeapon = weaponScene.Instantiate();
         Texture2D texture = null;
         
-        // Try to find Sprite2D (new AnimationPlayer style)
         var sprite = tempWeapon.FindChild("*", true, false) as Sprite2D;
         if (sprite != null && sprite.Texture != null)
         {
@@ -185,7 +180,6 @@ public partial class WeaponMenu : Control
         }
         else
         {
-            // Fallback to AnimatedSprite2D (old style)
             var animatedSprite = tempWeapon.FindChild("*", true, false) as AnimatedSprite2D;
             if (animatedSprite != null && animatedSprite.SpriteFrames != null)
             {

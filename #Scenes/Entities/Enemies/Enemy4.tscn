@@ -18,7 +18,7 @@
 [ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="17_8ret6"]
 [ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="18_t4woj"]
 [ext_resource type="PackedScene" uid="uid://bualcr85nt0rd" path="res://#Scenes/UI/EnemyStateDisplay.tscn" id="19_bj8pf"]
-[ext_resource type="PackedScene" uid="uid://d2ixetyos5840" path="res://#Scenes/Enemies/Enemy Resource Bar.tscn" id="19_ggf2l"]
+[ext_resource type="PackedScene" uid="uid://d2ixetyos5840" path="res://#Scenes/Entities/Enemies/Enemy Resource Bar.tscn" id="19_ggf2l"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
 size = Vector2(12.5, 18.75)
@@ -221,6 +221,8 @@ scale = Vector2(0.1953125, 0.19531254)
 sprite_frames = SubResource("SpriteFrames_vu8ro")
 animation = &"tenacity recovered"
 
+[node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("19_ggf2l")]
+
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1075992845]
 
 [node name="Label" parent="CanvasLayer" unique_id=1362593918 instance=ExtResource("19_bj8pf")]
@@ -230,5 +232,3 @@ offset_right = 3143.349
 offset_bottom = 911.7493
 scale = Vector2(0.25810045, 0.25810045)
 theme_override_font_sizes/normal_font_size = 100
-
-[node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("19_ggf2l")]

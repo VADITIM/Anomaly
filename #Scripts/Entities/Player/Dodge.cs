@@ -3,31 +3,24 @@ using System;
 
 public static class Dodge
 {
-    #region Configuration
     public const float DashSpeed = DodgeDistance / DodgeDurationTotalSeconds;
     public static bool HasIFrames { get; set; } = true;
     public const float DodgeDistance = 70f;
     public static float DodgeStaminaCost { get; set; } = 20f;
-    #endregion
 
-    #region State
     private static float _dodgeDuration = 0f;
     private static Vector2 _dodgeDirection = Vector2.Zero;
     private static bool _staminaUsedForCurrentDodge = false;
     private static bool _isDodging = false;
     private static bool _hasDodged = false;
     private static float _iFrameRemaining = 0f;
-    #endregion
 
-    #region Properties
     public const float DodgeDurationTotalSeconds = 0.43f;
     public const float IFrameDuration = 0.2f;
     public static float DodgeDurationTotal => DodgeDurationTotalSeconds;
     public static float RemainingDuration => _dodgeDuration;
     public static bool IsIFrameActive => HasIFrames && _iFrameRemaining > 0f;
-    #endregion
 
-    #region Query Methods
     public static bool IsDodging() => _isDodging;
     public static bool HasDodged() => _hasDodged;
     public static Vector2 GetDodgeDirection() => _dodgeDirection;
@@ -45,9 +38,7 @@ public static class Dodge
     {
         return Player.Instance?.ResourceManager != null && Player.Instance.ResourceManager.HasStamina(DodgeStaminaCost);
     }
-    #endregion
 
-    #region Actions
     public static bool TryDodge(Vector2 movementVector)
     {
         if (!CanDodge()) return false;
@@ -120,5 +111,4 @@ public static class Dodge
             Player.Instance.ResourceManager.TryUseStamina(DodgeStaminaCost);
             _staminaUsedForCurrentDodge = true;
     }
-    #endregion
 }

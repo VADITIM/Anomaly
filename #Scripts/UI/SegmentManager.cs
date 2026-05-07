@@ -2,7 +2,7 @@ using Godot;
 
 public partial class SegmentManager : Control
 {
-	[Export] public Player Player;
+	public Player Player;
 
 	[Export] public TextureProgressBar HealthBar;
 	[Export] public TextureProgressBar HealthStar;
@@ -19,12 +19,12 @@ public partial class SegmentManager : Control
 	private Vector2 _vesselBarBaseSize;
 	private Vector2 _healthStarBasePos;
 
-	private int _lastMaxHealth = -1;
-	private int _lastHealth = -1;
-	private int _lastMaxVessel = -1;
-	private int _lastVessel = -1;
-	private int _lastMaxStamina = -1;
-	private int _lastStamina = -1;
+	private int lastMaxHealth = -1;
+	private int lastHealth = -1;
+	private int lastMaxVessel = -1;
+	private int lastVessel = -1;
+	private int lastMaxStamina = -1;
+	private int lastStamina = -1;
 
 	public override void _Ready()
 	{
@@ -48,25 +48,25 @@ public partial class SegmentManager : Control
 		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
 		int stamina = (int)Player.Stats.GetCurrent("Stamina");
 
-		if (maxHealth != _lastMaxHealth || health != _lastHealth)
+		if (maxHealth != lastMaxHealth || health != lastHealth)
 		{
-			_lastMaxHealth = maxHealth;
-			_lastHealth = health;
+			lastMaxHealth = maxHealth;
+			lastHealth = health;
 			UpdateHealthUI(maxHealth, health);
 			UpdateVesselSizeForHealth(maxHealth);
 		}
 
-		if (maxVessel != _lastMaxVessel || vessel != _lastVessel)
+		if (maxVessel != lastMaxVessel || vessel != lastVessel)
 		{
-			_lastMaxVessel = maxVessel;
-			_lastVessel = vessel;
+			lastMaxVessel = maxVessel;
+			lastVessel = vessel;
 			UpdateVesselUI(maxVessel, vessel);
 		}
 
-		if (maxStamina != _lastMaxStamina || stamina != _lastStamina)
+		if (maxStamina != lastMaxStamina || stamina != lastStamina)
 		{
-			_lastMaxStamina = maxStamina;
-			_lastStamina = stamina;
+			lastMaxStamina = maxStamina;
+			lastStamina = stamina;
 			UpdateStaminaUI(maxStamina, stamina);
 		}
 	}
@@ -104,12 +104,12 @@ public partial class SegmentManager : Control
 		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
 		int stamina = (int)Player.Stats.GetCurrent("Stamina");
 
-		_lastMaxHealth = maxHealth;
-		_lastHealth = health;
-		_lastMaxVessel = maxVessel;
-		_lastVessel = vessel;
-		_lastMaxStamina = maxStamina;
-		_lastStamina = stamina;
+		lastMaxHealth = maxHealth;
+		lastHealth = health;
+		lastMaxVessel = maxVessel;
+		lastVessel = vessel;
+		lastMaxStamina = maxStamina;
+		lastStamina = stamina;
 
 		UpdateHealthUI(maxHealth, health);
 		UpdateVesselSizeForHealth(maxHealth);

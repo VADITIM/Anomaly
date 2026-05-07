@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://dhu4vdo7bvbux"]
 
 [ext_resource type="PackedScene" uid="uid://dku5svk7lmour" path="res://#Scenes/Worlds/Overworld.tscn" id="1_klt0f"]
-[ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Enemies/Enemy4.tscn" id="6_0ennt"]
-[ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Player.tscn" id="7_mjgta"]
+[ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Entities/Enemies/Enemy4.tscn" id="6_0ennt"]
+[ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Entities/Player.tscn" id="7_mjgta"]
 
 [node name="Node2D" type="Node2D" unique_id=835527753]
 

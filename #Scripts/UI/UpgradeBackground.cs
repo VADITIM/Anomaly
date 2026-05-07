@@ -13,7 +13,7 @@ public partial class UpgradeBackground : Panel
     private Dictionary<string, Label> statLabels;
     private Dictionary<string, (Button increaseBtn, Button decreaseBtn)> statButtons;
     
-    [Export] public HBoxContainer StatContainer; // Assign the HBoxContainer in the inspector
+    [Export] public HBoxContainer StatContainer; 
 
     public override void _Ready()
     {
@@ -43,7 +43,6 @@ public partial class UpgradeBackground : Panel
             "Crush Multiplier",
         };
         
-        // Instantiate stat labels in the VBoxContainer
         PopulateStatLabels();
     }
     
@@ -52,37 +51,30 @@ public partial class UpgradeBackground : Panel
         statLabels = new Dictionary<string, Label>();
         statButtons = new Dictionary<string, (Button, Button)>();
         
-        // Clear existing children from StatContainer
         foreach (Node child in StatContainer.GetChildren())
         {
             child.QueueFree();
         }
         
-        // Create left VBoxContainer for stat labels
         VBoxContainer statsVBox = new VBoxContainer();
         statsVBox.Name = "StatsVBox";
         StatContainer.AddChild(statsVBox);
         
-        // Create right VBoxContainer for buttons
         VBoxContainer buttonsVBox = new VBoxContainer();
         buttonsVBox.Name = "ButtonsVBox";
         StatContainer.AddChild(buttonsVBox);
         
-        // Create labels and buttons for normal stats
         foreach (var stat in statName)
         {
-            // Create label
             Label label = new Label();
             label.Name = stat.Replace(" ", "");
             label.AddThemeFontSizeOverride("font_size", 80);
             statsVBox.AddChild(label);
             statLabels[stat] = label;
             
-            // Create HBoxContainer for increase/decrease buttons
             HBoxContainer buttonRow = new HBoxContainer();
             buttonRow.Name = stat.Replace(" ", "") + "Buttons";
             
-            // Decrease button
             Button decreaseBtn = new Button();
             decreaseBtn.Name = stat.Replace(" ", "") + "DecreaseBtn";
             decreaseBtn.Text = "-";
@@ -91,7 +83,6 @@ public partial class UpgradeBackground : Panel
             decreaseBtn.Pressed += () => OnDecreasePressed(stat);
             buttonRow.AddChild(decreaseBtn);
             
-            // Increase button
             Button increaseBtn = new Button();
             increaseBtn.Name = stat.Replace(" ", "") + "IncreaseBtn";
             increaseBtn.Text = "+";
@@ -133,7 +124,6 @@ public partial class UpgradeBackground : Panel
     
     public override void _Process(double delta)
     {
-        // Update normal stats
         foreach (var stat in statName)
         {
             if (statLabels.TryGetValue(stat, out Label label))
@@ -142,7 +132,6 @@ public partial class UpgradeBackground : Panel
                 float totalMax = playerStats.GetTotalMax(stat);
                 label.Text = $"{stat}: {(int)currentMax}/{(int)totalMax}";
                 
-                // Update button states
                 if (statButtons.TryGetValue(stat, out var buttons))
                 {
                     buttons.increaseBtn.Disabled = !playerStats.CanIncrease(stat);
@@ -151,7 +140,6 @@ public partial class UpgradeBackground : Panel
             }
         }
         
-        // Update hidden stats
         foreach (var stat in hiddenStatName)
         {
             if (statLabels.TryGetValue(stat, out Label label))
@@ -160,7 +148,6 @@ public partial class UpgradeBackground : Panel
                 float totalMax = playerStats.GetTotalMax(stat);
                 label.Text = $"{stat}: {(int)currentMax}/{(int)totalMax}";
                 
-                // Update button states
                 if (statButtons.TryGetValue(stat, out var buttons))
                 {
                     buttons.increaseBtn.Disabled = !playerStats.CanIncrease(stat);

@@ -19,7 +19,6 @@ public partial class Player : Entity
     [Export] public Node2D WeaponSlot;
     
     [Export] public Sprite2D BodySprite { get; set; }
-    [Export] public AnimationPlayer AnimationPlayer { get; set; }
     private PlayerState lastAnimation = (PlayerState)(-1);
     private string lastAnimationDirection = "";
     private bool _lastAirborne = false;
@@ -53,6 +52,53 @@ public partial class Player : Entity
     private void OnAttackEnded() { }
     private void OnDodgeStarted(Vector2 direction) { }
     private void OnPlayerDied() { }
+
+    protected override bool CanTakeDamage(float damage, Vector2 sourcePosition)
+    {
+        return !Dodge.IsIFrameActive;
+    }
+
+    protected override float GetHealth() => Stats?.GetCurrent("Health") ?? base.GetHealth();
+
+    protected override float GetMaxHealth() => Stats?.GetCurrentMax("Health") ?? base.GetMaxHealth();
+
+    protected override void SetHealth(float value)
+    {
+        if (Stats != null)
+            Stats.SetCurrent("Health", value);
+        else
+            base.SetHealth(value);
+    }
+
+    protected override void SetMaxHealth(float value)
+    {
+        if (Stats != null)
+            Stats.SetCurrentMax("Health", value);
+        else
+            base.SetMaxHealth(value);
+    }
+
+    protected override float ApplyDamageModifiers(float damage, Vector2 sourcePosition)
+    {
+        float armor = Stats?.GetCurrentMax("Armor") ?? 0f;
+        return damage * (1f - armor / 100f);
+    }
+
+    protected override void OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth)
+    {
+        _lastDamageDirection = GetDirectionFromVector(sourcePosition - GlobalPosition, out _);
+
+        if (newHealth <= 0f)
+            return;
+
+        Vector2 knockbackDir = (GlobalPosition - sourcePosition).Normalized();
+        StateMachine.RequestKnockback(knockbackDir, 200f, 0.2f);
+    }
+
+    protected override void OnDeath(Vector2 sourcePosition)
+    {
+        StateMachine.RequestDeath();
+    }
 
     public override void _Ready()
     {
@@ -131,11 +177,9 @@ public partial class Player : Entity
         {
             if (keyEvent.Keycode == Key.F1)
             {
-                // Debug key - to be implemented
             }
             else if (keyEvent.Keycode == Key.F2)
             {
-                // Debug key - to be implemented
             }
         }
     }
@@ -165,29 +209,6 @@ public partial class Player : Entity
         }
     }
 
-    public void TakeDamage(float damage, Vector2 sourcePosition)
-    {
-        if (Dodge.IsIFrameActive)
-            return;
-
-        float armor = Stats.GetCurrentMax("Armor");
-        float effectiveDamage = damage * (1f - armor / 100f);
-        Vector2 knockbackDir = (GlobalPosition - sourcePosition).Normalized();
-        _lastDamageDirection = GetDirectionFromVector(sourcePosition - GlobalPosition, out _);
-        
-        float currentHealth = Stats.GetCurrentMax("Health");
-        float newHealth = currentHealth - effectiveDamage;
-        
-        // Update health through ResourceManager or PlayerStats
-        if (newHealth <= 0)
-            StateMachine.RequestDeath();
-        else
-            StateMachine.RequestKnockback(knockbackDir, 200f, 0.2f);
-    }
-
-
-
-   
     private string GetDirectionFromAngle(float angleDegrees, out bool flipH)
     {
         while (angleDegrees > 180) angleDegrees -= 360;
@@ -276,7 +297,6 @@ public partial class Player : Entity
 
                 if (PlayAnimation(animationName))
                 {
-                    // Mirror weapon animations (idle/move) to match the player
                     try
                     {
                         Weapon?.PlayStateAnimation(animationName);
@@ -288,7 +308,6 @@ public partial class Player : Entity
                     }
                     catch (Exception)
                     {
-                        // Swallow any unexpected errors from optional weapon mirroring
                     }
 
                     return;

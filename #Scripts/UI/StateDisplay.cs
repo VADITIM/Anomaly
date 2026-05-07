@@ -1,9 +1,6 @@
 using Godot;
 using System;
 
-/// <summary>
-/// UI component that displays the current player state.
-/// </summary>
 public partial class StateDisplay : Label
 {
     private Label _stateLabel;

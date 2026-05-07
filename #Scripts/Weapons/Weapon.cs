@@ -3,15 +3,12 @@ using System;
 
 public partial class Weapon : Node2D
 {
-    #region References
     private Camera Camera;
     [Export] public Area2D Hitbox;
     [Export] public Sprite2D WeaponSprite;
     [Export] public AnimationPlayer AnimationPlayer;
     private Timer _attackAnimationStopTimer;
-    #endregion
 
-#region Stats
     public WeaponType weaponType;
     public enum WeaponType { Melee, Ranged }
     public AttackType attackType;
@@ -29,15 +26,11 @@ public partial class Weapon : Node2D
 
     public float _tenacityDamage;
     private float _penetration, _attackSpeed, _attackDuration, _heavyAttackDuration;
-#endregion
     
-#region Tenacity Damage System
     public int specialHitInterval = 4;
     public int hitCount = 0;
     public float currentTenacityDamageMultiplier = 1f;
-#endregion
 
-#region Utility
     public static Timer QuickTimer(Node parent, float time)
     {
         Timer timer = new Timer();
@@ -48,9 +41,7 @@ public partial class Weapon : Node2D
         timer.Timeout += () => { timer.QueueFree(); };
         return timer;
     }
-#endregion
 
-#region Godot Lifecycle
     public override void _Ready()
     {
         Camera = GetViewport().GetCamera2D() as Camera;
@@ -76,11 +67,9 @@ public partial class Weapon : Node2D
         if (Hitbox != null)
             Hitbox.Monitoring = shouldMonitor;
     }
-#endregion
 
 
  
-#region Hit Detection
     private void OnHurtboxHit(Area2D area)
     {
         if (area is not Hurtbox hurtbox)
@@ -139,23 +128,18 @@ public partial class Weapon : Node2D
         if (string.IsNullOrEmpty(animationToPlay))
             return;
 
-        // Stop any current playback and play the chosen attack animation
         AnimationPlayer.Stop();
 
-        // Determine desired attack duration from weapon attack speed (attacks per second)
         float desiredDuration = 1f / Mathf.Max(attackSpeed, 0.0001f);
         if (isHeavy && heavyAttackDuration > 0f)
             desiredDuration = heavyAttackDuration;
 
-        // Native animation length
         float nativeLength = GetAnimationDuration(animationToPlay);
-        // Compute playback speed so the animation finishes in desiredDuration
         float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
         AnimationPlayer.SpeedScale = playbackSpeed;
 
         AnimationPlayer.Play(animationToPlay);
 
-        // Schedule stopping after the desired duration and restore playback speed
         _attackAnimationStopTimer?.QueueFree();
         if (desiredDuration > 0f)
         {
@@ -185,33 +169,28 @@ public partial class Weapon : Node2D
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        // Desired duration is driven by attacks-per-second (attackSpeed)
         float baseDuration = 1f / Mathf.Max(attackSpeed, 0.0001f);
         if (isHeavy && heavyAttackDuration > 0f)
             return heavyAttackDuration;
         return baseDuration;
     }
 
-    // Play state/idle/move animations to mirror the player's animator
     public void PlayStateAnimation(string animationName)
     {
         if (AnimationPlayer == null || string.IsNullOrEmpty(animationName))
             return;
 
-        // Don't override attack animations here; attacks use PlayAttackAnimation
         if (animationName.StartsWith("Sword_Attack") || animationName.StartsWith("Attack"))
             return;
 
         if (AnimationPlayer.HasAnimation(animationName))
         {
-            // Ensure normal state animations play at normal speed
             AnimationPlayer.SpeedScale = 1f;
             if (AnimationPlayer.CurrentAnimation != animationName || !AnimationPlayer.IsPlaying())
                 AnimationPlayer.Play(animationName);
             return;
         }
 
-        // Try stripping common prefixes (e.g. "Weapon_") and fallback to a generic idle
         string alt = animationName;
         if (animationName.StartsWith("Weapon_"))
             alt = animationName.Substring("Weapon_".Length);
@@ -230,7 +209,6 @@ public partial class Weapon : Node2D
         }
     }
 
-    // Adjust Z layering relative to the player's sprite ZIndex
     public void SetLayerRelativeToPlayer(int playerZIndex, bool above)
     {
         int offset = above ? 1 : -1;
@@ -251,9 +229,7 @@ public partial class Weapon : Node2D
             return false;
         return Hitbox.GetOverlappingBodies().Count > 0;
     }
-#endregion
 
-#region Damage Calculation
     public float ApplyDamage(Enemy enemy)
     {
         float rawDamage = damage;
@@ -299,6 +275,5 @@ public partial class Weapon : Node2D
         currentTenacityDamageMultiplier = 1f;
         hitCount = 0;
     }
-#endregion
 }
 

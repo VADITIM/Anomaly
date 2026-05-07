@@ -14,11 +14,10 @@ public partial class Camera : CameraFocus
         shakeOffset = CameraFeedback.TenacityBreakShake(delta, ref shakeDecay, ref shakeIntensity, ref shakeTimer);
         Offset = focusOffset + shakeOffset;
         
-        // Update debug sphere position
         if (debugSphere != null && Player != null)
         {
             Vector2 focusPoint = Player.GlobalPosition + focusOffset;
-            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4); // Center the 8x8 sphere
+            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4);
             debugSphere.Visible = showDebugSphere;
         }
     }

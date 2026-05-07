@@ -70,7 +70,6 @@ public class PlayerStats
         return null;
     }
 
-    // Current value getters/setters (for active gameplay)
     public float GetCurrent(string statName)
     {
         var stat = GetStat(statName);
@@ -98,7 +97,6 @@ public class PlayerStats
         if (stat != null)
         {
             stat.CurrentMax = Mathf.Clamp(value, 0, stat.TotalMax);
-            // Clamp current to new max
             if (stat.Current > stat.CurrentMax)
                 stat.Current = stat.CurrentMax;
         }
@@ -137,7 +135,6 @@ public class PlayerStats
             if (stat.CurrentMax > stat.TotalMax)
                 stat.CurrentMax = stat.TotalMax;
             stat.UpgradeLevels++;
-            // Increase current value too
             stat.Current = stat.CurrentMax;
         }
     }
@@ -149,7 +146,6 @@ public class PlayerStats
         {
             stat.CurrentMax -= amount;
             stat.UpgradeLevels--;
-            // Clamp current to new max
             if (stat.Current > stat.CurrentMax)
                 stat.Current = stat.CurrentMax;
         }

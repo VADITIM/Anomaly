@@ -22,11 +22,34 @@ public partial class Entity : CharacterBody2D
     private bool _capturedBaseWallMask;
     private bool _baseWallMaskValue;
 
+    protected Control ResourceBarControl;
+    protected ProgressBar HealthBar;
+    [Export] public AnimationPlayer AnimationPlayer { get; set; }
+
     public float Z { get; private set; } = 0f;
     public float ZVelocity { get; private set; } = 0f;
 
     public bool IsGrounded => Z <= FloorZ + 0.01f && ZVelocity <= 0.01f;
     public bool IsAirborne => !IsGrounded;
+
+    public virtual void TakeDamage(float damage, Vector2 sourcePosition)
+    {
+        if (damage <= 0f || !CanTakeDamage(damage, sourcePosition))
+            return;
+
+        float effectiveDamage = Mathf.Max(0f, ApplyDamageModifiers(damage, sourcePosition));
+        if (effectiveDamage <= 0f)
+            return;
+
+        float currentHealth = GetHealth();
+        float newHealth = Mathf.Max(0f, currentHealth - effectiveDamage);
+
+        SetHealth(newHealth);
+        OnDamageTaken(effectiveDamage, sourcePosition, currentHealth, newHealth);
+
+        if (newHealth <= 0f)
+            OnDeath(sourcePosition);
+    }
 
     public override void _PhysicsProcess(double delta)
     {
@@ -110,6 +133,96 @@ public partial class Entity : CharacterBody2D
 
         UpdateWallCollisionMask();
         OnZChanged();
+    }
+
+    public void InitializeResourceBars()
+    {
+        ResourceBarControl = FindResourceBarControl();
+        HealthBar = GetNodeOrNull<ProgressBar>("Health Bar")
+                    ?? FindProgressBar(ResourceBarControl, "Health Bar")
+                    ?? FindProgressBar(this, "Resource Bar/Health Bar")
+                    ?? FindProgressBar(this, "Enemy Resource Bar/Health Bar")
+                    ?? FindProgressBar(this, "Enemy Health Bar");
+
+        UpdateResourceBars();
+    }
+
+    protected virtual float GetHealth() => Health;
+
+    protected virtual float GetMaxHealth() => MaxHealth;
+
+    protected virtual void SetHealth(float value)
+    {
+        Health = Mathf.Clamp(value, 0f, GetMaxHealth());
+        UpdateResourceBars();
+    }
+
+    protected virtual void SetMaxHealth(float value)
+    {
+        MaxHealth = Mathf.Max(0f, value);
+        UpdateResourceBars();
+    }
+
+    protected virtual bool CanTakeDamage(float damage, Vector2 sourcePosition) => true;
+
+    protected virtual float ApplyDamageModifiers(float damage, Vector2 sourcePosition) => damage;
+
+    protected virtual void OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth) { }
+
+    protected virtual void OnDeath(Vector2 sourcePosition) { }
+
+    protected virtual void UpdateResourceBars()
+    {
+        if (HealthBar == null)
+            return;
+
+        float maxHealth = Mathf.Max(GetMaxHealth(), 1f);
+        HealthBar.MaxValue = maxHealth;
+        HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, maxHealth);
+    }
+
+    protected virtual Control FindResourceBarControl()
+    {
+        foreach (string candidate in GetResourceBarCandidates())
+        {
+            Control control = GetNodeOrNull<Control>(candidate) ?? FindChildControl(this, candidate);
+            if (control != null)
+                return control;
+        }
+
+        return null;
+    }
+
+    protected virtual string[] GetResourceBarCandidates()
+    {
+        return new[] { "Resource Bar", "Enemy Resource Bar", "Enemy Health Bar" };
+    }
+
+    protected Control FindChildControl(Node node, string nodeName)
+    {
+        foreach (Node child in node.GetChildren())
+        {
+            if (child is Control control && child.Name == nodeName)
+                return control;
+
+            Control nested = FindChildControl(child, nodeName);
+            if (nested != null)
+                return nested;
+        }
+
+        return null;
+    }
+
+    protected ProgressBar FindProgressBar(Node node, string nodePath)
+    {
+        if (node == null)
+            return null;
+
+        Node child = node.GetNodeOrNull(nodePath);
+        if (child is ProgressBar progressBar)
+            return progressBar;
+
+        return node.FindChild(nodePath, true, false) as ProgressBar;
     }
 
     private void CaptureBaseWallMaskIfNeeded()

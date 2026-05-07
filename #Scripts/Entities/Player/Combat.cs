@@ -3,7 +3,6 @@ using System;
 
 public static partial class Combat
 {
-    #region Query Methods
     public static bool IsAttacking()
     {
         return PlayerStateMachine.Instance?.IsAttacking ?? false;
@@ -23,13 +22,10 @@ public static partial class Combat
     {
         return PlayerStateMachine.Instance?.HeavyChargeProgress ?? 0f;
     }
-    #endregion
 
-    #region Damage Calculation Helpers
     public static float GetHeavyDamageMultiplier()
     {
         float charge = HeavyChargeProgress();
         return 1f + (2f * charge); 
     }
-    #endregion
 }

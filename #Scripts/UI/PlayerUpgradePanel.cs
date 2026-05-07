@@ -32,7 +32,7 @@ public partial class PlayerUpgradePanel : Control
     {
         if (IsStatChanged())
         {
-            // Stats are now managed by PlayerStats, which automatically handles clamping
+            
         }
     }
 
@@ -142,10 +142,9 @@ public partial class PlayerUpgradePanel : Control
                 UpdateStatLabels(stat, currentLevelLabel, nextLevelLabel);
             };
 
-            // Ensure proper positioning if StatsContainer is not a layout container
             if (UpgradeContainer is Control)
             {
-                float gap = 100f; // Set the gap between items
+                float gap = 100f;
                 statPanel.Position = new Vector2(0, UpgradeContainer.GetChildCount() * (statPanel.Size.Y + gap));
             }
 
@@ -161,7 +160,6 @@ public partial class PlayerUpgradePanel : Control
         currentLabel.Text = $"{current:F0}";
         nextLabel.Text = $"+{Math.Max(0, next - current):F0}";
 
-        // Refresh the stats in the Player instance
         ResetPlayerStats();
     }
 
@@ -194,9 +192,9 @@ public partial class PlayerUpgradePanel : Control
         {
             PlayerStatType.MaxHealth => playerStats.GetTotalMax("Health"),
             PlayerStatType.MaxStamina => playerStats.GetTotalMax("Stamina"),
-            PlayerStatType.Armor => playerStats.GetTotalMax("Health"), // Adjust if armor has a different max
-            PlayerStatType.StaminaRegen => playerStats.GetTotalMax("Stamina"), // Adjust if needed
-            PlayerStatType.Speed => 100, // Example max value for speed
+            PlayerStatType.Armor => playerStats.GetTotalMax("Health"), 
+            PlayerStatType.StaminaRegen => playerStats.GetTotalMax("Stamina"), 
+            PlayerStatType.Speed => 100, 
             _ => float.MaxValue
         };
     }
@@ -228,7 +226,6 @@ public class PlayerStat
     private Func<float> _getter;
     private Action<float> _setter;
 
-    // Constructor for single stat
     public PlayerStat(string name, PlayerStatType type, Func<float> getter, Action<float> setter, float incrementPerLevel)
     {
         Name = name;
@@ -239,7 +236,6 @@ public class PlayerStat
         _setter = setter;
     }
 
-    // Constructor for multiple stats
     public PlayerStat(string name, List<(PlayerStatType type, Func<float> getter, Action<float> setter, float incrementPerLevel)> stats)
     {
         Name = name;

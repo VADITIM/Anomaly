@@ -18,10 +18,9 @@ public partial class CameraFocus : Camera2D
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
         
-        // Create debug sphere
         debugSphere = new ColorRect();
         debugSphere.CustomMinimumSize = new Vector2(8, 8);
-        debugSphere.Color = new Color(1, 1, 0, 0.7f); // Yellow with slight transparency
+        debugSphere.Color = new Color(1, 1, 0, 0.7f); 
         debugSphere.MouseFilter = Control.MouseFilterEnum.Ignore;
         AddChild(debugSphere);
         debugSphere.Visible = showDebugSphere;

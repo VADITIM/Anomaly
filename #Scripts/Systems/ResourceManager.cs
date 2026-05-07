@@ -7,7 +7,6 @@ public partial class ResourceManager
 
     private Player _player;
 
-    // Events or UI updates
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnStaminaChanged;
     public event Action<float, float> OnXpChanged;
@@ -94,7 +93,6 @@ public partial class ResourceManager
         Instance = this;
     }
 
-    // Health methods
     public void SetHealth(float value)
     {
         float oldHealth = _player.Stats.GetCurrent("Health");
@@ -115,7 +113,6 @@ public partial class ResourceManager
 
     public bool IsDead() => _player != null && _player.Stats.GetCurrent("Health") <= 0;
 
-    // Stamina methods
     public void SetStamina(float value)
     {
         float oldStamina = _player.Stats.GetCurrent("Stamina");
@@ -143,7 +140,6 @@ public partial class ResourceManager
         OnStaminaChanged?.Invoke(_player.Stats.GetCurrent("Stamina"), _player.Stats.GetCurrentMax("Stamina"));
     }
 
-    // XP methods
     public void AddXp(float amount)
     {
         float currentXp = _player.Stats.GetCurrent("Vessel");
