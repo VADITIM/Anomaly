@@ -175,12 +175,13 @@ animations = [{
 }]
 
 [node name="Enemy4" type="CharacterBody2D" unique_id=1778528792]
-collision_layer = 8
-collision_mask = 39
+collision_layer = 24
+collision_mask = 295
 script = ExtResource("1_micq5")
 
-[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=1240647017]
+[node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")
+debug_color = Color(0.18003303, 0.6432267, 3.85046e-07, 0.41960785)
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2095261304]
 texture_filter = 1

@@ -1,0 +1,260 @@
+[gd_scene format=4 uid="uid://b1135sndfmxq0"]
+
+[ext_resource type="Script" uid="uid://f2o25s7igb6w" path="res://#Scripts/Entities/Enemy/Types/Enemy5.cs" id="1_u8rv5"]
+[ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="1_vnapa"]
+[ext_resource type="Texture2D" uid="uid://brl8bddmdruyt" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Progress.png" id="2_3sdvt"]
+[ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="2_u8rv5"]
+[ext_resource type="Texture2D" uid="uid://b2fo3fwaguoep" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Active.png" id="3_rtvfq"]
+[ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="3_wqa6d"]
+[ext_resource type="Texture2D" uid="uid://dtum370lchaq1" path="res://#Assets/VFX/Tenacity VFX/cue4.png" id="4_3sdvt"]
+[ext_resource type="Texture2D" uid="uid://ittl4mkf231e" path="res://#Assets/VFX/Tenacity VFX/cue5.png" id="5_rtvfq"]
+[ext_resource type="Texture2D" uid="uid://dt4f13jp3dpr6" path="res://#Assets/VFX/Tenacity VFX/cue6.png" id="6_d0vyg"]
+[ext_resource type="Texture2D" uid="uid://dys8pwyngntvn" path="res://#Assets/VFX/Tenacity VFX/cue7.png" id="7_jabn6"]
+[ext_resource type="Texture2D" uid="uid://cfxda724e0262" path="res://#Assets/VFX/Tenacity VFX/cue8.png" id="8_samhl"]
+[ext_resource type="Texture2D" uid="uid://c3f76gkpt1254" path="res://#Assets/VFX/Tenacity VFX/cue9.png" id="9_0g2nq"]
+[ext_resource type="Texture2D" uid="uid://hk0fdn544068" path="res://#Assets/VFX/Tenacity VFX/cue10.png" id="10_sf65a"]
+[ext_resource type="Texture2D" uid="uid://blwgmtj5d1y0o" path="res://#Assets/VFX/Tenacity VFX/cue11.png" id="11_3h8wq"]
+[ext_resource type="Texture2D" uid="uid://c03b50rso6j3n" path="res://#Assets/VFX/Tenacity VFX/cue12.png" id="12_v6yql"]
+[ext_resource type="Texture2D" uid="uid://cy6cpnfvppoo" path="res://#Assets/VFX/Tenacity VFX/cue13.png" id="13_5lkh7"]
+[ext_resource type="Texture2D" uid="uid://7twuvvlhm2yp" path="res://#Assets/VFX/Tenacity VFX/cue14.png" id="14_u3a62"]
+[ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="15_ypkp8"]
+[ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="16_yiobf"]
+[ext_resource type="PackedScene" uid="uid://d2ixetyos5840" path="res://#Scenes/Entities/Enemies/Enemy Resource Bar.tscn" id="17_e3lcm"]
+[ext_resource type="PackedScene" uid="uid://bualcr85nt0rd" path="res://#Scenes/UI/EnemyStateDisplay.tscn" id="18_utdlp"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_7wtq7"]
+size = Vector2(12.5, 18.75)
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_vnapa"]
+_data = PackedByteArray("AAADAAUAAAABAAAAgAAAAIAAAAByCAAAUklGRmoIAABXRUJQVlA4TF4IAAAvf8AfEL+gJpLc5hiIgPhDEBV1Tq0rVznQYBRJVqs54gD8W0BNDicQkH9kG0lSo0GFACb5h4GNC1koU78QEBT5P1r8/1d6BOwxA1rFCl8AvFVRaycyAVKxAZv2gFoz1l0Bv+9tG6ev4b4/YHi7rTdvm23bGCIJbWUXXbMpVv//Pz1IgIDq4/04PkT0X4IkSXLb5AAgl756ZiHQb/j9n2EVV6wqvv4BIbW2RqxsSt1gomQXYpU/TSdzqN2DBEVkDSZN3dxeB1nEoicoUu3OJClV6i6WFtju2iYL7JNEVl2ghbpIa7i+csQdSk8omFgJm7FulvSRItJEPHrIzu0C1XWavj7VNUKAQP5Ss5Q41sgSc9jkkbNWMSBDQRGTG7V9hU58boUUtzEpiq9m3p0TJXZCC/qKUx8+N+dC2dPiN8bQ/eQYva9Vq6uOlXqgf3O9r03qYWJjc7fjtGNRK94XA1KqLLfbDViu9xWzuQ8TfGAprr52c9PN5PbGIrX1+/12G+vjq32FhiG1HSu4SR6lprq5QTy5bi/uroT7HabrffnUvjOb+zTB7xC6zbXRMpOzqilOs56L633F++Jyc2KTb43BXezcWmpyZuE0dNZyva9gLsNrPrhGU6PauW0nFxPTl+r6MZ1/0dW+Mty+muDr8/hjV203uQBtkqnMWq73ZT2wcLl3XyxRamRDw8kNi1artJ2rfW08MH19f/vcF0itPpmadJba4KrmuVA28n1F9PFkxfql7zR7UzjB1JQmdm6Z5Cb4w2HjQl+BD30+4cdPVQ6pcrIRTU39vvIZ+pgHz6fLvfMn+oqf7CcHJ8WJpqafbm6fMXcXuNy6caGvNKADG9HU9nNLJne5y0a6rzzVdZNTyl4pqbllbXJ7+b7SSlZibq9TEv7voMqsD308sKX/eI+m1eg6+/qiH4M/LHg8u4frSy7PJ91VzDy6zTes3xcIqSpVamu8EMNXTOdpv17cXOh7alpdZ62TFngJhusJ8jA1Rg51kYVO6n7YVpJ9ReravCSoMotBHxmyKkVdKz5GgaQf68VtXiP6GNRPtrWYnWv1iec59jat+DH0rJ/fjGFJa0RONmdra1124GQYK1KazOMq/TUPu3sJygHNtMXZVmO6NfapFsqO7lpx50jT7832xQq0uqodJzCI9F0q+6p7dbNUuOR9pUeq5BxVluNmagy2emeXajcVxdbmhtnsStIXTWQdCxpfJqnt6PdVEBjbVLupMPq69mFviu2uJLm9EzJ/zN89rZ3+m0kD21RmKpFwV5J0nta8ND7ji1RTcJrbN7ZJ5aayNTK7krJOWau2PvxMa4CuCgyvtX0qurlkdiXLnCt7raiWPX8CWlTDZ7fid3adxQSLFoS7kuDO1hrncTS0ZJjb4XN9EivQTDDKPhXdL7ZjUdWU70UaNOi3YwljTY031ZJRysPlUk1rbm5uVxJUaW31BfebvbVTsXSeSb9crsgDC1U3F5s5h0OqnKgu5sjFyvO5Qg/M+2/VTzuXCzg5OTjNqypTMlbJ2uXa08eTdf7Sdz+XC4AOGHb/crHyfK7Ihz6f8OOn6mYuVxa9D7ToNLp5E3xsc5WSpZtcgU0I9XO5oGwwGL1DkK1cVi7a5sqJRjQx1pvff9d1jfmdwO//I6vNV8/uwf+SZ7IJrumvjShb4ksNpVapwishUkVQLXBhNE1qrWjmSxVZ1qFbJVtha5tzqig9Y39W4YKapGpapRSbKmzNnhf5M29MJpNdasw2RimfmucK+shz0VpMt2xpzOQSDA1bU79e0a+q6QuOcDL6JvnuNhPTlPCpaqQu9jzplKv4TKQC2iw4GBmc+F1VBQ1b+8JVA/OqOW80Ma2hmricRzNjM8l3FF92UytwJlozO7WurNyDLJq7qz61hODWXGO3WWwwuu1pszhOYJAmK/fIfaxKg7OtmWWc3bxOfVZGt/cFyM3UGATGxv1+h4z1ynEcLKVkFq3ZH1uzSKlVzEu/rwJSl47NrZok3OfIkgr+QvBb6M72sYJpLf1xRcusnFo55shyVEM8o8ug2poOzM9iatEd1SROSC/W4Sij8/B6gvKls7Lk0kWgVnOmFsVpqMLjoQlizulriqIrFlXaBWtnL1HWb2zh9/4DC8yN0UBNX5Hvb/MWM7Y0VdoVqlNroKEHC0+fi/cU/bUOm3tmyMIEv4BTqhwxfTwZY90HHFLlPNEc/fkDjionujLkuL4KOW+Fk4OTk8iHPp/w+Km6Qh1mnTFjmOAHanKlbPpSsoAOhHwKLTZXuYLe+euCTV8r19tbTIvSzS2x8f9CBUWLLaAknrr+uQxA7pEZZip/XsdBRChFNUWpVWpdsWImU5XGi+k867wSs3uB1M0RQ6o9XmWYQxHTmBDrWO64YB6vpDsU/cOgia0XKUygVKNyAqDRXBCxTKb4xqnr5WV0NWabba3BAX30wR78hXfS+XvDYB3iLqu2CuFYRmx0G0oab6/5eNxWSbVkhWAQ7svRTKxGkqmV6iXgvmpjhaBvMZijOGyu241O5sZV2gkN1RcsFFPiK1wwxppETwg2RuE4DhrlBcosDjYXuvktwb4AZ3NTGQkM1s7ckddY9UVCtC8n2FyM0UnduGtnqPUVSpnnlyKyiMNzwxStbfBI3bh2OK9hyjArg+dGUV2jwZCJZ0TV/0mQF3qHNjVgrNY0ylUmmRqUp6aCF/Pway+k7sH2/q7M9/qR+H9HmxorwkdeQ/VVinKeUuVA9eejlO2ivL29rcG4uayQOcU+l19I4Tg5KWqD7HKtN4ubywWHVDl5ocKqDHdwcrAGk8bpkr1MKeaf1MyizPUEdCBtk+t11Ikv5v36wOfK2uV6ufRCi16kO/9Fqd8=")
+size_override = Vector2(128, 128)
+
+[sub_resource type="Animation" id="Animation_u8rv5"]
+length = 0.4
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
+"transitions": PackedFloat32Array(1, 1, 1, 1),
+"update": 1,
+"values": [0, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_wqa6d"]
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 8, 9, 10, 11, 12, 13, 14]
+}
+
+[sub_resource type="Animation" id="Animation_3sdvt"]
+length = 0.5
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 4, 5, 6, 7]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_rwfqm"]
+_data = {
+&"Idle_Down": SubResource("Animation_u8rv5"),
+&"Spin_Down": SubResource("Animation_wqa6d"),
+&"Take_Damage_Down": SubResource("Animation_3sdvt")
+}
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_tt53j"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_vnapa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_u8rv5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_wqa6d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_3sdvt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_rtvfq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_d0vyg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_jabn6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_samhl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_0g2nq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_sf65a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_3h8wq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_v6yql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_5lkh7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_u3a62")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_ypkp8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_yiobf")
+}],
+"loop": false,
+"name": &"tenacity broken",
+"speed": 30.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("15_ypkp8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_u3a62")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_5lkh7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_v6yql")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_3h8wq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_sf65a")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_0g2nq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("1_vnapa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_u8rv5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_wqa6d")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_3sdvt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_rtvfq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_samhl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_d0vyg")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_jabn6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_yiobf")
+}],
+"loop": false,
+"name": &"tenacity recovered",
+"speed": 30.0
+}]
+
+[node name="Practice Dummy" type="CharacterBody2D" unique_id=970362701]
+collision_layer = 8
+collision_mask = 61
+script = ExtResource("1_u8rv5")
+maxHealth = 0.0
+speed = 0.0
+outsideKnockbackForce = 0.0
+tenacity = 1.0
+maxTenacity = 1.0
+AttackRange = 0.0
+StopDistance = 0.0
+Tenacity_Bar_Normal = ExtResource("2_3sdvt")
+Tenacity_Bar_Active = ExtResource("3_rtvfq")
+maxHealth = 0.0
+
+[node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1370027202]
+shape = SubResource("RectangleShape2D_7wtq7")
+debug_color = Color(0.18003303, 0.6432267, 3.85046e-07, 0.41960785)
+
+[node name="Body" type="Sprite2D" parent="." unique_id=1824700497]
+texture_filter = 1
+position = Vector2(0, -3.125)
+texture = SubResource("PortableCompressedTexture2D_vnapa")
+hframes = 4
+vframes = 4
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "AnimationPlayer",
+"scale": "1.0",
+"slice": "",
+"source": "res://#Assets/Entities/Enemies/Practice Dummy/Practice_Dummy.aseprite",
+"source_uid": 5516729040989214228
+}
+metadata/_aseprite_wizard_source_file_hash_ = "f2357475439a0487aca3aa600283dd86"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=559415569]
+libraries/ = SubResource("AnimationLibrary_rwfqm")
+
+[node name="Tenacity Broken Animation" type="AnimatedSprite2D" parent="." unique_id=29824513]
+position = Vector2(0, -4.7683716e-07)
+scale = Vector2(0.1953125, 0.19531254)
+sprite_frames = SubResource("SpriteFrames_tt53j")
+animation = &"tenacity recovered"
+
+[node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("17_e3lcm")]
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1713865982]
+
+[node name="Label" parent="CanvasLayer" unique_id=496803029 instance=ExtResource("18_utdlp")]
+offset_left = 1482.0
+offset_top = 9.0
+offset_right = 3143.349
+offset_bottom = 911.7493
+scale = Vector2(0.25810045, 0.25810045)
+theme_override_font_sizes/normal_font_size = 100

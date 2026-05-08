@@ -130,6 +130,7 @@ jump={
 2d_physics/layer_3="Weapon Hitbox"
 2d_physics/layer_4="Enemy Hurtbox"
 2d_physics/layer_5="Enemy Hitbox"
+2d_physics/layer_6="Prop"
 2d_physics/layer_9="Wall"
 
 [physics]

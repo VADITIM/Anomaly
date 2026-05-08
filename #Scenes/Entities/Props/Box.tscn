@@ -1,63 +1,13 @@
 [gd_scene format=4 uid="uid://jty1m1ihrgmf"]
 
-[ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="1_xhvkm"]
-[ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="2_fs0w3"]
-[ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="3_uwdng"]
-[ext_resource type="Texture2D" uid="uid://dtum370lchaq1" path="res://#Assets/VFX/Tenacity VFX/cue4.png" id="4_v4umf"]
-[ext_resource type="Texture2D" uid="uid://ittl4mkf231e" path="res://#Assets/VFX/Tenacity VFX/cue5.png" id="5_m5640"]
-[ext_resource type="Texture2D" uid="uid://dt4f13jp3dpr6" path="res://#Assets/VFX/Tenacity VFX/cue6.png" id="6_yswfh"]
-[ext_resource type="Texture2D" uid="uid://dys8pwyngntvn" path="res://#Assets/VFX/Tenacity VFX/cue7.png" id="7_g8o23"]
-[ext_resource type="Texture2D" uid="uid://cfxda724e0262" path="res://#Assets/VFX/Tenacity VFX/cue8.png" id="8_2ghvn"]
-[ext_resource type="Texture2D" uid="uid://c3f76gkpt1254" path="res://#Assets/VFX/Tenacity VFX/cue9.png" id="9_x8es1"]
-[ext_resource type="Texture2D" uid="uid://hk0fdn544068" path="res://#Assets/VFX/Tenacity VFX/cue10.png" id="10_1cs6x"]
-[ext_resource type="Texture2D" uid="uid://blwgmtj5d1y0o" path="res://#Assets/VFX/Tenacity VFX/cue11.png" id="11_qru1s"]
-[ext_resource type="Texture2D" uid="uid://c03b50rso6j3n" path="res://#Assets/VFX/Tenacity VFX/cue12.png" id="12_hkd2s"]
-[ext_resource type="Texture2D" uid="uid://cy6cpnfvppoo" path="res://#Assets/VFX/Tenacity VFX/cue13.png" id="13_na1qp"]
-[ext_resource type="Texture2D" uid="uid://7twuvvlhm2yp" path="res://#Assets/VFX/Tenacity VFX/cue14.png" id="14_s4x7a"]
-[ext_resource type="Texture2D" uid="uid://cjb4jx32oud52" path="res://#Assets/VFX/Tenacity VFX/cue15.png" id="15_seosh"]
-[ext_resource type="Texture2D" uid="uid://db80im8tfxa6d" path="res://#Assets/VFX/Tenacity VFX/blank.png" id="16_on128"]
-[ext_resource type="PackedScene" uid="uid://d2ixetyos5840" path="res://#Scenes/Entities/Enemies/Enemy Resource Bar.tscn" id="17_5ptuv"]
+[ext_resource type="Script" uid="uid://c8powtdl1yr7a" path="res://#Scripts/Entities/Props/Box.cs" id="1_a0mbn"]
+[ext_resource type="PackedScene" uid="uid://c0ickg75l1uio" path="res://#Scenes/Entities/Props/Prop Resource Bar.tscn" id="2_a0mbn"]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_dh61d"]
-size = Vector2(12.5, 18.75)
-
-[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_xhvkm"]
-_data = PackedByteArray("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")
-size_override = Vector2(64, 64)
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_a0mbn"]
+_data = PackedByteArray("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")
+size_override = Vector2(128, 64)
 
 [sub_resource type="Animation" id="Animation_xjnca"]
-length = 0.7
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [6, 7, 8, 9, 10, 11, 12]
-}
-
-[sub_resource type="Animation" id="Animation_jvqkt"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 1, 2, 3, 4, 5]
-}
-
-[sub_resource type="Animation" id="Animation_fs0w3"]
 length = 0.1
 loop_mode = 1
 tracks/0/type = "value"
@@ -73,132 +23,63 @@ tracks/0/keys = {
 "values": [0]
 }
 
+[sub_resource type="Animation" id="Animation_okhwv"]
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_k6eut"]
+length = 0.3
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [0, 1, 0]
+}
+
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jqbvc"]
 _data = {
 &"Die_Down": SubResource("Animation_xjnca"),
-&"Move_Down": SubResource("Animation_jvqkt"),
-&"default": SubResource("Animation_fs0w3")
+&"Idle_Down": SubResource("Animation_okhwv"),
+&"Take_Damage_Down": SubResource("Animation_k6eut")
 }
 
-[sub_resource type="SpriteFrames" id="SpriteFrames_jdlgl"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("1_xhvkm")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_fs0w3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_uwdng")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_v4umf")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_m5640")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_yswfh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_g8o23")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_2ghvn")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_x8es1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_1cs6x")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_qru1s")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_hkd2s")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13_na1qp")
-}, {
-"duration": 1.0,
-"texture": ExtResource("14_s4x7a")
-}, {
-"duration": 1.0,
-"texture": ExtResource("15_seosh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("16_on128")
-}],
-"loop": false,
-"name": &"tenacity broken",
-"speed": 30.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": ExtResource("15_seosh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("14_s4x7a")
-}, {
-"duration": 1.0,
-"texture": ExtResource("13_na1qp")
-}, {
-"duration": 1.0,
-"texture": ExtResource("12_hkd2s")
-}, {
-"duration": 1.0,
-"texture": ExtResource("11_qru1s")
-}, {
-"duration": 1.0,
-"texture": ExtResource("10_1cs6x")
-}, {
-"duration": 1.0,
-"texture": ExtResource("9_x8es1")
-}, {
-"duration": 1.0,
-"texture": ExtResource("1_xhvkm")
-}, {
-"duration": 1.0,
-"texture": ExtResource("2_fs0w3")
-}, {
-"duration": 1.0,
-"texture": ExtResource("3_uwdng")
-}, {
-"duration": 1.0,
-"texture": ExtResource("4_v4umf")
-}, {
-"duration": 1.0,
-"texture": ExtResource("5_m5640")
-}, {
-"duration": 1.0,
-"texture": ExtResource("8_2ghvn")
-}, {
-"duration": 1.0,
-"texture": ExtResource("6_yswfh")
-}, {
-"duration": 1.0,
-"texture": ExtResource("7_g8o23")
-}, {
-"duration": 1.0,
-"texture": ExtResource("16_on128")
-}],
-"loop": false,
-"name": &"tenacity recovered",
-"speed": 30.0
-}]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dh61d"]
+size = Vector2(26, 39)
 
-[node name="Box" type="CharacterBody2D" unique_id=1620376775]
-
-[node name="Hitbox" type="CollisionShape2D" parent="." unique_id=1785199783]
-shape = SubResource("RectangleShape2D_dh61d")
+[node name="Box" type="CharacterBody2D" unique_id=1620376775 node_paths=PackedStringArray("AnimationPlayer")]
+collision_layer = 32
+collision_mask = 21
+script = ExtResource("1_a0mbn")
+AnimationPlayer = NodePath("AnimationPlayer")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=1217962706]
 texture_filter = 1
 position = Vector2(0, -3.125)
-texture = SubResource("PortableCompressedTexture2D_xhvkm")
+texture = SubResource("PortableCompressedTexture2D_a0mbn")
+hframes = 2
 metadata/_aseprite_wizard_interface_config_ = {
+"animation_section": false,
+"layer_section": false,
+"output_section": false,
 "pending_changes": {}
 }
 metadata/_aseprite_wizard_config_ = {
@@ -219,15 +100,14 @@ metadata/_aseprite_wizard_config_ = {
 "source": "res://#Assets/Entities/Props/Box.aseprite",
 "source_uid": 485554677345502884
 }
-metadata/_aseprite_wizard_source_file_hash_ = "d41030173980f4b94b31dc5cd36dce6c"
+metadata/_aseprite_wizard_source_file_hash_ = "e5e9971e066cc71fd607b0e66a7e40cf"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=273720077]
 libraries/ = SubResource("AnimationLibrary_jqbvc")
 
-[node name="Tenacity Broken Animation" type="AnimatedSprite2D" parent="." unique_id=193519143]
-position = Vector2(0, -4.7683716e-07)
-scale = Vector2(0.1953125, 0.19531254)
-sprite_frames = SubResource("SpriteFrames_jdlgl")
-animation = &"tenacity recovered"
+[node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1785199783]
+position = Vector2(0, 6.5)
+shape = SubResource("RectangleShape2D_dh61d")
+debug_color = Color(0, 0.6437342, 0.30028194, 0.41960785)
 
-[node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("17_5ptuv")]
+[node name="Prop Resource Bar" parent="." unique_id=1887647171 instance=ExtResource("2_a0mbn")]

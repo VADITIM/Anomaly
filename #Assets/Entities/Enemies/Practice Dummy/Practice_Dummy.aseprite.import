@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://ckulyr3al4yxo"
+path="res://.godot/imported/Practice_Dummy.aseprite-d9b90a73e04d9a5fbb3eede8844ec99a.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Enemies/Practice Dummy/Practice_Dummy.aseprite"
+dest_files=["res://.godot/imported/Practice_Dummy.aseprite-d9b90a73e04d9a5fbb3eede8844ec99a.res"]
+
+[params]
+

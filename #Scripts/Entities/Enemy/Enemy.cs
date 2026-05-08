@@ -4,7 +4,7 @@ using System.Collections.Generic;
 public abstract partial class Enemy : Entity
 {
     private static readonly List<Enemy> ActiveEnemies = new();
-    private const float CAMERA_FOCUS_RANGE = 800f;
+    private const float CAMERA_FOCUS_RANGE = 500f;
 
     public Player Player { get; private set; }
     private Weapon Weapon => Player?.Weapon;
@@ -14,7 +14,7 @@ public abstract partial class Enemy : Entity
     private StyleBox TenacityBarKnockbackFill;
     
     private RichTextLabel testDisplay;
-    private ProgressBar TenacityBar;
+    private TextureProgressBar TenacityBar;
     public AnimatedSprite2D TenacityCooldownCue { get; private set; }
 
     [Export] public float armor { get; set; } = 0f;
@@ -46,7 +46,7 @@ public abstract partial class Enemy : Entity
     [Export] public float StopDistance { get; set; } = 20f;
 
     public float attackDuration;
-    private float _hitTimer = 0f;
+    private float hitTimer = 0f;
     private const float HIT_WINDOW = 1.5f;
     
     public bool IsStaggered => TenacitySystem?.IsStaggered ?? false;
@@ -85,7 +85,7 @@ public abstract partial class Enemy : Entity
         InitializeBars();
         InitializeStateMachine();
 
-        PlayEnemyAnimation(GetCurrentEnemyAnimation());
+        PlayAnimation(GetCurrentEnemyAnimation());
     }
 
 
@@ -111,7 +111,6 @@ public abstract partial class Enemy : Entity
         StateMachine = GetNodeOrNull<EnemyStateMachine>("EnemyStateMachine");
 
         StateMachine = new EnemyStateMachine();
-        StateMachine.Name = "EnemyStateMachine";
         AddChild(StateMachine);
         StateMachine.SetMaxStaggers(maxStaggers);
         StateMachine.Target = Player;
@@ -127,13 +126,13 @@ public abstract partial class Enemy : Entity
         SetHealth(health);
         SetMaxHealth(health);
         InitializeResourceBars();
-        TenacityBar = FindProgressBar(ResourceBarControl, "Tenacity Bar");
+        TenacityBar = FindTextureProgressBar(ResourceBarControl, "Tenacity Bar");
     }
 
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
-        if (IsDead || TenacitySystem == null || StateMachine == null)
+        if (IsDead)
             return;
         
         UpdateHitTimer((float)delta);
@@ -175,7 +174,7 @@ public abstract partial class Enemy : Entity
     private void OnStateChangedHandler(EnemyState oldState, EnemyState newState)
     {
         OnStateChanged(oldState, newState);
-        PlayEnemyAnimation(GetCurrentEnemyAnimation());
+        PlayAnimation(GetCurrentEnemyAnimation());
     }
     protected virtual void OnStateChanged(EnemyState oldState, EnemyState newState) { }
 
@@ -190,28 +189,16 @@ public abstract partial class Enemy : Entity
         return null;
     }
 
-    private void PlayEnemyAnimation(string animationName)
-    {
-        if (AnimationPlayer == null || string.IsNullOrEmpty(animationName) || !AnimationPlayer.HasAnimation(animationName))
-            return;
-
-        if (AnimationPlayer.CurrentAnimation != animationName)
-            AnimationPlayer.Play(animationName);
-    }
-
     private void OnDeathHandler()
     {
         OnDeath();
 
-        if (AnimationPlayer != null && AnimationPlayer.HasAnimation("Die_Down"))
-        {
-            AnimationPlayer.Play("Die_Down");
+        ResourceBarControl?.QueueFree();
 
-            float animationLength = AnimationPlayer.GetAnimation("Die_Down").Length;
-            SceneTreeTimer timer = GetTree().CreateTimer((double)Mathf.Max(animationLength, 0.1f));
-            timer.Timeout += QueueFree;
-            return;
-        }
+        AnimationPlayer.Play("Die_Down");
+        float animationLength = AnimationPlayer.GetAnimation("Die_Down").Length;
+        SceneTreeTimer timer = GetTree().CreateTimer((double)Mathf.Max(animationLength, 0.1f));
+        timer.Timeout += QueueFree;
 
         QueueFree();
     }
@@ -227,12 +214,13 @@ public abstract partial class Enemy : Entity
         Player.Instance.Stats.SetCurrent("Soul", Mathf.Min(currentSoul + soulReward, maxSoul));
     }
 
-    private void UpdateHitTimer(float delta) { if (_hitTimer > 0) _hitTimer -= delta; }
+    private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
 
     public void TakeDamage(Weapon weapon, Vector2 playerPosition)
     {
         if (IsDead) return;
 
+        PlayAnimation("Take_Damage_Down");
         MarkCameraFocus();
         
         Camera camera = GetViewport().GetCamera2D() as Camera;
@@ -249,7 +237,7 @@ public abstract partial class Enemy : Entity
             return;
         }
 
-        _hitTimer = HIT_WINDOW;
+        hitTimer = HIT_WINDOW;
         
         bool staggerTriggered = TenacitySystem.ProcessTenacitySystem(playerPosition, weapon);
         
@@ -312,47 +300,51 @@ public abstract partial class Enemy : Entity
                            $"\n[color=cyan]Weakness:[/color] {weaknessType}";
     }
 
-    protected override void UpdateResourceBars()
+[Export] public Texture2D Tenacity_Bar_Normal;
+[Export] public Texture2D Tenacity_Bar_Active;
+
+
+protected override void UpdateResourceBars()
+{
+    base.UpdateResourceBars();
+
+    if (HealthBar != null)
     {
-        base.UpdateResourceBars();
-
-        if (HealthBar != null)
-        {
-            float healthMax = Mathf.Max(GetMaxHealth(), 1f);
-            HealthBar.MaxValue = healthMax;
-            HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, healthMax);
-        }
-
-        if (TenacityBar != null)
-        {
-            float tenacityMax = Mathf.Max(maxTenacity, 1f);
-            TenacityBar.MaxValue = tenacityMax;
-            float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
-            TenacityBar.Value = tenacityMax - clampedTenacity;
-            UpdateTenacityBarFillStyle();
-        }
+        float healthMax = Mathf.Max(GetMaxHealth(), 1f);
+        HealthBar.MaxValue = healthMax;
+        HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, healthMax);
     }
 
-    private void UpdateTenacityBarFillStyle()
+    // Ensure we cast TenacityBar to TextureProgressBar to access TextureProgress
+    if (TenacityBar is TextureProgressBar texTenacityBar)
     {
-        if (TenacityBar == null)
-            return;
+        float tenacityMax = Mathf.Max(maxTenacity, 1f);
+        texTenacityBar.MaxValue = tenacityMax;
+        
+        float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
+        texTenacityBar.Value = tenacityMax - clampedTenacity;
 
-        bool canBeKnockbacked = TenacitySystem?.CanBeStaggered() ?? false;
-
-        if (canBeKnockbacked)
-        {
-            EnsureTenacityBarStyles();
-            if (TenacityBarKnockbackFill != null)
-                TenacityBar.AddThemeStyleboxOverride("fill", TenacityBarKnockbackFill);
-        }
-        else
-        {
-            EnsureTenacityBarStyles();
-            if (TenacityBarNormalFill != null)
-                TenacityBar.AddThemeStyleboxOverride("fill", TenacityBarNormalFill);
-        }
+        // Handle the texture swap
+        UpdateTenacityTexture(texTenacityBar);
     }
+}
+
+private void UpdateTenacityTexture(TextureProgressBar bar)
+{
+    bool canBeKnockbacked = TenacitySystem?.CanBeStaggered() ?? false;
+
+    // Swap the texture directly
+    if (canBeKnockbacked)
+    {
+        if (Tenacity_Bar_Active != null)
+            bar.TextureProgress = Tenacity_Bar_Active;
+    }
+    else
+    {
+        if (Tenacity_Bar_Normal != null)
+            bar.TextureProgress = Tenacity_Bar_Normal;
+    }
+}
 
     private void EnsureTenacityBarStyles()
     {

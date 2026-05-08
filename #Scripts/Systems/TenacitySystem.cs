@@ -269,24 +269,20 @@ public class TenacitySystem
         }
     }
 
-
-    public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
+public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
+{
+    if (StateMachine.IsDead) return;
+    
+    // Instead of internal velocity, tell the Enemy (Entity) to move
+    Enemy.ApplyKnockback(direction, force, duration);
+    
+    if (!isStaggered)
     {
-        if (StateMachine.IsDead) return;
-        
-        knockbackVelocity = direction.Normalized() * force;
-        knockbackDuration = duration > 0 ? duration : Enemy.DefaultKnockbackDuration;
-        
-        if (isStaggered)
-        {
-            OnKnockbackStarted?.Invoke(direction, force);
-            return;
-        }
-        
         isKnockbackActive = true;
         StateMachine.TransitionTo(State.Knockback);
-        OnKnockbackStarted?.Invoke(direction, force);
     }
+    OnKnockbackStarted?.Invoke(direction, force);
+}
 
     private void ApplyStaggerKnockback(Vector2 playerPosition, Weapon weapon, bool isSpecialHit)
     {

@@ -1,6 +1,9 @@
 [gd_scene format=3 uid="uid://dhu4vdo7bvbux"]
 
 [ext_resource type="PackedScene" uid="uid://dku5svk7lmour" path="res://#Scenes/Worlds/Overworld.tscn" id="1_klt0f"]
+[ext_resource type="PackedScene" uid="uid://b1135sndfmxq0" path="res://#Scenes/Entities/Enemies/Practice Dummy.tscn" id="3_tx5dj"]
+[ext_resource type="PackedScene" uid="uid://jty1m1ihrgmf" path="res://#Scenes/Entities/Props/Box.tscn" id="4_2nxyx"]
+[ext_resource type="PackedScene" uid="uid://danivmopm7dpo" path="res://#Scenes/Entities/Props/Vase.tscn" id="5_gdl6d"]
 [ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Entities/Enemies/Enemy4.tscn" id="6_0ennt"]
 [ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Entities/Player.tscn" id="7_mjgta"]
 
@@ -14,5 +17,16 @@ position = Vector2(537, 484)
 [node name="Enemy4" parent="Enemies" unique_id=1778528792 instance=ExtResource("6_0ennt")]
 position = Vector2(810, 218)
 
+[node name="Practice Dummy" parent="Enemies" unique_id=970362701 instance=ExtResource("3_tx5dj")]
+position = Vector2(513, 580)
+
 [node name="Player" parent="." unique_id=996730977 instance=ExtResource("7_mjgta")]
 position = Vector2(592, 555)
+
+[node name="Props" type="Node2D" parent="." unique_id=2024540903]
+
+[node name="Box" parent="Props" unique_id=1620376775 instance=ExtResource("4_2nxyx")]
+position = Vector2(663, 583)
+
+[node name="Vase" parent="Props" unique_id=652208677 instance=ExtResource("5_gdl6d")]
+position = Vector2(599, 606)

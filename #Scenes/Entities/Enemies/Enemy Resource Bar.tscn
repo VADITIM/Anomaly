@@ -1,32 +1,11 @@
 [gd_scene format=3 uid="uid://d2ixetyos5840"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rdx4c"]
-bg_color = Color(0, 0, 0, 0.39215687)
-border_color = Color(0.12781036, 0.12637094, 0.117194556, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_s7wrk"]
-bg_color = Color(0.826247, 0.1357018, 0.37746194, 1)
-border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
-corner_radius_top_left = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_10p8t"]
-bg_color = Color(0, 0, 0, 0.39215687)
-border_color = Color(0.12781036, 0.12637094, 0.117194556, 1)
-corner_radius_top_left = 6
-corner_radius_top_right = 6
-corner_radius_bottom_right = 6
-corner_radius_bottom_left = 6
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_d0fy5"]
-bg_color = Color(0.94911104, 0.7997122, 0, 1)
-border_color = Color(0.16470589, 0.13333334, 0.13725491, 1)
-corner_radius_top_left = 6
-corner_radius_bottom_left = 6
+[ext_resource type="Texture2D" uid="uid://cy5w7vpx7vmrx" path="res://#Assets/UI/Resources UI/Enemy/Health Bar/Health_Bar_Under.png" id="1_v7ii4"]
+[ext_resource type="Texture2D" uid="uid://ljt722wxm3ty" path="res://#Assets/UI/Resources UI/Enemy/Health Bar/Health_Bar_Over.png" id="2_4tgq2"]
+[ext_resource type="Texture2D" uid="uid://jusaqhgi0ij5" path="res://#Assets/UI/Resources UI/Enemy/Health Bar/Health_Bar_Progress.png" id="3_4ulb0"]
+[ext_resource type="Texture2D" uid="uid://cfajlrd3ooug4" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Under.png" id="4_ageqe"]
+[ext_resource type="Texture2D" uid="uid://x2hk4jkcmcxo" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Over.png" id="5_d7psh"]
+[ext_resource type="Texture2D" uid="uid://brl8bddmdruyt" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Progress.png" id="6_d3hce"]
 
 [node name="Enemy Resource Bar" type="Control" unique_id=1987811369]
 layout_mode = 3
@@ -36,26 +15,25 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Health Bar" type="ProgressBar" parent="." unique_id=1470533157]
-layout_mode = 0
-offset_left = -9.0
-offset_top = -19.0
-offset_right = 9.0
-offset_bottom = -17.0
-theme_override_font_sizes/font_size = 1
-theme_override_styles/background = SubResource("StyleBoxFlat_rdx4c")
-theme_override_styles/fill = SubResource("StyleBoxFlat_s7wrk")
-value = 50.0
-show_percentage = false
+[node name="Health Bar" type="TextureProgressBar" parent="." unique_id=1532696424]
+layout_mode = 1
+offset_left = -16.5
+offset_top = -29.0
+offset_right = 16.5
+offset_bottom = -24.0
+pivot_offset = Vector2(16.5, 0)
+max_value = 500.0
+texture_under = ExtResource("1_v7ii4")
+texture_over = ExtResource("2_4tgq2")
+texture_progress = ExtResource("3_4ulb0")
 
-[node name="Tenacity Bar" type="ProgressBar" parent="." unique_id=624749322]
-layout_mode = 0
-offset_left = -8.0
-offset_top = -17.0
-offset_right = 8.0
-offset_bottom = -16.0
-theme_override_font_sizes/font_size = 1
-theme_override_styles/background = SubResource("StyleBoxFlat_10p8t")
-theme_override_styles/fill = SubResource("StyleBoxFlat_d0fy5")
-value = 50.0
-show_percentage = false
+[node name="Tenacity Bar" type="TextureProgressBar" parent="." unique_id=2094333843]
+layout_mode = 1
+offset_left = -16.5
+offset_top = -29.0
+offset_right = 16.5
+offset_bottom = -24.0
+pivot_offset = Vector2(16.5, 0)
+texture_under = ExtResource("4_ageqe")
+texture_over = ExtResource("5_d7psh")
+texture_progress = ExtResource("6_d3hce")

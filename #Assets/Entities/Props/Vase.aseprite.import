@@ -1,0 +1,14 @@
+[remap]
+
+importer="aseprite_wizard.plugin.noop"
+type="PackedDataContainer"
+uid="uid://bnsq5cvh5fl81"
+path="res://.godot/imported/Vase.aseprite-a916248d6ec01019b8ce7c62815ae6f1.res"
+
+[deps]
+
+source_file="res://#Assets/Entities/Props/Vase.aseprite"
+dest_files=["res://.godot/imported/Vase.aseprite-a916248d6ec01019b8ce7c62815ae6f1.res"]
+
+[params]
+

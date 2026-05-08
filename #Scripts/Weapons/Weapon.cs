@@ -56,6 +56,7 @@ public partial class Weapon : Node2D
         if (Hitbox != null)
         {
             Hitbox.BodyEntered += OnEnemyHit;
+            Hitbox.BodyEntered += OnPropHit;
             Hitbox.AreaEntered += OnHurtboxHit;
             Hitbox.Monitoring = false;
         }
@@ -76,7 +77,7 @@ public partial class Weapon : Node2D
             return;
 
         Entity targetEntity = hurtbox.OwnerEntity;
-        if (targetEntity is not Enemy enemy)
+        if (targetEntity is not Enemy enemy || targetEntity is not Prop prop)
             return;
 
         Player player = Player.Instance;
@@ -96,6 +97,17 @@ public partial class Weapon : Node2D
                 return;
             CheckWeaknessExploited(enemy);
             enemy.TakeDamage(this, player.GlobalPosition);
+        }
+    }
+
+    private void OnPropHit(Node2D body)
+    {
+        if (body is Prop prop)
+        {
+            Player player = Player.Instance;
+            if (player == null)
+                return;
+            prop.TakeDamage(this, player.GlobalPosition);
         }
     }
 

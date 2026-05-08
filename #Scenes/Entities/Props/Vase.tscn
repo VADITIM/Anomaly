@@ -1,0 +1,111 @@
+[gd_scene format=4 uid="uid://danivmopm7dpo"]
+
+[ext_resource type="PackedScene" uid="uid://c0ickg75l1uio" path="res://#Scenes/Entities/Props/Prop Resource Bar.tscn" id="1_ywy27"]
+[ext_resource type="Script" uid="uid://eu4k3dbslr50" path="res://#Scripts/Entities/Props/Vase.cs" id="2_4wmry"]
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_4wmry"]
+_data = PackedByteArray("AAADAAUAAAABAAAAQAAAAEAAAAAMBAAAUklGRgQEAABXRUJQVlA4TPcDAAAvP8APEM11IaL/sRl+MgHLWIkNp+h/4P4gx7a2Y3vO/X76bca2bdupOICsjIiDSJVKc7D12+ar54rx/GVSQIgkSbGVPe+jjwf+5Xyywf+mKce27dpOxtxXwsTieyj/Ft6bWCTgLQFBkf+jMXLbxhFTZ05bfgGBfxIh/OTS5ecNBuAQ0b23L/zIBHiPa+efD5PF/5EUQFCT0Rcvf4/14+Ld+esvr1zAs7tDhsYlNDv/PqEh1Bcvf5mZxFh46pSGQl8yfWBCefzw3qHfTwEAgOD/fPr603Mypf8HmAGBFydpYpgKNUN/+vD1Dw9fvwIE7zSxAggIAoAKIrjGABRm4BxslICdf3lyzzckW/8+5hAkoTPgOGM9IOv4FhK82P/m/L614eckiUMKwYWW+w9eSoFAmoCgB3h1/fY9BBhX4LW3DMv9SwmYMjhvmsDM7gk1dOPyD+Hm62eK+4bn+anPi/I/kOwhvPQWAA6SpiTdU2lmNzC0ISQZvxvytXJNBnkMy3L/kVhnNIeeMNM8M7Gx5GuKXOLXR8+L/SfXZE2uWFJr+sVMIIiFhiDJJuXNmHxb/bJiTdYUmsxC0KS+owSTijOuGZ/JJyTlZtQBNF4du/78Yv8blNmdTIckZ/ILAKkkQyLmlPSMJ6WZyT0jYVYCe0UgzPLSN5l3TL6AQgHTk4zJ7wmTOAmc8j5GMx1hTs9oAzyHNbN3+nNm9SW3UbCmaEmTOBTK+ASAnrIomdqjhOB3AwRk1k7/gDNrXxTUYABQp21I0ZDjEsGEBniP5gNCR45yZKZzbBNNklDvCFMZIElP+G0KAGCAgmFWRwmNQoyxiRAmQMXlUILEejzfSoACDQ2wDUiDa354CjZKKH43GklqJIIyQY8bAJ0oSYMAwHQGM91IPO/QtF4dMKlEkgcdJBaXUQMEwTk4hom76fo/kN87w0ezft+IM9lmeggaBTpOkiAoAWaiDc3IESB49eD1nX3Xb6d5Mf8LnJX7CJwAErwkRgIiRIM1HcH14bkASKSxj/4M5W3GsMxhE04AJszBtBxHRQ6o/TqtT6H4NZWq3i4ESWPoad4akCKQSBJIMI0e7RlXWp4eWJ4bRUnOo7LTUzCgPukpMjINffQE0J2Xqs+j0PL0ADR+bcX9j687ev71WqdyAaOZngYgzukJoMoj+gLT+nQqvRpxnr5/zsQrhV3nX01QiR45UXmkonFBiJ1yBwjRF6Dl+QGNOMB30IDJVpU9cgJTdhyAAfEXAmh5OhAAWzLAfwyrqjHN2IQGAKHl+QBaAGyZAZ7dfXnnmw3X79ECE7VgEjfgyeuXrb/+iUDz5O0LvuuHX/Tk9Rs/P8TT1y8BYAL+WwsAAA==")
+size_override = Vector2(64, 64)
+
+[sub_resource type="Animation" id="Animation_xjnca"]
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_okhwv"]
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="Animation" id="Animation_k6eut"]
+length = 0.1
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Body:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_3w2vh"]
+_data = {
+&"Die_Down": SubResource("Animation_xjnca"),
+&"Idle_Down": SubResource("Animation_okhwv"),
+&"Take_Damage_Down": SubResource("Animation_k6eut")
+}
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2u2s1"]
+size = Vector2(20, 24)
+
+[node name="Vase" type="CharacterBody2D" unique_id=652208677]
+collision_layer = 32
+collision_mask = 21
+script = ExtResource("2_4wmry")
+
+[node name="Body" type="Sprite2D" parent="." unique_id=2082875857]
+texture_filter = 1
+position = Vector2(0, -3.125)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("PortableCompressedTexture2D_4wmry")
+metadata/_aseprite_wizard_interface_config_ = {
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"player": "AnimationPlayer",
+"scale": "1.0",
+"slice": "",
+"source": "res://#Assets/Entities/Props/Vase.aseprite",
+"source_uid": 3337059634107949776
+}
+metadata/_aseprite_wizard_source_file_hash_ = "ee5a3abc29a16023d060233a0a9a1a9c"
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=517355058]
+libraries/ = SubResource("AnimationLibrary_3w2vh")
+
+[node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=471908465]
+position = Vector2(0, -3)
+scale = Vector2(0.5, 0.5)
+shape = SubResource("RectangleShape2D_2u2s1")
+debug_color = Color(0, 0.6437342, 0.30028194, 0.41960785)
+
+[node name="Prop Resource Bar" parent="." unique_id=1887647171 instance=ExtResource("1_ywy27")]
+metadata/_edit_use_anchors_ = true

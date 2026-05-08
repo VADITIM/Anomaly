@@ -11,7 +11,7 @@ public partial class SlashingWeapon : Weapon
         attackSpeed = 5f;
         knockback = 100f;
         penetration = 20f;
-        tenacityDamage = 40f;
+        tenacityDamage = 10f;
         weaponType = WeaponType.Melee;
         attackType = AttackType.Slashing;
         staminaCost = 2f;

@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://c0ickg75l1uio"]
+
+[ext_resource type="Texture2D" uid="uid://d3gokjo5phqsl" path="res://#Assets/UI/Resources UI/Prop/Health Bar/Prop_Resources_Under.png" id="1_umi3s"]
+[ext_resource type="Texture2D" uid="uid://ed0ulianhypr" path="res://#Assets/UI/Resources UI/Prop/Health Bar/Prop_Resources_Over.png" id="2_bplxp"]
+[ext_resource type="Texture2D" uid="uid://4ika2h4e7t2u" path="res://#Assets/UI/Resources UI/Prop/Health Bar/Prop_Resources_Progress.png" id="3_jwfgi"]
+
+[node name="Prop Resource Bar" type="Control" unique_id=1887647171]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Health Bar" type="TextureProgressBar" parent="." unique_id=1075675843]
+layout_mode = 0
+offset_left = -16.0
+offset_top = -22.0
+offset_right = 16.0
+offset_bottom = -19.0
+pivot_offset = Vector2(16, 0)
+texture_under = ExtResource("1_umi3s")
+texture_over = ExtResource("2_bplxp")
+texture_progress = ExtResource("3_jwfgi")

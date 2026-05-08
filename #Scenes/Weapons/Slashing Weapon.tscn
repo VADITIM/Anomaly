@@ -616,8 +616,8 @@ libraries/ = SubResource("AnimationLibrary_2u1yt")
 autoplay = &"Weapon_Idle_Down"
 
 [node name="Hitbox" type="Area2D" parent="." unique_id=908206759]
-collision_layer = 2
-collision_mask = 24
+collision_layer = 4
+collision_mask = 40
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox" unique_id=1466608632]
 position = Vector2(-5, 18.000002)
