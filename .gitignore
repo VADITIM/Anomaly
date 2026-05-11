@@ -1,6 +1,7 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+data_Anomaly_windows_x86_64/
 
 # Godot C# / Visual Studio artifacts
 .vs/
@@ -12,9 +13,12 @@ obj/
 *.userprefs
 *.csproj.user
 *.sln.docstates
+*.csproj.old
+*.csproj.old.*
 
 # Local plugins / addons
 addons/
+desktop.ini
 
 # Optional export outputs
 build/
