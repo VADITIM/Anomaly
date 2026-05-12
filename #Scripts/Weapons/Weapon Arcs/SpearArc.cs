@@ -8,7 +8,6 @@ public partial class SpearArc : WeaponArc
         if (weapon != null)
         {
             weapon.Damage = 20f;
-            weapon.AttackSpeed = 1.0f;
             weapon.TenacityDamage = 10f;
             weapon.StaminaCost = 2f;
             weapon.SpecialHitInterval = 4;

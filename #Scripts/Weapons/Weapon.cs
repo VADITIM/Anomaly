@@ -1,31 +1,43 @@
 using Godot;
 
-/// <summary>
-/// Main weapon that owns base stats, hit detection, and animation display.
-/// Can slot a WeaponArc for hit-confirmed visual effects.
-/// </summary>
+
 public partial class Weapon : Node2D
 {
     private WeaponArc currentArc;
     private Sprite2D weaponSprite;
+    public Sprite2D WeaponSprite => weaponSprite;
     [Export] private AnimationPlayer weaponAnimationPlayer;
+    public AnimationPlayer AnimationPlayer => weaponAnimationPlayer;
     private Area2D weaponHitbox;
+    public Area2D Hitbox => weaponHitbox;
+    public WeaponArc CurrentArc => currentArc;
 
-    // Base weapon stats
     private float damage = 20f;
     private float knockback = 100f;
     private float staminaCost = 2f;
     private float tenacityDamage = 10f;
-    private float attackSpeed = 2.5f;
-    private float penetration = 0f;
-    private float attackDuration = 0.2f;
+    private float penetration = 50f;
+    private float attackDuration = 0.37f;
     private float heavyAttackDuration = 1.5f;
     private int specialHitInterval = 4;
     private int hitCount = 0;
     private float currentTenacityDamageMultiplier = 1f;
     private float outsideKnockbackForce = 1f;
 
-    public WeaponArc CurrentArc => currentArc;
+    public void UnslotArc() { currentArc = null; }
+    public WeaponArc GetCurrentArc() { return currentArc; }
+
+    public float Damage { get => damage; set => damage = value; }
+    public float Knockback { get => knockback; set => knockback = value; }
+    public float StaminaCost { get => staminaCost; set => staminaCost = value; }
+    public float TenacityDamage { get => tenacityDamage; set => tenacityDamage = Mathf.Clamp(value, 0f, 100f); }
+    public float Penetration { get => penetration; set => penetration = Mathf.Clamp(value, 0f, 100f); }
+    public float AttackDuration { get => attackDuration; set => attackDuration = Mathf.Clamp(value, 0.1f, 1.5f); }
+    public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
+    public int SpecialHitInterval { get => specialHitInterval; set => specialHitInterval = value; }
+    public int HitCount { get => hitCount; set => hitCount = value; }
+    public float CurrentTenacityDamageMultiplier { get => currentTenacityDamageMultiplier; set => currentTenacityDamageMultiplier = value; }
+    public float OutsideKnockbackForce { get => outsideKnockbackForce; set => outsideKnockbackForce = value; }
 
     public override void _Ready()
     {
@@ -42,7 +54,6 @@ public partial class Weapon : Node2D
             weaponHitbox.Monitoring = false;
         }
 
-        // Create and slot ScytheArc as the default weapon
         ScytheArc scytheArc = new ScytheArc();
         AddChild(scytheArc);
         SlotArc(scytheArc);
@@ -57,80 +68,16 @@ public partial class Weapon : Node2D
         currentArc.SetParentWeapon(this);
     }
 
-    public void UnslotArc()
-    {
-        currentArc = null;
-    }
-
-    public WeaponArc GetCurrentArc()
-    {
-        return currentArc;
-    }
-
-    // Weapon base stats - owned by this weapon, accessed by arc
-    public Area2D Hitbox => weaponHitbox;
-    public Sprite2D WeaponSprite => weaponSprite;
-    public AnimationPlayer AnimationPlayer => weaponAnimationPlayer;
-
-    public float Damage { get => damage; set => damage = value; }
-    public float Knockback { get => knockback; set => knockback = value; }
-    public float StaminaCost { get => staminaCost; set => staminaCost = value; }
-    public float TenacityDamage { get => tenacityDamage; set => tenacityDamage = Mathf.Clamp(value, 0f, 100f); }
-    public float AttackSpeed { get => attackSpeed; set => attackSpeed = Mathf.Clamp(value, 0.1f, 5f); }
-    public float Penetration { get => penetration; set => penetration = Mathf.Clamp(value, 0f, 100f); }
-    public float AttackDuration { get => attackDuration; set => attackDuration = Mathf.Clamp(value, 0.1f, 5f); }
-    public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
-    public int SpecialHitInterval { get => specialHitInterval; set => specialHitInterval = value; }
-    public int HitCount { get => hitCount; set => hitCount = value; }
-    public float CurrentTenacityDamageMultiplier { get => currentTenacityDamageMultiplier; set => currentTenacityDamageMultiplier = value; }
-    public float OutsideKnockbackForce { get => outsideKnockbackForce; set => outsideKnockbackForce = value; }
-
-    public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
-    {
-        currentArc?.PrepareAttack(direction, isHeavy);
-    }
+    public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false) { currentArc?.PrepareAttack(direction, isHeavy); }
 
     public override void _Process(double delta)
     {
-        if (weaponHitbox != null)
-            weaponHitbox.Monitoring = PlayerStateMachine.Instance != null && PlayerStateMachine.Instance.IsAttacking;
+        weaponHitbox.Monitoring = PlayerStateMachine.Instance != null && PlayerStateMachine.Instance.IsAttacking;
     }
 
     public void PlayStateAnimation(string animationName)
     {
-        if (weaponAnimationPlayer.HasAnimation(animationName))
-        {
-            weaponAnimationPlayer.SpeedScale = 1f;
-            if (weaponAnimationPlayer.CurrentAnimation != animationName || !weaponAnimationPlayer.IsPlaying())
-            {
-                GD.Print($"[Weapon.PlayStateAnimation] Playing: {animationName}");
-                weaponAnimationPlayer.Play(animationName);
-            }
-            return;
-        }
-
-        string alt = animationName;
-        if (animationName.StartsWith("Weapon_"))
-            alt = animationName.Substring("Weapon_".Length);
-
-        if (!string.IsNullOrEmpty(alt) && weaponAnimationPlayer.HasAnimation(alt))
-        {
-            weaponAnimationPlayer.SpeedScale = 1f;
-            GD.Print($"[Weapon.PlayStateAnimation] Playing alt: {alt}");
-            weaponAnimationPlayer.Play(alt);
-            return;
-        }
-
-        if (weaponAnimationPlayer.HasAnimation("Weapon_Idle_Down"))
-        {
-            weaponAnimationPlayer.SpeedScale = 1f;
-            GD.Print($"[Weapon.PlayStateAnimation] Fallback to idle");
-            weaponAnimationPlayer.Play("Weapon_Idle_Down");
-        }
-        else
-        {
-            GD.Print($"[Weapon.PlayStateAnimation] NO ANIMATION FOUND for: {animationName}");
-        }
+        WeaponAnimations.PlayStateAnimation(weaponAnimationPlayer, animationName, attackDuration, heavyAttackDuration);
     }
 
     public void SetLayerRelativeToPlayer(int playerZIndex, bool above)
@@ -141,7 +88,6 @@ public partial class Weapon : Node2D
 
     public void CheckWeaknessExploited(Enemy enemy)
     {
-        // Default behavior - no special weakness multiplier
         enemy.outsideKnockbackForce = 1f;
     }
 
@@ -193,51 +139,12 @@ public partial class Weapon : Node2D
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        if (weaponAnimationPlayer == null)
-            return isHeavy ? heavyAttackDuration : (1f / attackSpeed);
-
-        string[] animationNames = GetAttackAnimationCandidates(direction, isHeavy);
-        foreach (string animationName in animationNames)
-        {
-            if (weaponAnimationPlayer.HasAnimation(animationName))
-                return GetAnimationDuration(animationName);
-        }
-
-        return isHeavy ? heavyAttackDuration : (1f / attackSpeed);
+        return WeaponAnimations.GetDesiredAttackDuration(attackDuration, heavyAttackDuration, isHeavy);
     }
 
-    private string GetAttackAnimationName(string direction, bool isHeavy)
+    public float GetNativeAnimationLength(string direction, bool isHeavy)
     {
-        string[] animationNames = GetAttackAnimationCandidates(direction, isHeavy);
-        foreach (string animationName in animationNames)
-        {
-            if (weaponAnimationPlayer != null && weaponAnimationPlayer.HasAnimation(animationName))
-                return animationName;
-        }
-
-        return null;
-    }
-
-    private string[] GetAttackAnimationCandidates(string direction, bool isHeavy)
-    {
-        if (isHeavy)
-        {
-            return new[] { "Weapon_Spin", "Weapon_Attack_Spin", $"Weapon_Attack_{direction}", "Weapon_Attack_Down", "Weapn_Attack_Up" };
-        }
-
-        return new[] { $"Weapon_Attack_{direction}", "Weapon_Attack_Down", "Weapon_Attack_Left", "Weapon_Attack_Right", "Weapon_Attack_Up", "Weapn_Attack_Up" };
-    }
-
-    private float GetAnimationDuration(string animationName)
-    {
-        if (weaponAnimationPlayer == null || !weaponAnimationPlayer.HasAnimation(animationName))
-            return 0f;
-
-        Animation animation = weaponAnimationPlayer.GetAnimation(animationName);
-        if (animation == null)
-            return 0f;
-
-        return Mathf.Max(0.1f, (float)animation.Length);
+        return WeaponAnimations.GetNativeAnimationLength(weaponAnimationPlayer, direction, isHeavy);
     }
 
     private void OnHurtboxHit(Area2D area)

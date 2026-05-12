@@ -8,7 +8,6 @@ public partial class HammerArc : WeaponArc
         if (weapon != null)
         {
             weapon.Damage = 440f;
-            weapon.AttackSpeed = 0.8f;
             weapon.SpecialHitInterval = 5;
         }
     }

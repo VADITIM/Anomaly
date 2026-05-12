@@ -1,4 +1,6 @@
 using Godot;
+using System;
+
 public partial class WeaponArc : Node2D
 {
     [Export] public Area2D Hitbox;
@@ -10,18 +12,17 @@ public partial class WeaponArc : Node2D
     private Weapon parentWeapon;
 
     // Properties that reference parent weapon stats
-    public float Damage => parentWeapon != null ? parentWeapon.Damage : 0f;
-    public float Knockback => parentWeapon != null ? parentWeapon.Knockback : 0f;
-    public float StaminaCost => parentWeapon != null ? parentWeapon.StaminaCost : 0f;
-    public float TenacityDamage { get => parentWeapon != null ? parentWeapon.TenacityDamage : 0f; set { if (parentWeapon != null) parentWeapon.TenacityDamage = value; } }
-    public float AttackSpeed { get => parentWeapon != null ? parentWeapon.AttackSpeed : 1f; set { if (parentWeapon != null) parentWeapon.AttackSpeed = value; } }
-    public float Penetration { get => parentWeapon != null ? parentWeapon.Penetration : 0f; set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
-    public float AttackDuration { get => parentWeapon != null ? parentWeapon.AttackDuration : 0.5f; set { if (parentWeapon != null) parentWeapon.AttackDuration = value; } }
-    public float HeavyAttackDuration { get => parentWeapon != null ? parentWeapon.HeavyAttackDuration : 0.8f; set { if (parentWeapon != null) parentWeapon.HeavyAttackDuration = value; } }
-    public int SpecialHitInterval { get => parentWeapon != null ? parentWeapon.SpecialHitInterval : 4; set { if (parentWeapon != null) parentWeapon.SpecialHitInterval = value; } }
-    public int HitCount { get => parentWeapon != null ? parentWeapon.HitCount : 0; set { if (parentWeapon != null) parentWeapon.HitCount = value; } }
-    public float CurrentTenacityDamageMultiplier { get => parentWeapon != null ? parentWeapon.CurrentTenacityDamageMultiplier : 1f; set { if (parentWeapon != null) parentWeapon.CurrentTenacityDamageMultiplier = value; } }
-    public float OutsideKnockbackForce { get => parentWeapon != null ? parentWeapon.OutsideKnockbackForce : 1f; set { if (parentWeapon != null) parentWeapon.OutsideKnockbackForce = value; } }
+    public float Damage => parentWeapon?.Damage ?? throw new InvalidOperationException("Parent weapon not set.");
+    public float Knockback => parentWeapon?.Knockback ?? throw new InvalidOperationException("Parent weapon not set.");
+    public float StaminaCost => parentWeapon?.StaminaCost ?? throw new InvalidOperationException("Parent weapon not set.");
+    public float TenacityDamage { get => parentWeapon?.TenacityDamage ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.TenacityDamage = value; } }
+    public float Penetration { get => parentWeapon?.Penetration ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
+    public float AttackDuration { get => parentWeapon?.AttackDuration ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.AttackDuration = value; } }
+    public float HeavyAttackDuration { get => parentWeapon?.HeavyAttackDuration ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.HeavyAttackDuration = value; } }
+    public int SpecialHitInterval { get => parentWeapon?.SpecialHitInterval ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.SpecialHitInterval = value; } }
+    public int HitCount { get => parentWeapon?.HitCount ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.HitCount = value; } }
+    public float CurrentTenacityDamageMultiplier { get => parentWeapon?.CurrentTenacityDamageMultiplier ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.CurrentTenacityDamageMultiplier = value; } }
+    public float OutsideKnockbackForce { get => parentWeapon?.OutsideKnockbackForce ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.OutsideKnockbackForce = value; } }
 
     public static Timer QuickTimer(Node parent, float time)
     {
@@ -91,7 +92,7 @@ public partial class WeaponArc : Node2D
 
         AnimationPlayer.Stop();
 
-        float desiredDuration = 1f / Mathf.Max(AttackSpeed, 0.0001f);
+        float desiredDuration = AttackDuration;
         if (preparedHeavyAttack && HeavyAttackDuration > 0f)
             desiredDuration = HeavyAttackDuration;
 
@@ -99,6 +100,8 @@ public partial class WeaponArc : Node2D
         float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
         AnimationPlayer.SpeedScale = playbackSpeed;
 
+        // Seek to frame 0 to avoid displaying stale frames from previous animations
+        AnimationPlayer.Seek(0);
         AnimationPlayer.Play(animationToPlay);
 
         attackAnimationStopTimer?.QueueFree();
@@ -131,10 +134,9 @@ public partial class WeaponArc : Node2D
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        float baseDuration = 1f / Mathf.Max(AttackSpeed, 0.0001f);
         if (isHeavy && HeavyAttackDuration > 0f)
             return HeavyAttackDuration;
-        return baseDuration;
+        return AttackDuration;
     }
 
     public void PlayStateAnimation(string animationName)

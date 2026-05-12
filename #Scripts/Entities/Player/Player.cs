@@ -271,6 +271,12 @@ public partial class Player : Entity
             direction = _lastDamageDirection;
             flipH = false;
         }
+        else if (currentState == PlayerState.Attacking || currentState == PlayerState.HeavyAttacking)
+        {
+            // Lock direction during attacks - don't update from mouse
+            direction = lastAnimationDirection;
+            flipH = _lastFlipH;
+        }
         else
         {
             Vector2 mousePos = GetGlobalMousePosition();

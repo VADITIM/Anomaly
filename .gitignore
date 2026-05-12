@@ -24,3 +24,5 @@ exports/
 *.exe
 *.app
 *.zip
+
+.fake

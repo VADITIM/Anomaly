@@ -183,6 +183,10 @@ public partial class PlayerStateMachine : StateMachineBase
     
     private void UpdateMovementDirection()
     {
+        // Lock direction changes during attacks
+        if (IsAttacking)
+            return;
+
         Player.MovementDirection newDirection = Player.MovementDirection.None;
         
         if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
@@ -268,7 +272,7 @@ public partial class PlayerStateMachine : StateMachineBase
         OnAttackStarted?.Invoke(true);
         
         if (Player?.Weapon != null)
-            attackCooldown = 1f / Player.Weapon.AttackSpeed;
+            attackCooldown = Player.Weapon.HeavyAttackDuration;
     }
     
     private void ExecuteNormalAttack()
@@ -281,7 +285,7 @@ public partial class PlayerStateMachine : StateMachineBase
             OnAttackStarted?.Invoke(false);
             
             if (Player?.Weapon != null)
-                attackCooldown = 1f / Player.Weapon.AttackSpeed;
+                attackCooldown = Player.Weapon.AttackDuration;
         }
     }
 
