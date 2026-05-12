@@ -10,6 +10,21 @@ public partial class Camera : CameraFocus
 
     public override void _Process(double delta)
     {
+        if (Input.IsActionJustPressed(Keybinds.FocusToggle))
+        {
+            focusActive = !focusActive;
+            if (!focusActive)
+            {
+                focusOffset = Vector2.Zero;
+                Enemy = null;
+                shakeOffset = Vector2.Zero;
+                Offset = Vector2.Zero;
+            }
+        }
+
+        if (!focusActive)
+            return;
+
         UpdateFocusOffset((float)delta);
         shakeOffset = CameraFeedback.TenacityBreakShake(delta, ref shakeDecay, ref shakeIntensity, ref shakeTimer);
         Offset = focusOffset + shakeOffset;

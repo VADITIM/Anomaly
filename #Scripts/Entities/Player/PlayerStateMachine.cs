@@ -147,7 +147,7 @@ public partial class PlayerStateMachine : StateMachineBase
         
         if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && attackCooldown <= 0)
         {
-            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.staminaCost)
+            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
             {
                 if (CurrentState != PlayerState.HeavyCharging)
                     StartHeavyCharge();
@@ -163,7 +163,7 @@ public partial class PlayerStateMachine : StateMachineBase
         
         if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && attackCooldown <= 0)
         {
-            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.staminaCost)
+            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
             {
                 ExecuteNormalAttack();
             }
@@ -268,20 +268,20 @@ public partial class PlayerStateMachine : StateMachineBase
         OnAttackStarted?.Invoke(true);
         
         if (Player?.Weapon != null)
-            attackCooldown = 1f / Player.Weapon.attackSpeed;
+            attackCooldown = 1f / Player.Weapon.AttackSpeed;
     }
     
     private void ExecuteNormalAttack()
     {
         if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Moving)
         {
-            Player.Instance.Stats.SetCurrent("Stamina", Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.staminaCost, 0f));
+            Player.Instance.Stats.SetCurrent("Stamina", Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
             attackDuration = Player.GetCurrentAttackAnimationDuration(false);
             TransitionTo(PlayerState.Attacking);
             OnAttackStarted?.Invoke(false);
             
             if (Player?.Weapon != null)
-                attackCooldown = 1f / Player.Weapon.attackSpeed;
+                attackCooldown = 1f / Player.Weapon.AttackSpeed;
         }
     }
 

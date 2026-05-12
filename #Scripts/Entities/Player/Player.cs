@@ -15,7 +15,7 @@ public partial class Player : Entity
     public static Player Instance;
     public PlayerStateMachine StateMachine { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
-    [Export]public Weapon Weapon { get; set; }
+    public Weapon Weapon { get; set; }
     [Export] public Node2D WeaponSlot;
     
     [Export] public Sprite2D BodySprite { get; set; }
@@ -106,12 +106,36 @@ public partial class Player : Entity
         Instance = this;
         Stats = new PlayerStats();
         WeaponSlot = GetNode<Node2D>("WEAPON");
-        BodySprite = GetNode<Sprite2D>("Sprite2D");
+        BodySprite = GetNode<Sprite2D>("Player Sprite");
         AnimationPlayer = GetNode<AnimationPlayer>("Animator");
         ResourceManager = new ResourceManager(this);
         StateMachine = new PlayerStateMachine();
 
-        Weapon = WeaponSlot.GetChild<Weapon>(0);
+        Node firstChild = WeaponSlot.GetChildCount() > 0 ? WeaponSlot.GetChild(0) : null;
+        if (firstChild is Weapon weaponNode)
+        {
+            Weapon = weaponNode;
+        }
+        else if (firstChild is WeaponArc arcNode)
+        {
+            // Load weapon from scene file
+            PackedScene weaponScene = GD.Load<PackedScene>("res://#Scenes/Entities/Weapon.tscn");
+            Weapon weaponContainer = weaponScene.Instantiate<Weapon>();
+            // Move existing arc under new container and slot it
+            WeaponSlot.RemoveChild(arcNode);
+            weaponContainer.AddChild(arcNode);
+            weaponContainer.SlotArc(arcNode);  // Slot the arc into the container
+            WeaponSlot.AddChild(weaponContainer);
+            Weapon = weaponContainer;
+        }
+        else
+        {
+            // No valid child found; load weapon from scene file
+            PackedScene weaponScene = GD.Load<PackedScene>("res://#Scenes/Entities/Weapon.tscn");
+            Weapon weaponContainer = weaponScene.Instantiate<Weapon>();
+            WeaponSlot.AddChild(weaponContainer);
+            Weapon = weaponContainer;
+        }
 
     _bodySpriteBasePosition = BodySprite?.Position ?? Vector2.Zero;
     _weaponSlotBasePosition = WeaponSlot?.Position ?? Vector2.Zero;
@@ -157,10 +181,9 @@ public partial class Player : Entity
         PassiveStaminaRegeneration((float)delta);
 
         Player.Instance.ProcessMovement((float)delta);
-        ProcessCombat((float)delta);
     }
 
-    protected override void OnZChanged()
+    public override void OnZChanged()
     {
         float yOffset = -Z;
 
@@ -184,14 +207,6 @@ public partial class Player : Entity
         }
     }
 
-    private void ProcessCombat(float delta)
-    {
-        if (Weapon == null || Weapon.Hitbox == null) return;
-        
-        bool shouldMonitor = StateMachine.IsAttacking;
-        Weapon.Hitbox.Monitoring = shouldMonitor;
-    }
-    
     private void PassiveStaminaRegeneration(float delta)
     {
         _staminaRegenerationCooldown -= delta;
@@ -280,7 +295,7 @@ public partial class Player : Entity
         {
             if (AnimationPlayer.HasAnimation(animationName))
             {
-                bool isAttackAnimation = animationName.StartsWith("Sword_Attack") ||
+                bool isAttackAnimation = animationName.StartsWith("Weapon_Attack") ||
                                          animationName.StartsWith("Attack") ||
                                          animationName == "Weapon_Spin";
                 if (isAttackAnimation && Weapon != null)
@@ -299,6 +314,7 @@ public partial class Player : Entity
                 {
                     try
                     {
+                        GD.Print($"[Player.UpdateAnimation] Calling Weapon.PlayStateAnimation({animationName})");
                         Weapon?.PlayStateAnimation(animationName);
 
                         int playerZ = BodySprite != null ? BodySprite.ZIndex : 0;
@@ -306,8 +322,9 @@ public partial class Player : Entity
                         if (Weapon != null)
                             Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
                     }
-                    catch (Exception)
+                    catch (Exception ex)
                     {
+                        GD.Print($"[Player.UpdateAnimation] Exception: {ex}");
                     }
 
                     return;
@@ -336,8 +353,8 @@ public partial class Player : Entity
         {
             PlayerState.Idle => IsAirborne ? new[] { "Jump_Down" } : new[] { idle },
             PlayerState.Moving => IsAirborne ? new[] { "Jump_Down" } : new[] { $"Weapon_Move_{direction}", idle },
-            PlayerState.Attacking => new[] { $"Sword_Attack_{direction}", idle },
-            PlayerState.HeavyAttacking => new[] { "Weapon_Spin", "Sword_Attack_Spin", $"Sword_Attack_{direction}", idle },
+            PlayerState.Attacking => new[] { $"Weapon_Attack_{direction}", idle },
+            PlayerState.HeavyAttacking => new[] { "Weapon_Spin", "Weapon_Attack_Spin", $"Weapon_Attack_{direction}", idle },
             PlayerState.Dodging => new[] { $"Dodge_{direction}", $"Weapon_Move_{direction}", idle },
             PlayerState.Healing => IsAirborne ? new[] { "Jump_Down" } : new[] { idle },
             PlayerState.Staggered => new[] { $"Take_Damage_{direction}", idle },

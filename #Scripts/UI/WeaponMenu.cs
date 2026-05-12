@@ -6,7 +6,7 @@ public partial class WeaponMenu : Control
 {
     public Player Player;
     [Export] public WeaponManager WeaponManager;
-    [Export] public WeaponInventory WeaponInventory;
+    [Export] public WeaponArcInventory WeaponInventory;
     [Export] public GridContainer WeaponGrid;
     [Export] public PackedScene WeaponButtonScene;
 
@@ -14,6 +14,7 @@ public partial class WeaponMenu : Control
     private Button _prevButton;
     private Button _nextButton;
     private Label _pageLabel;
+    private WeaponSwapAnimator _swapAnimator;
 
     private int _currentPage = 0;
 
@@ -23,13 +24,24 @@ public partial class WeaponMenu : Control
 
     public override void _Ready()
     {
+
+
         Visible = false;
         MouseFilter = MouseFilterEnum.Pass;
-        ProcessMode = ProcessModeEnum.Always;
+        ProcessMode = ProcessModeEnum.Inherit;  // Only process when parent allows
 
         Player ??= GetTree().Root.FindChild("Player", true, false) as Player;
         WeaponManager ??= Player?.GetNodeOrNull<WeaponManager>("WeaponManager");
-        WeaponInventory ??= Player?.GetNodeOrNull<WeaponInventory>("WeaponInventory");
+        WeaponInventory ??= Player?.GetNodeOrNull<WeaponArcInventory>("WeaponInventory");
+        _swapAnimator ??= Player?.GetNodeOrNull<WeaponSwapAnimator>("WeaponSwapAnimator");
+
+        // Create animator if it doesn't exist (defer to avoid blocking parent setup)
+        if (_swapAnimator == null && Player != null)
+        {
+            _swapAnimator = new WeaponSwapAnimator();
+            _swapAnimator.Name = "WeaponSwapAnimator";
+            Player.CallDeferred(Node.MethodName.AddChild, _swapAnimator);
+        }
 
         BuildUi();
         
@@ -66,13 +78,6 @@ public partial class WeaponMenu : Control
         _navBar.AddChild(_nextButton);
     }
 
-    public override void _UnhandledInput(InputEvent @event)
-    {
-        if (@event is InputEventKey key && key.Pressed && !key.IsEcho() && key.Keycode == Key.T)
-        {
-            Visible = !Visible;
-        }
-    }
 
     private void ChangePage(int delta)
     {
@@ -148,14 +153,17 @@ public partial class WeaponMenu : Control
             PackedScene weaponScene = scene;
             
             button.Pressed += () => {
-                GD.Print($"Button pressed: {displayName}");
-                HandleEquipLeft(weaponScene, slotIndex);
+                GD.Print($"Button pressed (Tween swap): {displayName}");
+                _swapAnimator?.AnimateWeaponSwap(textureRect, weaponScene);
+                RefreshGrid();
             };
             button.GuiInput += (InputEvent evt) => {
                 if (evt is InputEventMouseButton mouse && mouse.Pressed && !mouse.IsEcho() && mouse.ButtonIndex == MouseButton.Right)
                 {
                     GD.Print($"Right click on: {displayName}");
-                    HandleEquipRight(weaponScene, slotIndex);
+                    // Right-click also triggers swap animation
+                    _swapAnimator?.AnimateWeaponSwap(textureRect, weaponScene);
+                    RefreshGrid();
                     GetViewport().SetInputAsHandled();
                 }
             };
@@ -193,35 +201,6 @@ public partial class WeaponMenu : Control
         
         tempWeapon.QueueFree();
         return texture;
-    }
-
-    private void HandleEquipLeft(PackedScene weaponScene, int index)
-    {
-        GD.Print($"HandleEquipLeft called for weapon at index {index}");
-        if (WeaponManager == null || weaponScene == null)
-        {
-            GD.Print("WeaponManager or weaponScene is null!");
-            return;
-        }
-
-        int currentSlot = WeaponManager.GetCurrentSlotIndex();
-        WeaponManager.EquipWeaponToSlot(weaponScene, currentSlot);
-        RefreshGrid();
-    }
-
-    private void HandleEquipRight(PackedScene weaponScene, int index)
-    {
-        GD.Print($"HandleEquipRight called for weapon at index {index}");
-        if (WeaponManager == null || weaponScene == null)
-        {
-            GD.Print("WeaponManager or weaponScene is null!");
-            return;
-        }
-
-        int currentSlot = WeaponManager.GetCurrentSlotIndex();
-        int otherSlot = currentSlot == 0 ? 1 : 0;
-        WeaponManager.EquipWeaponToSlot(weaponScene, otherSlot);
-        RefreshGrid();
     }
 
     private static string GetDisplayName(PackedScene scene)

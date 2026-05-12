@@ -1,110 +1,97 @@
 using Godot;
 
+/// <summary>
+/// Manages weapon arc slotting into the single player weapon.
+/// Handles arc instantiation, slotting, and unslotting.
+/// </summary>
 public partial class WeaponManager : Node
 {
-    public Player Player;
-    public Weapon CurrentWeapon { get; private set; }
-    public Weapon[] EquippedWeapons { get; private set; } = new Weapon[2];
+    public Player Player { get; private set; }
 
     public override void _Ready()
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
     }
 
-    public void EquipWeapon(Weapon weapon)
+    /// <summary>
+    /// Slots a weapon arc into the player's weapon.
+    /// </summary>
+    public void SlotWeaponArc(WeaponArc arc)
     {
-        if (weapon == null)
+        if (arc == null || Player?.Weapon == null)
             return;
 
-        CurrentWeapon?.QueueFree();
-
-        CurrentWeapon = weapon;
-        Node weaponParent = GetWeaponParent();
-        weaponParent.AddChild(CurrentWeapon);
-        CurrentWeapon.Owner = Player;
-        EquippedWeapons[0] = weapon;
-        Player.Weapon = weapon;
+        Player.Weapon.SlotArc(arc);
     }
 
-    public void ChangeWeapon(Weapon newWeapon)
+    /// <summary>
+    /// Instantiates an arc from a scene and slots it into the weapon.
+    /// </summary>
+    public WeaponArc SlotWeaponArcFromScene(PackedScene arcScene)
     {
-        CurrentWeapon.QueueFree();
-        EquipWeapon(newWeapon);
+        if (arcScene == null || Player?.Weapon == null)
+            return null;
+
+        WeaponArc arc = arcScene.Instantiate<WeaponArc>();
+        if (arc == null)
+            return null;
+
+        Node weaponParent = GetWeaponParent();
+        weaponParent.AddChild(arc);
+        arc.Owner = Player;
+
+        Player.Weapon.SlotArc(arc);
+        return arc;
     }
 
-    public void EquipWeaponToSlot(PackedScene weaponScene, int slotIndex)
+    /// <summary>
+    /// Unslots the current arc from the weapon.
+    /// </summary>
+    public void UnslotWeaponArc()
     {
-        if (weaponScene == null) return;
-        if (slotIndex < 0 || slotIndex >= EquippedWeapons.Length) return;
-
-        Weapon oldWeapon = EquippedWeapons[slotIndex];
-        oldWeapon?.QueueFree();
-
-        Weapon instance = weaponScene.Instantiate<Weapon>();
-        Node weaponParent = GetWeaponParent();
-        weaponParent.AddChild(instance);
-        instance.Owner = Player;
-        EquippedWeapons[slotIndex] = instance;
-
-        if (CurrentWeapon == null || CurrentWeapon == oldWeapon || slotIndex == 0)
+        if (Player?.Weapon != null)
         {
-            CurrentWeapon = instance;
-            Player.Weapon = instance;
+            Player.Weapon.UnslotArc();
         }
     }
 
+    /// <summary>
+    /// Gets the currently slotted arc.
+    /// </summary>
+    public WeaponArc GetCurrentArc()
+    {
+        return Player?.Weapon?.GetCurrentArc();
+    }
+
+    /// <summary>
+    /// Checks if the given scene is the currently equipped arc.
+    /// </summary>
+    public bool IsSceneEquipped(PackedScene arcScene)
+    {
+        if (arcScene == null)
+            return false;
+
+        WeaponArc currentArc = GetCurrentArc();
+        if (currentArc == null)
+            return false;
+
+        return IsSameArcResource(arcScene.ResourcePath, currentArc);
+    }
+
+    /// <summary>
+    /// Gets a dummy index for UI compatibility. Always returns 0 for single-arc system.
+    /// </summary>
     public int GetCurrentSlotIndex()
     {
-        if (CurrentWeapon == null)
-        {
-            for (int i = 0; i < EquippedWeapons.Length; i++)
-            {
-                if (EquippedWeapons[i] != null)
-                    return i;
-            }
-            return 0;
-        }
-
-        for (int i = 0; i < EquippedWeapons.Length; i++)
-        {
-            if (EquippedWeapons[i] == CurrentWeapon)
-                return i;
-        }
-
         return 0;
     }
 
-    public int GetSlotIndexForScene(PackedScene weaponScene)
+    /// <summary>
+    /// Equipment an arc to a slot. For single-arc system, slotIndex is ignored.
+    /// </summary>
+    public void EquipWeaponToSlot(PackedScene arcScene, int slotIndex)
     {
-        if (weaponScene == null)
-            return -1;
-
-        string path = weaponScene.ResourcePath;
-        for (int i = 0; i < EquippedWeapons.Length; i++)
-        {
-            Weapon weapon = EquippedWeapons[i];
-            if (weapon == null)
-                continue;
-
-            if (IsSameWeaponResource(path, weapon))
-                return i;
-        }
-
-        return -1;
-    }
-
-    public bool IsSceneEquipped(PackedScene weaponScene)
-    {
-        return GetSlotIndexForScene(weaponScene) >= 0;
-    }
-
-    private static bool IsSameWeaponResource(string scenePath, Weapon weapon)
-    {
-        if (weapon == null)
-            return false;
-
-        string instancePath = weapon.SceneFilePath;
-        return !string.IsNullOrEmpty(scenePath) && scenePath == instancePath;
+        SlotWeaponArcFromScene(arcScene);
     }
 
     private Node GetWeaponParent()
@@ -112,5 +99,14 @@ public partial class WeaponManager : Node
         if (Player?.WeaponSlot != null)
             return Player.WeaponSlot;
         return Player ?? GetParent();
+    }
+
+    private static bool IsSameArcResource(string scenePath, WeaponArc arc)
+    {
+        if (arc == null)
+            return false;
+
+        string instancePath = arc.SceneFilePath;
+        return !string.IsNullOrEmpty(scenePath) && scenePath == instancePath;
     }
 }

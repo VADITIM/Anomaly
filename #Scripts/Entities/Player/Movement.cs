@@ -20,7 +20,8 @@ public static class Movement
     
     public static float GetSpeedModifier()
     {
-        if (PlayerStateMachine.Instance.CurrentState == PlayerState.Healing)
+        var sm = PlayerStateMachine.Instance;
+        if (sm != null && sm.CurrentState == PlayerState.Healing)
             return HEAL_SPEED_MODIFIER;
         return 1f;
     }
@@ -31,31 +32,35 @@ public static class Movement
 
     public static void ProcessMovement(this CharacterBody2D body, float delta)
     {
-        switch (PlayerStateMachine.Instance.CurrentState)
+        var sm = PlayerStateMachine.Instance;
+        if (sm == null || Player.Instance == null)
+            return;
+
+        switch (sm.CurrentState)
         {
             case PlayerState.Moving:
                 Vector2 movement = GetMovementVector();
                 body.Velocity = movement * Player.Instance.Stats.GetCurrentMax("Speed");
                 body.MoveAndSlide();
                 break;
-                
+
             case PlayerState.Healing:
                 Vector2 healMovement = GetMovementVector();
                 float healSpeed = Player.Instance.Stats.GetCurrentMax("Speed") * GetSpeedModifier();
                 body.Velocity = healMovement * healSpeed;
                 body.MoveAndSlide();
                 break;
-                
+
             case PlayerState.Dodging:
                 body.Velocity = Dodge.GetDodgeVelocity();
                 body.MoveAndSlide();
                 break;
-                
+
             case PlayerState.Knockback:
-                body.Velocity = PlayerStateMachine.Instance.GetKnockbackVelocity();
+                body.Velocity = sm.GetKnockbackVelocity();
                 body.MoveAndSlide();
                 break;
-                
+
             default:
                 body.Velocity = Vector2.Zero;
                 break;

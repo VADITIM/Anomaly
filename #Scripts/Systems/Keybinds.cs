@@ -17,6 +17,7 @@ public partial class Keybinds : Node
 	public const string Special = "special";
 	public const string Interact = "interact";
 	public const string UiWeaponPanel = "ui_weapon_panel";
+	public const string FocusToggle = "focus_toggle";
 
 	public static readonly string[] ActionOrder =
 	{
@@ -33,7 +34,8 @@ public partial class Keybinds : Node
 		MoveRight,
 		Special,
 		Interact,
-		UiWeaponPanel
+		UiWeaponPanel,
+		FocusToggle
 	};
 
 	private static readonly Dictionary<string, string> ActionLabels = new()
@@ -51,7 +53,8 @@ public partial class Keybinds : Node
 		[MoveRight] = "Move Right",
 		[Special] = "Special",
 		[Interact] = "Interact",
-		[UiWeaponPanel] = "Weapon Panel"
+		[UiWeaponPanel] = "Weapon Panel",
+		[FocusToggle] = "Toggle Focus Mode"
 	};
 
 	private static readonly Dictionary<string, List<InputEvent>> DefaultBindings = new();

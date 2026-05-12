@@ -6,13 +6,15 @@ public partial class CameraFocus : Camera2D
     [Export] protected float focusSpeed = 4f;
     [Export] protected float offsetRadius = 100;
     [Export] protected bool showDebugSphere = false;
+    protected bool focusActive = true;
 
     protected Vector2 focusOffset = Vector2.Zero;
     protected Player Player;
     protected Enemy Enemy;
     protected ColorRect debugSphere;
 
-    public bool IsLocked => Enemy != null;
+    public bool FocusActive => focusActive;
+    public bool IsLocked => focusActive && Enemy != null;
 
     public override void _Ready()
     {
@@ -28,6 +30,19 @@ public partial class CameraFocus : Camera2D
 
     public override void _Process(double delta)
     {
+        if (Input.IsActionJustPressed(Keybinds.FocusToggle))
+        {
+            focusActive = !focusActive;
+            if (!focusActive)
+            {
+                focusOffset = Vector2.Zero;
+                Enemy = null;
+                Offset = Vector2.Zero;
+            }
+        }
+
+        if (!focusActive) return;
+
         UpdateFocusOffset((float)delta);
         Offset = focusOffset;
         

@@ -21,11 +21,7 @@ WeaponInventoryPanel = NodePath("Weapon Menu/Weapon Inventory Panel")
 [node name="Bonfire Interface" parent="." unique_id=1624975214 instance=ExtResource("2_unt3r")]
 layout_mode = 1
 
-[node name="Upgrade Container" parent="Bonfire Interface" index="5" unique_id=183646173]
-visible = false
-
 [node name="Weapon Menu" parent="." unique_id=326094923 instance=ExtResource("3_uwjqw")]
-visible = false
 layout_mode = 1
 
 [editable path="Bonfire Interface"]

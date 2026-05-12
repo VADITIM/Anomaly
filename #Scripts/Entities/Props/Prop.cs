@@ -14,22 +14,25 @@ public partial class Prop : Entity
 
         SetMaxHealth(health);
         SetHealth(health);
-        
-        InitializeResourceBars();
+
+        InitializeBars();
         PlayAnimation("Idle_Down");
     }
 
-    public void TakeDamage(Weapon weapon, Vector2 playerPosition)
+    public override void TakeDamage(WeaponArc weapon, Node2D damageSource)
     {
         if (_isDead || !Destroyable) return;
+        if (weapon == null) return;
+
+        Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
 
         PlayAnimation("Take_Damage_Down");
 
-        float newHealth = GetHealth() - weapon.damage;
+        float newHealth = GetHealth() - weapon.Damage;
         SetHealth(newHealth);
+        SpawnDamageNumber(weapon.Damage, DamageNumberStyle.Standard);
 
-        Vector2 knockbackDirection = (GlobalPosition - playerPosition).Normalized();
-        ApplyKnockback(knockbackDirection, weapon.knockback);
+        TakeKnockback(sourcePosition, weapon.Knockback);
 
         if (GetHealth() <= 0)
         {

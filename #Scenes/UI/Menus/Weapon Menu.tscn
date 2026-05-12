@@ -1,14 +1,13 @@
-[gd_scene load_steps=8 format=3 uid="uid://bgahxlcxcj3nk"]
+[gd_scene format=3 uid="uid://bgahxlcxcj3nk"]
 
 [ext_resource type="Script" uid="uid://dvkwvks0uu08m" path="res://#Scripts/UI/WeaponMenu.cs" id="1_0kfwu"]
 [ext_resource type="PackedScene" uid="uid://ckjier8c5ki5i" path="res://#Scenes/Weapons/Weapon Manager.tscn" id="2_paqvh"]
 [ext_resource type="PackedScene" uid="uid://b8qxomuahcc2v" path="res://#Scenes/UI/WeapnItemControl.tscn" id="2_rs1rc"]
-[ext_resource type="Script" uid="uid://cp3w71omtqs2m" path="res://#Scripts/Weapons/WeaponInventory.cs" id="3_1cs8r"]
-[ext_resource type="PackedScene" uid="uid://drls02dfnacq0" path="res://#Scenes/Weapons/Pierching Weapon.tscn" id="4_rs1rc"]
-[ext_resource type="PackedScene" uid="uid://4vrodf6tt6t6" path="res://#Scenes/Weapons/Slashing Weapon.tscn" id="5_u51ay"]
-[ext_resource type="PackedScene" uid="uid://dygiv72viw8hp" path="res://#Scenes/Weapons/Smashing Weapon.tscn" id="6_3mofk"]
+[ext_resource type="Script" uid="uid://cp3w71omtqs2m" path="res://#Scripts/Weapons/WeaponArcInventory.cs" id="3_1cs8r"]
+[ext_resource type="Texture2D" uid="uid://hg428r1ygohc" path="res://#Assets/Entities/Weapons/Gemini_Generated_Image_muad8fmuad8fmuad.png" id="3_rs1rc"]
+[ext_resource type="FontFile" uid="uid://clad1xd41f85h" path="res://#Assets/UI/Fonts/Zodiak-Variable.ttf" id="4_avl07"]
 
-[node name="Weapon Menu" type="Control" node_paths=PackedStringArray("WeaponManager", "WeaponInventory", "WeaponGrid")]
+[node name="Weapon Menu" type="Control" unique_id=1087142169 node_paths=PackedStringArray("WeaponManager", "WeaponInventory", "WeaponGrid")]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,29 +20,140 @@ WeaponInventory = NodePath("Weapon Inventory")
 WeaponGrid = NodePath("Weapon Inventory Panel/GridContainer")
 WeaponButtonScene = ExtResource("2_rs1rc")
 
-[node name="Weapon Inventory Panel" type="Panel" parent="."]
+[node name="Weapon Inventory Panel" type="Panel" parent="." unique_id=301264617]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 511.0
-offset_top = 226.0
-offset_right = -511.0
-offset_bottom = -226.0
+offset_left = 460.0
+offset_top = 119.0
+offset_right = -460.0
+offset_bottom = -119.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="GridContainer" type="GridContainer" parent="Weapon Inventory Panel"]
+[node name="GridContainer" type="GridContainer" parent="Weapon Inventory Panel" unique_id=1043577147]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_left = 43.0
+offset_top = 473.0
+offset_right = -43.0
+offset_bottom = -35.0
 grow_horizontal = 2
 grow_vertical = 2
 columns = 5
 
-[node name="Weapon Manager" parent="." instance=ExtResource("2_paqvh")]
+[node name="ItemList" type="ItemList" parent="Weapon Inventory Panel" unique_id=1052899280]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.034
+anchor_top = 0.56200004
+anchor_right = 0.966
+anchor_bottom = 0.9620001
+offset_top = -0.20404053
+offset_bottom = -0.0040893555
+grow_horizontal = 2
+grow_vertical = 0
 
-[node name="Weapon Inventory" type="Node2D" parent="."]
+[node name="Weapon Panel" type="Panel" parent="Weapon Inventory Panel" unique_id=185825945]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.047000002
+anchor_top = 0.023000002
+anchor_right = 0.95300007
+anchor_bottom = 0.5
+offset_top = -0.36600113
+offset_right = -6.1035156e-05
+offset_bottom = 9.0
+grow_horizontal = 2
+
+[node name="Weapon Sprite" type="TextureRect" parent="Weapon Inventory Panel/Weapon Panel" unique_id=726680903]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 29.0
+offset_top = 94.0
+offset_right = -637.0
+offset_bottom = -77.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(136, 136)
+texture = ExtResource("3_rs1rc")
+expand_mode = 1
+
+[node name="Description Panel" type="Panel" parent="Weapon Inventory Panel/Weapon Panel" unique_id=2018738473]
+self_modulate = Color(7.4854083, 12.511423, 7.7321806, 1)
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.3763797
+anchor_top = 0.11192214
+anchor_right = 0.9768212
+anchor_bottom = 0.8515815
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Weapon Inventory Panel/Weapon Panel/Description Panel" unique_id=628794489]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.02631579
+anchor_right = 5.0
+anchor_bottom = 1.0789474
+grow_horizontal = 2
+scale = Vector2(0.2, 0.2)
+theme_override_fonts/normal_font = ExtResource("4_avl07")
+theme_override_font_sizes/normal_font_size = 120
+text = "Soul Scythe Arc"
+scroll_active = false
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel2" type="RichTextLabel" parent="Weapon Inventory Panel/Weapon Panel/Description Panel" unique_id=264137658]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0147058815
+anchor_top = 0.23684211
+anchor_right = 0.42647058
+anchor_bottom = 0.92105263
+offset_right = 896.0
+offset_bottom = 831.9999
+grow_horizontal = 2
+scale = Vector2(0.2, 0.2)
+theme_override_fonts/normal_font = ExtResource("4_avl07")
+theme_override_font_sizes/normal_font_size = 80
+text = "Type: Slashing
+
+Damage: 15
+Attack Speed 1.2
+Penetration:
+Tenacity Damage:
+Knockback Force:
+"
+metadata/_edit_use_anchors_ = true
+
+[node name="RichTextLabel3" type="RichTextLabel" parent="Weapon Inventory Panel/Weapon Panel/Description Panel" unique_id=1247649481]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.47058824
+anchor_top = 0.3421053
+anchor_right = 0.96470594
+anchor_bottom = 0.81578946
+offset_right = 1075.2
+offset_bottom = 575.9999
+grow_horizontal = 2
+scale = Vector2(0.2, 0.2)
+theme_override_fonts/normal_font = ExtResource("4_avl07")
+theme_override_font_sizes/normal_font_size = 65
+text = "Throw the Scythe & *Pierce* through heavily armored foes, instantly triggering a *Tenacity Break*"
+horizontal_alignment = 1
+vertical_alignment = 1
+metadata/_edit_use_anchors_ = true
+
+[node name="Weapon Manager" parent="." unique_id=423281279 instance=ExtResource("2_paqvh")]
+
+[node name="Weapon Inventory" type="Node2D" parent="." unique_id=1053915532]
 script = ExtResource("3_1cs8r")
-StartingWeapons = Array[PackedScene]([ExtResource("4_rs1rc"), ExtResource("5_u51ay"), ExtResource("6_3mofk")])

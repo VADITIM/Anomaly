@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Runtime.CompilerServices;
 
 public class TenacitySystem
 {
@@ -44,7 +45,7 @@ public class TenacitySystem
     private Timer staggerWindowTimer = null;
 
     private bool cuePlayed = false;
-    private Weapon pendingWeaponReset = null;
+    private WeaponArc pendingWeaponReset = null;
     public bool IsInRecoveryCooldown => isRecovering;
     public bool IsInStaggerWindow => isInStaggerWindow;
     public bool IsStaggered => isStaggered;
@@ -111,7 +112,7 @@ public class TenacitySystem
         }
     }
 
-    public bool ProcessTenacitySystem(Vector2 playerPosition, Weapon weapon)
+    public bool ProcessTenacitySystem(Vector2 playerPosition, WeaponArc weapon)
     {
         if (isRecovering) return false;
         
@@ -119,11 +120,11 @@ public class TenacitySystem
         float tenacityDamage;
         if (Combat.IsHeavyAttacking())
         {
-            tenacityDamage = weapon.CalculateTenacityDamage(weapon.tenacityDamage) * 1.30f;
+            tenacityDamage = weapon.CalculateTenacityDamage(weapon.TenacityDamage) * 1.30f;
         }
         else
         {
-            tenacityDamage = weapon.CalculateTenacityDamage(weapon.tenacityDamage);
+            tenacityDamage = weapon.CalculateTenacityDamage(weapon.TenacityDamage);
         }
 
         Enemy.tenacity -= tenacityDamage;
@@ -173,7 +174,7 @@ public class TenacitySystem
         return true;
     }
 
-    private void TriggerStagger(Vector2 playerPosition, Weapon weapon)
+    private void TriggerStagger(Vector2 playerPosition, WeaponArc weapon)
     {
         bool isFirstStagger = !isInStaggerWindow;
         
@@ -188,7 +189,7 @@ public class TenacitySystem
         
         if (staggerApplied)
         {
-            bool isSpecialHit = (weapon.hitCount % weapon.specialHitInterval) == 0;
+            bool isSpecialHit = (weapon.HitCount % weapon.SpecialHitInterval) == 0;
             ApplyStaggerKnockback(playerPosition, weapon, isSpecialHit);
             
             if (isFirstStagger)
@@ -284,9 +285,9 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
     OnKnockbackStarted?.Invoke(direction, force);
 }
 
-    private void ApplyStaggerKnockback(Vector2 playerPosition, Weapon weapon, bool isSpecialHit)
+    private void ApplyStaggerKnockback(Vector2 playerPosition, WeaponArc weaponArc, bool isSpecialHit)
     {
-        float baseForce = weapon.knockback / 4;
+        float baseForce = weaponArc.Knockback / 4;
         
         if (isSpecialHit)
         {
@@ -300,8 +301,8 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
         float maxTenacityReduction = 1f - (Enemy.maxTenacity / 100f);
         maxTenacityReduction = Mathf.Clamp(maxTenacityReduction, 0.3f, 1f);
 
-        float weaknessMultiplier = (Enemy.weaknessType.ToString() == weapon.attackType.ToString()) 
-            ? Enemy.outsideKnockbackForce : 1f;
+        // attack types removed — no weakness multiplier
+        float weaknessMultiplier = 1f;
         
         float effectiveKnockback = baseForce * tenacityDistanceMultiplier * maxTenacityReduction * weaknessMultiplier * 10f;
         Vector2 knockbackDirection = (Enemy.GlobalPosition - playerPosition).Normalized();

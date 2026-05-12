@@ -3,6 +3,11 @@ using Godot;
 public partial class Entity : CharacterBody2D
 {
     [Export] public bool canBeKnockedBack { get; set; } = true;
+    [Export] public bool canBeKnockbacked
+    {
+        get => canBeKnockedBack;
+        set => canBeKnockedBack = value;
+    }
     [Export] public float weight { get; set; } = 1f;
     [Export] public float knockbackDecay { get; set; } = 2000f;
     protected Vector2 knockbackVelocity = Vector2.Zero;
@@ -14,34 +19,32 @@ public partial class Entity : CharacterBody2D
     [Export] public float health { get; set; }
 
     [ExportGroup("Z Axis")]
-    [Export(PropertyHint.Range, "0,4096,1")] public float FloorZ { get; private set; } = 0f;
-    [Export(PropertyHint.Range, "0,256,1")] public float JumpHeight { get; set; } = 20f;
-    [Export(PropertyHint.Range, "0,4096,1")] public float Gravity { get; set; } = 900f;
-    [Export(PropertyHint.Range, "0,8192,1")] public float TerminalVelocity { get; set; } = 3000f;
+    [Export(PropertyHint.Range, "0,256,1")] public float JumpHeight { get => zAxis?.JumpHeight ?? 20f; set { if (zAxis != null) zAxis.JumpHeight = value; } }
+    [Export(PropertyHint.Range, "0,4096,1")] public float Gravity { get => zAxis?.Gravity ?? 900f; set { if (zAxis != null) zAxis.Gravity = value; } }
+    [Export(PropertyHint.Range, "0,8192,1")] public float TerminalVelocity { get => zAxis?.TerminalVelocity ?? 3000f; set { if (zAxis != null) zAxis.TerminalVelocity = value; } }
+    public float FloorZ => zAxis?.FloorZ ?? 0f;
 
     [ExportGroup("Z Collision")]
-    [Export] public bool IgnoreWallsWhenAirborne { get; set; } = true;
-    [Export(PropertyHint.Range, "1,32,1")] public int WallCollisionLayerNumber { get; set; } = 6;
-    [Export(PropertyHint.Range, "0,4096,0.1")] public float AirborneEpsilon { get; set; } = 0.1f;
+    [Export] public bool IgnoreWallsWhenAirborne { get => zAxis?.IgnoreWallsWhenAirborne ?? true; set { if (zAxis != null) zAxis.IgnoreWallsWhenAirborne = value; } }
+    [Export(PropertyHint.Range, "1,32,1")] public int WallCollisionLayerNumber { get => zAxis?.WallCollisionLayerNumber ?? 6; set { if (zAxis != null) zAxis.WallCollisionLayerNumber = value; } }
+    [Export(PropertyHint.Range, "0,4096,0.1")] public float AirborneEpsilon { get => zAxis?.AirborneEpsilon ?? 0.1f; set { if (zAxis != null) zAxis.AirborneEpsilon = value; } }
 
-    private bool captureBaseWallMask;
-    private bool baseWallMaskValue;
-
+    protected ZAxis zAxis;
     protected Control ResourceBarControl;
     protected TextureProgressBar HealthBar;
 
-    public float Z { get; private set; } = 0f;
-    public float ZVelocity { get; private set; } = 0f;
+    public float Z => zAxis?.Z ?? 0f;
+    public float ZVelocity => zAxis?.ZVelocity ?? 0f;
 
-    public bool IsGrounded => Z <= FloorZ + 0.01f && ZVelocity <= 0.01f;
-    public bool IsAirborne => !IsGrounded;
+    public bool IsGrounded => zAxis?.IsGrounded ?? false;
+    public bool IsAirborne => zAxis?.IsAirborne ?? false;
 
     protected virtual bool CanTakeDamage(float damage, Vector2 sourcePosition) => true;
     protected virtual float ApplyDamageModifiers(float damage, Vector2 sourcePosition) => damage;
     protected virtual void OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth) { }
     protected virtual void OnDeath(Vector2 sourcePosition) { }
 
-    protected virtual void OnZChanged() { }
+    public virtual void OnZChanged() { }
 
     protected virtual void OnKnockbackFinished() { }
 
@@ -61,56 +64,24 @@ public partial class Entity : CharacterBody2D
 
     public override void _PhysicsProcess(double delta)
     {
-        ProcessVertical((float)delta);
+        zAxis?.ProcessVertical((float)delta);
         ProcessKnockback((float)delta);
+        YSortSystem.Update(this);
     }
 
     public override void _Ready()
     {
-        CaptureBaseWallMaskIfNeeded();
-        UpdateWallCollisionMask();
+        zAxis = new ZAxis(this);
     }
 
     protected void ProcessVertical(float delta)
     {
-        if (Z < FloorZ)
-        {
-            Z = FloorZ;
-            ZVelocity = 0f;
-        }
-
-        if (IsGrounded && ZVelocity <= 0f)
-        {
-            UpdateWallCollisionMask();
-            return;
-        }
-
-        ZVelocity -= Gravity * delta;
-        if (ZVelocity < -TerminalVelocity)
-            ZVelocity = -TerminalVelocity;
-
-        Z += ZVelocity * delta;
-
-        float targetZ = FloorZ + Mathf.Max(0f, JumpHeight);
-        if (ZVelocity > 0f && Z >= targetZ)
-        {
-            Z = targetZ;
-            ZVelocity = 0f;
-        }
-
-        if (Z <= FloorZ)
-        {
-            Z = FloorZ;
-            ZVelocity = 0f;
-        }
-
-        UpdateWallCollisionMask();
-        OnZChanged();
+        zAxis?.ProcessVertical(delta);
     }
 
     protected void ProcessKnockback(float delta)
     {
-        if (!canBeKnockedBack) return;
+        if (!canBeKnockbacked) return;
 
         if (knockbackDuration > 0 || knockbackVelocity.Length() > 0.1f)
         {
@@ -130,59 +101,14 @@ public partial class Entity : CharacterBody2D
     }
 
 
-    protected virtual Control FindResourceBarControl()
+    public virtual void InitializeBars()
     {
-        foreach (string candidate in GetResourceBarCandidates())
-        {
-            Control control = GetNodeOrNull<Control>(candidate) ?? FindChildControl(this, candidate);
-            if (control != null)
-                return control;
-        }
-
-        return null;
-    }
-
-    protected Control FindChildControl(Node node, string nodeName)
-    {
-        foreach (Node child in node.GetChildren())
-        {
-            if (child is Control control && child.Name == nodeName)
-                return control;
-
-            Control nested = FindChildControl(child, nodeName);
-            if (nested != null)
-                return nested;
-        }
-
-        return null;
-    }
-
-    protected TextureProgressBar FindTextureProgressBar(Node node, string nodePath)
-    {
-        if (node == null)
-            return null;
-
-        Node child = node.GetNodeOrNull(nodePath);
-        if (child is TextureProgressBar textureProgressBar)
-            return textureProgressBar;
-
-        return node.FindChild(nodePath, true, false) as TextureProgressBar;
-    }
-
-    protected virtual string[] GetResourceBarCandidates()
-    {
-        return new[] { "Resource Bar", "Enemy Resource Bar", "Enemy Health Bar" };
+        InitializeResourceBars();
     }
 
     public void InitializeResourceBars()
     {
-        ResourceBarControl = FindResourceBarControl();
-        HealthBar = GetNodeOrNull<TextureProgressBar>("Health Bar")
-                    ?? FindTextureProgressBar(ResourceBarControl, "Health Bar")
-                    ?? FindTextureProgressBar(this, "Resource Bar/Health Bar")
-                    ?? FindTextureProgressBar(this, "Enemy Resource Bar/Health Bar")
-                    ?? FindTextureProgressBar(this, "Prop Resource Bar/Health Bar");
-
+        (ResourceBarControl, HealthBar) = InitializeEntity.InitializeResourceBars(this);
         UpdateResourceBars();
     }
 
@@ -210,10 +136,22 @@ public partial class Entity : CharacterBody2D
         float newHealth = Mathf.Max(0f, currentHealth - effectiveDamage);
 
         SetHealth(newHealth);
+        SpawnDamageNumber(effectiveDamage, DamageNumberStyle.Standard);
         OnDamageTaken(effectiveDamage, sourcePosition, currentHealth, newHealth);
 
         if (newHealth <= 0f)
             OnDeath(sourcePosition);
+    }
+
+    public virtual void TakeDamage(WeaponArc weapon, Node2D damageSource)
+    {
+        if (weapon == null)
+            return;
+
+        Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
+        float calculatedDamage = weapon.Damage;
+        TakeDamage(calculatedDamage, sourcePosition);
+        TakeKnockback(sourcePosition, weapon.Knockback);
     }
 
     public virtual void ApplyKnockback(Vector2 direction, float force, float duration = 0.2f)
@@ -225,64 +163,29 @@ public partial class Entity : CharacterBody2D
         knockbackDuration = duration;
     }
 
+    public virtual void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
+    {
+        if (!canBeKnockbacked)
+            return;
+
+        Vector2 knockbackDirection = (GlobalPosition - sourcePosition).Normalized();
+        ApplyKnockback(knockbackDirection, force, duration);
+    }
+
 
     public void SetFloorZ(float newFloorZ)
     {
-        newFloorZ = Mathf.Max(0f, newFloorZ);
-        if (Mathf.IsEqualApprox(FloorZ, newFloorZ))
-            return;
+        zAxis?.SetFloorZ(newFloorZ);
+    }
 
-        FloorZ = newFloorZ;
-
-        if (Z < FloorZ)
-        {
-            Z = FloorZ;
-            ZVelocity = 0f;
-        }
-
-        UpdateWallCollisionMask();
-        OnZChanged();
+    protected void SpawnDamageNumber(float damageAmount, DamageNumberStyle style)
+    {
+        DamageNumberSpawner.Spawn(this, damageAmount, style);
     }
 
     public bool TryJump(float? impulse = null)
     {
-        if (!IsGrounded)
-            return false;
-
-        float desiredHeight = Mathf.Max(0f, JumpHeight);
-        float jumpSpeed = Mathf.Sqrt(2f * Gravity * desiredHeight);
-
-        if (impulse.HasValue)
-            jumpSpeed = impulse.Value;
-
-        ZVelocity = jumpSpeed;
-        Z = Mathf.Max(Z, FloorZ);
-        UpdateWallCollisionMask();
-        OnZChanged();
-        return true;
-    }
-
-    private void UpdateWallCollisionMask()
-    {
-        if (!IgnoreWallsWhenAirborne)
-            return;
-
-        CaptureBaseWallMaskIfNeeded();
-        if (!baseWallMaskValue)
-            return;
-
-        bool airborne = Z > FloorZ + AirborneEpsilon;
-        SetCollisionMaskValue(WallCollisionLayerNumber, !airborne);
-    }
-
-
-    private void CaptureBaseWallMaskIfNeeded()
-    {
-        if (captureBaseWallMask)
-            return;
-
-        baseWallMaskValue = GetCollisionMaskValue(WallCollisionLayerNumber);
-        captureBaseWallMask = true;
+        return zAxis?.TryJump(impulse) ?? false;
     }
 
 

@@ -16,19 +16,32 @@ public partial class UI : Control
             Player = GetTree().Root.FindChild("Player", true, false) as Player;
 
         BonfireMenu.Visible = false;
+        WeaponMenu.Visible = false;
+
         ConnectPressed(BonfireEquipmentButton);
         ConnectPressed(BonfireEquipmentCloseButton);
+
+        SetProcessUnhandledInput(true);
     }
 
-    public override void _Process(double delta)
+    public override void _UnhandledInput(InputEvent @event)
     {
-        if (Input.IsActionJustReleased(Keybinds.ToggleEscape))
+        if (@event is not InputEventKey keyEvent || !keyEvent.Pressed || keyEvent.Echo)
+            return;
+
+        if (keyEvent.Keycode != Key.Escape && keyEvent.PhysicalKeycode != Key.Escape)
+            return;
+
+        if (BonfireMenu.Visible || (WeaponMenu != null && WeaponMenu.Visible))
         {
-            if (BonfireMenu.Visible)
-                DisableAllMenus();
-            else
-                BonfireMenu.Visible = !BonfireMenu.Visible;
+            DisableAllMenus();
+            GetViewport().SetInputAsHandled();
+            return;
         }
+
+        // BonfireMenu.Visible = true;
+        WeaponMenu.Visible = true;
+        GetViewport().SetInputAsHandled();
     }
 
     private void DisableAllMenus()

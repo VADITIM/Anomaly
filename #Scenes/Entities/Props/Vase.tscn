@@ -63,7 +63,6 @@ _data = {
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_2u2s1"]
-size = Vector2(20, 24)
 
 [node name="Vase" type="CharacterBody2D" unique_id=652208677]
 collision_layer = 32
@@ -72,7 +71,7 @@ script = ExtResource("2_4wmry")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2082875857]
 texture_filter = 1
-position = Vector2(0, -3.125)
+position = Vector2(0, 4)
 scale = Vector2(0.5, 0.5)
 texture = SubResource("PortableCompressedTexture2D_4wmry")
 metadata/_aseprite_wizard_interface_config_ = {
@@ -102,7 +101,7 @@ metadata/_aseprite_wizard_source_file_hash_ = "ee5a3abc29a16023d060233a0a9a1a9c"
 libraries/ = SubResource("AnimationLibrary_3w2vh")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=471908465]
-position = Vector2(0, -3)
+position = Vector2(0, 5)
 scale = Vector2(0.5, 0.5)
 shape = SubResource("RectangleShape2D_2u2s1")
 debug_color = Color(0, 0.6437342, 0.30028194, 0.41960785)

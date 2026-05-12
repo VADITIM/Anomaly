@@ -7,12 +7,13 @@ public abstract partial class Enemy : Entity
     private const float CAMERA_FOCUS_RANGE = 500f;
 
     public Player Player { get; private set; }
-    private Weapon Weapon => Player?.Weapon;
+    private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
     private EnemyStateMachine StateMachine;
     public TenacitySystem TenacitySystem;
-    private StyleBox TenacityBarNormalFill;
-    private StyleBox TenacityBarKnockbackFill;
-    
+
+    public Texture2D Tenacity_Bar_Normal = ResourceLoader.Load<Texture2D>("uid://brl8bddmdruyt");
+    public Texture2D Tenacity_Bar_Active = ResourceLoader.Load<Texture2D>("uid://b2fo3fwaguoep");
+    public Texture2D Tenacity_Bar_Cooldown = ResourceLoader.Load<Texture2D>("uid://0s2uvwfy3s50");
     private RichTextLabel testDisplay;
     private TextureProgressBar TenacityBar;
     public AnimatedSprite2D TenacityCooldownCue { get; private set; }
@@ -59,6 +60,9 @@ public abstract partial class Enemy : Entity
 
     private bool HasBeenHit = false;
 
+    public void MarkCameraFocus() { HasBeenHit = true; }
+    private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CAMERA_FOCUS_RANGE; }
+
     public override void _Ready()
     {
         base._Ready();
@@ -75,60 +79,6 @@ public abstract partial class Enemy : Entity
         ActiveEnemies.Remove(this);
     }
 
-    public void InitializeEnemy()
-    {
-        Player = GetTree().Root.FindChild("Player", true, false) as Player;
-
-        testbar();
-
-        InitializeTenacity();
-        InitializeBars();
-        InitializeStateMachine();
-
-        PlayAnimation(GetCurrentEnemyAnimation());
-    }
-
-
-    private void testbar() 
-    {
-        testDisplay = GetNodeOrNull<RichTextLabel>("Label")
-                      ?? GetNodeOrNull<RichTextLabel>("CanvasLayer/Label")
-                      ?? GetTree().CurrentScene?.FindChild("Label", true, false) as RichTextLabel;
-
-        testDisplay.BbcodeEnabled = true;
-    }
-
-    private void InitializeTenacity()
-    {
-        AnimationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        TenacityCooldownCue = GetNodeOrNull<AnimatedSprite2D>("Tenacity Broken Animation");
-        TenacityCooldownCue.Visible = false;
-        maxTenacity = tenacity;
-    }
-
-    private void InitializeStateMachine()
-    {
-        StateMachine = GetNodeOrNull<EnemyStateMachine>("EnemyStateMachine");
-
-        StateMachine = new EnemyStateMachine();
-        AddChild(StateMachine);
-        StateMachine.SetMaxStaggers(maxStaggers);
-        StateMachine.Target = Player;
-
-        StateMachine.OnDied += OnDeathHandler;
-        StateMachine.OnStateChanged += OnStateChangedHandler;
-
-        TenacitySystem = new TenacitySystem(this, this, StateMachine);
-    }
-
-    private void InitializeBars()
-    {
-        SetHealth(health);
-        SetMaxHealth(health);
-        InitializeResourceBars();
-        TenacityBar = FindTextureProgressBar(ResourceBarControl, "Tenacity Bar");
-    }
-
     public override void _PhysicsProcess(double delta)
     {
         base._PhysicsProcess(delta);
@@ -140,10 +90,6 @@ public abstract partial class Enemy : Entity
         UpdateResourceBars();
         DisplayStats();
     }
-
-    public void MarkCameraFocus() { HasBeenHit = true; }
-
-    private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CAMERA_FOCUS_RANGE; }
 
     public static Enemy GetBestCameraTarget(Vector2 cursorPosition)
     {
@@ -171,38 +117,6 @@ public abstract partial class Enemy : Entity
         return bestEnemy;
     }
 
-    private void OnStateChangedHandler(EnemyState oldState, EnemyState newState)
-    {
-        OnStateChanged(oldState, newState);
-        PlayAnimation(GetCurrentEnemyAnimation());
-    }
-    protected virtual void OnStateChanged(EnemyState oldState, EnemyState newState) { }
-
-    private string GetCurrentEnemyAnimation()
-    {
-        if (StateMachine.IsDead)
-            return "Die_Down";
-
-        if (AnimationPlayer != null && AnimationPlayer.HasAnimation("Move_Down"))
-            return "Move_Down";
-
-        return null;
-    }
-
-    private void OnDeathHandler()
-    {
-        OnDeath();
-
-        ResourceBarControl?.QueueFree();
-
-        AnimationPlayer.Play("Die_Down");
-        float animationLength = AnimationPlayer.GetAnimation("Die_Down").Length;
-        SceneTreeTimer timer = GetTree().CreateTimer((double)Mathf.Max(animationLength, 0.1f));
-        timer.Timeout += QueueFree;
-
-        QueueFree();
-    }
-
     protected virtual void OnDeath()
     {
         float currentVessel = Player.Instance.Stats.GetCurrent("Vessel");
@@ -214,74 +128,8 @@ public abstract partial class Enemy : Entity
         Player.Instance.Stats.SetCurrent("Soul", Mathf.Min(currentSoul + soulReward, maxSoul));
     }
 
+
     private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
-
-    public void TakeDamage(Weapon weapon, Vector2 playerPosition)
-    {
-        if (IsDead) return;
-
-        PlayAnimation("Take_Damage_Down");
-        MarkCameraFocus();
-        
-        Camera camera = GetViewport().GetCamera2D() as Camera;
-        camera?.ShakeCamera(.5f);
-        
-        float calculatedDamage = weapon.ApplyDamage(this);
-        SetHealth(GetHealth() - calculatedDamage);
-        
-        StateMachine.NotifyDamageTaken(calculatedDamage);
-
-        if (GetHealth() <= 0)
-        {
-            StateMachine.RequestDeath();
-            return;
-        }
-
-        hitTimer = HIT_WINDOW;
-        
-        bool staggerTriggered = TenacitySystem.ProcessTenacitySystem(playerPosition, weapon);
-        
-        if (!staggerTriggered)
-        {
-            TakeKnockback(playerPosition, weapon);
-        }
-        
-        if (staggerTriggered)
-        {
-            camera?.ShakeCamera(5f);
-            TenacityCooldownCue.Visible = true;
-        }
-
-        UpdateResourceBars();
-    }
-
-    private void TakeKnockback(Vector2 playerPosition, Weapon weapon)
-    {
-        float staggeredForce = weapon.knockback * 0.5f;
-        float subtleForce = 30f;
-
-        
-        if (IsInStaggerWindow) 
-        {
-            float weaknessMultiplier = (weaknessType.ToString() == weapon.attackType.ToString()) 
-                ? outsideKnockbackForce * 1.5f : 1f;
-            
-            Vector2 knockbackDirection = (GlobalPosition - playerPosition).Normalized();
-            
-            TenacitySystem.RequestKnockback(knockbackDirection, staggeredForce * weaknessMultiplier * 5f, 0.2f);
-        }
-        else 
-        {
-            float weaknessMultiplier = (weaknessType.ToString() == weapon.attackType.ToString()) 
-                ? outsideKnockbackForce : 1f;
-        
-            Vector2 knockbackDirection = (GlobalPosition - playerPosition).Normalized();
-            
-            TenacitySystem.RequestKnockback(knockbackDirection, subtleForce * weaknessMultiplier, 0.1f);
-
-        }
-
-    }
 
     private void DisplayStats()
     {
@@ -300,8 +148,6 @@ public abstract partial class Enemy : Entity
                            $"\n[color=cyan]Weakness:[/color] {weaknessType}";
     }
 
-[Export] public Texture2D Tenacity_Bar_Normal;
-[Export] public Texture2D Tenacity_Bar_Active;
 
 
 protected override void UpdateResourceBars()
@@ -331,13 +177,21 @@ protected override void UpdateResourceBars()
 
 private void UpdateTenacityTexture(TextureProgressBar bar)
 {
-    bool canBeKnockbacked = TenacitySystem?.CanBeStaggered() ?? false;
+    bool isInKnockbackWindow = TenacitySystem?.IsKnockbackActive ?? false;
+    bool isInStaggerWindow = TenacitySystem?.IsInStaggerWindow ?? false;
+    bool isInRecovery = TenacitySystem?.IsInRecoveryCooldown ?? false;
 
-    // Swap the texture directly
-    if (canBeKnockbacked)
+    // Show active texture during the stagger window or while knockback is active,
+    // show cooldown during recovery, otherwise show normal (progress) texture.
+    if (isInStaggerWindow || isInKnockbackWindow)
     {
         if (Tenacity_Bar_Active != null)
             bar.TextureProgress = Tenacity_Bar_Active;
+    }
+    else if (isInRecovery)
+    {
+        if (Tenacity_Bar_Cooldown != null)
+            bar.TextureProgress = Tenacity_Bar_Cooldown;
     }
     else
     {
@@ -345,25 +199,4 @@ private void UpdateTenacityTexture(TextureProgressBar bar)
             bar.TextureProgress = Tenacity_Bar_Normal;
     }
 }
-
-    private void EnsureTenacityBarStyles()
-    {
-        if (TenacityBarNormalFill != null && TenacityBarKnockbackFill != null)
-            return;
-
-        StyleBox originalFill = TenacityBar?.GetThemeStylebox("fill");
-        StyleBoxFlat originalFlat = originalFill as StyleBoxFlat;
-
-        TenacityBarNormalFill = originalFlat != null
-            ? originalFlat.Duplicate() as StyleBox
-            : new StyleBoxFlat();
-
-        TenacityBarKnockbackFill = originalFlat != null
-            ? originalFlat.Duplicate() as StyleBox
-            : new StyleBoxFlat();
-
-        if (TenacityBarKnockbackFill is StyleBoxFlat knockbackFlat)
-            knockbackFlat.BgColor = Colors.White;
-    }
-
 }
