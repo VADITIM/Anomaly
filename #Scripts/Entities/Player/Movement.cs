@@ -39,6 +39,7 @@ public static class Movement
         switch (sm.CurrentState)
         {
             case PlayerState.Moving:
+            case PlayerState.Airborne:
                 Vector2 movement = GetMovementVector();
                 body.Velocity = movement * Player.Instance.Stats.GetCurrentMax("Speed");
                 body.MoveAndSlide();

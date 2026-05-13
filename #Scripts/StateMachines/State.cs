@@ -2,6 +2,7 @@
     {
         Idle,
         Moving,
+        Airborne,
         Chasing,
         Attacking,
         HeavyCharging,

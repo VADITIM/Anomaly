@@ -23,6 +23,7 @@ public abstract partial class StateMachineBase : Node
     public bool IsDodging => IsState(State.Dodging);
     public bool HasDodged => WasState(State.Dodging) && !IsState(State.Dodging);
     public bool IsHealing => IsState(State.Healing);
+    public bool IsAirborne => IsState(State.Airborne);
     public bool IsStaggered => IsState(State.Staggered);
     public bool IsKnockedBack => IsState(State.Knockback);
     public bool IsDead => IsState(State.Dead);

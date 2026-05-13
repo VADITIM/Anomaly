@@ -1,29 +1,29 @@
 using Godot;
 
-/// <summary>
-/// Base class for all game entities.  Handles health, knockback, and
-/// coordinates with <see cref="ZAxis"/> and <see cref="ElevationSystem"/>
-/// for height / elevation logic.
-///
-/// Elevation flow:
-///   1. Each physics frame <see cref="ProcessElevation"/> is called.
-///   2. When grounded, the entity's CurrentElevation is derived from FloorZ.
-///   3. When airborne, the system detects if the entity has risen past the
-///      threshold for a higher elevation level and sets IsPhasingElevation.
-///   4. On landing, IsPhasingElevation is cleared, CurrentElevation is updated,
-///      and wall collisions are restored.
-/// </summary>
 public partial class Entity : CharacterBody2D
 {
     // ── Knockback ─────────────────────────────────────────────────────────────
     [Export] public bool  canBeKnockedBack  { get; set; } = true;
-    /// <summary>Alias kept for backwards-compatibility.</summary>
     [Export] public bool  canBeKnockbacked  { get => canBeKnockedBack; set => canBeKnockedBack = value; }
     [Export] public float weight            { get; set; } = 1f;
     [Export] public float knockbackDecay    { get; set; } = 2000f;
 
     protected Vector2 knockbackVelocity = Vector2.Zero;
     protected float   knockbackDuration = 0f;
+
+    // ── Jump ───────────────────────────────────────────────────────────────────
+    [Export] public float jumpImpulse         { get; set; } = 300f;
+    [Export] public float jumpFallSpeed       { get; set; } = 1200f;
+    [Export] public float shadowScaleWhenJump { get; set; } = 0.5f;
+
+    protected float jumpTimer = 0f;
+    protected float jumpVelocity = 0f;
+    protected float jumpPosition = 0f;
+    protected Vector2 spriteBasePosition = Vector2.Zero;
+    protected Vector2 shadowBaseScale = Vector2.One;
+    protected Sprite2D spriteShadow = null;
+    protected Vector2 weaponNodeBasePosition = Vector2.Zero;
+    protected Node2D WeaponNode = null;
 
     // ── Misc exports ──────────────────────────────────────────────────────────
     [Export] public AnimationPlayer AnimationPlayer { get; set; }
@@ -33,75 +33,6 @@ public partial class Entity : CharacterBody2D
     [Export] public float maxHealth { get; set; } = 99999f;
     [Export] public float health    { get; set; }
 
-    // ── Z-Axis parameters (forwarded to ZAxis instance) ───────────────────────
-    [ExportGroup("Z Axis")]
-    [Export(PropertyHint.Range, "0,256,1")]
-    public float JumpHeight
-    {
-        get => zAxis?.JumpHeight ?? 20f;
-        set { if (zAxis != null) zAxis.JumpHeight = value; }
-    }
-
-    [Export(PropertyHint.Range, "0,4096,1")]
-    public float Gravity
-    {
-        get => zAxis?.Gravity ?? 900f;
-        set { if (zAxis != null) zAxis.Gravity = value; }
-    }
-
-    [Export(PropertyHint.Range, "0,8192,1")]
-    public float TerminalVelocity
-    {
-        get => zAxis?.TerminalVelocity ?? 3000f;
-        set { if (zAxis != null) zAxis.TerminalVelocity = value; }
-    }
-
-    // ── Z-Collision parameters ────────────────────────────────────────────────
-    [ExportGroup("Z Collision")]
-    [Export]
-    public bool IgnoreWallsWhenAirborne
-    {
-        get => zAxis?.IgnoreWallsWhenAirborne ?? true;
-        set { if (zAxis != null) zAxis.IgnoreWallsWhenAirborne = value; }
-    }
-
-    [Export(PropertyHint.Range, "1,32,1")]
-    public int WallCollisionLayerNumber
-    {
-        get => zAxis?.WallCollisionLayerNumber ?? 9;
-        set { if (zAxis != null) zAxis.WallCollisionLayerNumber = value; }
-    }
-
-    [Export(PropertyHint.Range, "0,4096,0.1")]
-    public float AirborneEpsilon
-    {
-        get => zAxis?.AirborneEpsilon ?? 0.1f;
-        set { if (zAxis != null) zAxis.AirborneEpsilon = value; }
-    }
-
-    // ── Runtime Z state (read-only convenience) ───────────────────────────────
-    public float Z         => zAxis?.Z         ?? 0f;
-    public float ZVelocity => zAxis?.ZVelocity ?? 0f;
-    public float FloorZ    => zAxis?.FloorZ    ?? 0f;
-
-    public bool IsGrounded => zAxis?.IsGrounded ?? false;
-    public bool IsAirborne => zAxis?.IsAirborne ?? false;
-
-    // ── Elevation state ───────────────────────────────────────────────────────
-    /// <summary>The elevation index the entity currently stands on (grounded).</summary>
-    public int  CurrentElevation   { get; protected set; } = 0;
-
-    /// <summary>
-    /// True while the entity is airborne AND has risen above the threshold
-    /// for a higher elevation level (i.e. it is phasing through walls).
-    /// </summary>
-    public bool IsPhasingElevation { get; protected set; } = false;
-
-    /// <summary>Elevation the entity was on when it started its current jump.</summary>
-    private int _jumpStartElevation = 0;
-
-    // ── Internal references ───────────────────────────────────────────────────
-    protected ZAxis    zAxis;
     protected Control  ResourceBarControl;
     protected TextureProgressBar HealthBar;
 
@@ -115,18 +46,6 @@ public partial class Entity : CharacterBody2D
     protected virtual void  OnDeath(Vector2 sourcePosition)                                                              { }
     protected virtual void  OnKnockbackFinished()                                                                        { }
 
-    /// <summary>Called when the entity's CurrentElevation index changes.</summary>
-    protected virtual void OnElevationChanged(int previousElevation, int newElevation) { }
-
-    /// <summary>Called the first frame the entity becomes "phasing" (rising past a ledge threshold).</summary>
-    protected virtual void OnElevationPhaseStarted() { }
-
-    /// <summary>Called when phasing ends (landed, or descended back below the threshold).</summary>
-    protected virtual void OnElevationPhaseEnded() { }
-
-    /// <summary>Called by ZAxis whenever Z changes.</summary>
-    public virtual void OnZChanged() { }
-
     protected virtual float GetHealth()               => health;
     protected virtual void  SetHealth(float value)    { health = Mathf.Clamp(value, 0f, GetMaxHealth()); UpdateResourceBars(); }
     protected virtual float GetMaxHealth()            => maxHealth;
@@ -138,140 +57,31 @@ public partial class Entity : CharacterBody2D
 
     public override void _Ready()
     {
-        zAxis = new ZAxis(this, initialFloorZ: ElevationSystem.GetElevationFloorZ(CurrentElevation));
+        InitializeJump();
     }
 
     public override void _PhysicsProcess(double delta)
     {
-        ProcessElevation();
-        zAxis?.ProcessVertical((float)delta);
         ProcessKnockback((float)delta);
+        UpdateJump((float)delta);
         YSortSystem.Update(this);
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Elevation processing  (called every physics frame)
-    // ═════════════════════════════════════════════════════════════════════════
-
-    protected void ProcessElevation()
-    {
-        if (ElevationSystem.Instance == null)
-            return;
-
-        if (IsAirborne)
-            ProcessElevationAirborne();
-        else
-            ProcessElevationGrounded();
-    }
-
-    // ── Airborne ─────────────────────────────────────────────────────────────
-
-    private void ProcessElevationAirborne()
-    {
-        var sys = ElevationSystem.Instance;
-
-        // The entity is phasing when it has risen strictly above the ledge wall
-        // of its starting elevation (i.e. Z has cleared the floor-height of the
-        // next elevation level).  We use a 50% threshold so the entity is
-        // considered "over the wall" halfway through the elevation band.
-        float phaseThreshold = (_jumpStartElevation + 0.5f) * ElevationSystem.ELEVATION_HEIGHT;
-        bool shouldPhase     = Z > phaseThreshold;
-
-        if (shouldPhase && !IsPhasingElevation)
-        {
-            IsPhasingElevation = true;
-            OnElevationPhaseStarted();
-        }
-        else if (!shouldPhase && IsPhasingElevation)
-        {
-            IsPhasingElevation = false;
-            OnElevationPhaseEnded();
-        }
-
-        // Once the entity has fully cleared the ledge threshold, raise the floor
-        // so it can land on the upper elevation.  We only do this when:
-        //   • the entity is still rising (ZVelocity > 0), so we don't raise the
-        //     floor prematurely on the way down and cause an instant re-land.
-        //   • ground tiles exist at the target elevation near the XY position.
-        if (ZVelocity > 0f)
-        {
-            int   targetElev  = _jumpStartElevation + 1;
-            float targetFloorZ = ElevationSystem.GetElevationFloorZ(targetElev);
-
-            if (targetElev <= ElevationSystem.MAX_ELEVATION
-                && targetFloorZ > FloorZ
-                && sys.HasGroundAt(GlobalPosition, targetElev, radius: 2))
-            {
-                zAxis?.SetFloorZ(targetFloorZ);
-            }
-        }
-    }
-
-    // ── Grounded ──────────────────────────────────────────────────────────────
-
-    private void ProcessElevationGrounded()
-    {
-        // Clear phasing the moment we touch down.
-        if (IsPhasingElevation)
-        {
-            IsPhasingElevation = false;
-            OnElevationPhaseEnded();
-        }
-
-        // Derive the authoritative elevation from where ZAxis placed the floor.
-        int groundedElev = Mathf.RoundToInt(FloorZ / ElevationSystem.ELEVATION_HEIGHT);
-        groundedElev     = Mathf.Clamp(groundedElev, 0, ElevationSystem.MAX_ELEVATION);
-
-        if (groundedElev != CurrentElevation)
-        {
-            int prev            = CurrentElevation;
-            CurrentElevation    = groundedElev;
-            _jumpStartElevation = groundedElev;
-            OnElevationChanged(prev, groundedElev);
-            // Notify subclasses (e.g. Player.OnZChanged) so the visual sprite
-            // offset snaps to the new elevation floor on the landing frame.
-            OnZChanged();
-        }
-    }
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Public jump API
     // ═════════════════════════════════════════════════════════════════════════
 
-    /// <summary>
-    /// Attempts a jump.  If <paramref name="targetElevation"/> is one above the
-    /// current elevation, the jump is validated against ElevationSystem geometry
-    /// (E{current} Wall + E{target} Ground must be adjacent).  On success, wall
-    /// collisions are automatically suspended for the leap.
-    ///
-    /// For plain cosmetic jumps (no elevation change) pass null or omit the parameter.
-    /// </summary>
-    public virtual bool TryJump(int? targetElevation = null, float? impulse = null)
+    public virtual void Jump()
     {
-        bool jumped = zAxis?.TryJump(targetElevation, impulse) ?? false;
-        if (jumped)
-            _jumpStartElevation = CurrentElevation;
-        return jumped;
+        if (jumpTimer <= 0f)
+        {
+            jumpVelocity = jumpImpulse;
+            jumpTimer = 1f; // Will continue until landing (y position <= 0)
+        }
     }
 
-    /// <summary>
-    /// Attempts to step the entity down one elevation level (no jump).
-    /// ElevationSystem must confirm E{current-1} Wall + E{current-1} Ground
-    /// are adjacent to the entity's position.
-    /// </summary>
-    public virtual bool TryStepDown()
-    {
-        bool stepped = zAxis?.TryStepDown() ?? false;
-        if (stepped)
-            _jumpStartElevation = CurrentElevation - 1; // Will be confirmed on landing.
-        return stepped;
-    }
-
-    /// <summary>Directly sets the entity's floor height and updates elevation accordingly.</summary>
-    public void SetFloorZ(float newFloorZ)
-    {
-        zAxis?.SetFloorZ(newFloorZ);
-    }
+    public virtual bool IsJumping => jumpTimer > 0f;
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Knockback
@@ -374,5 +184,98 @@ public partial class Entity : CharacterBody2D
         if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animName)) return;
         if (AnimationPlayer.CurrentAnimation != animName)
             AnimationPlayer.Play(animName);
+    }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  Jump
+    // ═════════════════════════════════════════════════════════════════════════
+
+    private void InitializeJump()
+    {
+        // Cache the sprite's base position
+        if (HasNode("Sprite"))
+        {
+            var sprite = GetNode<Sprite2D>("Sprite");
+            if (sprite != null)
+            {
+                spriteBasePosition = sprite.Position;
+            }
+        }
+
+        // Cache the shadow sprite if it exists
+        if (HasNode("Sprite Shadow"))
+        {
+            spriteShadow = GetNode<Sprite2D>("Sprite Shadow");
+            if (spriteShadow != null)
+            {
+                shadowBaseScale = spriteShadow.Scale;
+            }
+        }
+
+        // Cache the scythe sprite if it exists (in WEAPON node for Player)
+        if (HasNode("WEAPON"))
+        {
+            WeaponNode = GetNode<Node2D>("WEAPON");
+            if (WeaponNode != null)
+            {
+                weaponNodeBasePosition = WeaponNode.Position;
+            }
+        }
+    }
+
+    private void UpdateJump(float delta)
+    {
+        if (jumpTimer <= 0f) return;
+
+        // Apply gravity to velocity
+        jumpVelocity -= jumpFallSpeed * delta;
+
+        // Update position
+        jumpPosition += jumpVelocity * delta;
+        jumpPosition = Mathf.Max(0f, jumpPosition);
+
+        UpdateSpriteOffset(jumpPosition);
+
+        // Calculate shadow scale based on height ratio
+        float maxHeight = (jumpImpulse * jumpImpulse) / (2f * jumpFallSpeed);
+        float heightRatio = maxHeight > 0f ? jumpPosition / maxHeight : 0f;
+        heightRatio = Mathf.Clamp(heightRatio, 0f, 1f);
+        UpdateShadowScale(heightRatio);
+
+        // Land when position reaches ground
+        if (jumpPosition <= 0f && jumpVelocity < 0f)
+        {
+            jumpTimer = 0f;
+            jumpVelocity = 0f;
+            jumpPosition = 0f;
+            UpdateSpriteOffset(0f);
+            if (spriteShadow != null)
+                spriteShadow.Scale = shadowBaseScale;
+        }
+    }
+
+    private void UpdateSpriteOffset(float offset)
+    {
+        if (!HasNode("Sprite")) return;
+        var sprite = GetNode<Sprite2D>("Sprite");
+        if (sprite != null)
+        {
+            sprite.Position = spriteBasePosition + new Vector2(0, -offset);
+        }
+
+        if (WeaponNode != null)
+        {
+            WeaponNode.Position = weaponNodeBasePosition + new Vector2(0, -offset);
+        }
+    }
+
+    private void UpdateShadowScale(float heightRatio)
+    {
+        if (spriteShadow == null) return;
+        
+        // Scale down shadow based on how high the jump is
+        // At ground level (0): full scale, at peak (1): minimum scale
+        float shadowScale = Mathf.Lerp(1f, shadowScaleWhenJump, heightRatio);
+        spriteShadow.Scale = shadowBaseScale * shadowScale;
     }
 }

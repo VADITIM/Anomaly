@@ -3,10 +3,6 @@ using System;
 
 public static class WeaponAnimations
 {
-    // Animation name format: Weapon_Attack_{Direction}_{Number}
-    // Direction values: Top, Bottom, Left, Right   (number: 1-4)
-    // Heavy / spin: Weapon_Spin
-
     public static void PlayAttackAnimation(AnimationPlayer animationPlayer, string animationName, float attackDuration, float heavyAttackDuration)
     {
         float desiredDuration = IsHeavyAttack(animationName) ? heavyAttackDuration : attackDuration;
@@ -23,7 +19,6 @@ public static class WeaponAnimations
             float nativeLength = GetAnimationDuration(animationPlayer, animationName);
             float speedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
             animationPlayer.SpeedScale = speedScale;
-            GD.Print($"[Animation] PlayAttackAnimation -> {animationName} | desired={desiredDuration:F3}s | native={nativeLength:F3}s | speed={speedScale:F3}");
             animationPlayer.Play(animationName);
         }
         else
@@ -50,7 +45,6 @@ public static class WeaponAnimations
             return;
         }
 
-        // Strip leading "Weapon_" prefix and try again.
         string alt = animationName;
         if (animationName.StartsWith("Weapon_"))
             alt = animationName.Substring("Weapon_".Length);
@@ -61,7 +55,6 @@ public static class WeaponAnimations
             return;
         }
 
-        // Fallback to idle.
         if (animationPlayer.HasAnimation("Weapon_Idle_Down"))
         {
             animationPlayer.SpeedScale = 1f;
@@ -81,8 +74,6 @@ public static class WeaponAnimations
         return Mathf.Max(0.1f, (float)animation.Length);
     }
 
-    /// Returns the native length of the attack animation that would play for the
-    /// given direction, heavy flag, and sequence index.
     public static float GetNativeAnimationLength(AnimationPlayer animationPlayer, string direction, bool isHeavy, int sequenceIndex = 0)
     {
         if (animationPlayer == null)
@@ -105,8 +96,6 @@ public static class WeaponAnimations
                animationName == "Weapon_Spin";
     }
 
-    /// Extracts a normalised direction token from an animation name.
-    /// Returns one of: Top, Bottom, Left, Right.
     public static string ExtractDirection(string animationName)
     {
         if (animationName.Contains("Top"))    return "Top";
@@ -119,15 +108,13 @@ public static class WeaponAnimations
         return "Bottom";
     }
 
-    /// Normalises an incoming direction string to the canonical form used in
-    /// animation names (e.g. "Down" → "Bottom", "Up" → "Top").
     public static string NormaliseDirection(string direction)
     {
         return direction switch
         {
             "Up"    => "Top",
             "Down"  => "Bottom",
-            _       => direction   // Left, Right, Top, Bottom pass through unchanged
+            _       => direction   
         };
     }
 
@@ -136,9 +123,6 @@ public static class WeaponAnimations
         return animationName == "Weapon_Spin" || animationName.Contains("Spin");
     }
 
-    /// Returns an ordered list of candidate animation names to try, most
-    /// specific first. Format: Weapon_Attack_{Direction}_{Number}
-    /// sequenceIndex is 0-based; the animation number is index + 1 (1-4).
     public static string[] GetAttackAnimationCandidates(string direction, bool isHeavy, int sequenceIndex = 0)
     {
         if (isHeavy)
@@ -148,28 +132,24 @@ public static class WeaponAnimations
                 "Weapon_Spin",
                 "Weapon_Attack_Spin",
                 "Weapon_Attack_Bottom",
-                "Weapon_Attack_Down"    // legacy fallback
+                "Weapon_Attack_Down"    
             };
         }
 
         string normDir    = NormaliseDirection(direction);
         int sequenceNumber = Mathf.Clamp(sequenceIndex + 1, 1, 4);
 
-        // Primary candidates use the new naming convention.
-        // Fallbacks cover common legacy names so nothing silently breaks.
         return new[]
         {
-            $"Weapon_Attack_{normDir}_{sequenceNumber}",   // ← canonical, e.g. Weapon_Attack_Top_2
-            $"Weapon_Attack_{normDir}",                    // direction without number
-            $"Weapon_Attack_{direction}_{sequenceNumber}", // original direction string (Up/Down/…)
-            $"Weapon_Attack_{direction}",                  // original direction without number
+            $"Weapon_Attack_{normDir}_{sequenceNumber}",   
+            $"Weapon_Attack_{normDir}",                    
+            $"Weapon_Attack_{direction}_{sequenceNumber}", 
+            $"Weapon_Attack_{direction}",                  
             "Weapon_Attack_Bottom",
             "Weapon_Attack_Down"
         };
     }
 
-    /// Returns the name of the first matching animation in the player, or null.
-    /// Logs every candidate tried so missing animations are immediately visible.
     public static string GetAttackAnimationName(AnimationPlayer animationPlayer, string direction, bool isHeavy, int sequenceIndex = 0)
     {
         string[] candidates = GetAttackAnimationCandidates(direction, isHeavy, sequenceIndex);
@@ -177,17 +157,13 @@ public static class WeaponAnimations
         {
             if (animationPlayer != null && animationPlayer.HasAnimation(animationName))
             {
-                GD.Print($"[WeaponAnimations] Resolved animation: '{animationName}' (sequenceIndex={sequenceIndex})");
                 return animationName;
             }
         }
 
-        // Nothing matched — dump what we tried and what IS available so it's easy to fix.
-        GD.PrintErr($"[WeaponAnimations] No animation found! Tried: [{string.Join(", ", candidates)}]");
         if (animationPlayer != null)
         {
             var list = animationPlayer.GetAnimationList();
-            GD.PrintErr($"[WeaponAnimations] Available animations: [{string.Join(", ", list)}]");
         }
         return null;
     }

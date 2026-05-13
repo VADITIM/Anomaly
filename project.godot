@@ -136,7 +136,19 @@ focus_toggle={
 2d_physics/layer_4="Enemy Hurtbox"
 2d_physics/layer_5="Enemy Hitbox"
 2d_physics/layer_6="Prop"
-2d_physics/layer_9="Wall"
+2d_physics/layer_10="Wall"
+2d_physics/layer_11="Elevation Check"
+2d_physics/layer_20="Elevation 0"
+2d_physics/layer_21="Elevation 1"
+2d_physics/layer_22="Elevation 2"
+2d_physics/layer_23="Elevation 3"
+2d_physics/layer_24="Elevation 4"
+2d_physics/layer_25="Elevation 5"
+2d_physics/layer_26="Elevation 6"
+2d_physics/layer_27="Elevation 7"
+2d_physics/layer_28="Elevation 8"
+2d_physics/layer_29="Elevation 9"
+2d_physics/layer_30="Elevation 10"
 
 [physics]
 

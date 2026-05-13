@@ -12,7 +12,6 @@ public partial class WeaponArc : Node2D
     private int preparedSequenceIndex = 0;
     private Weapon parentWeapon;
 
-    // Properties that reference parent weapon stats
     public float Damage => parentWeapon?.Damage ?? throw new InvalidOperationException("Parent weapon not set.");
     public float Knockback => parentWeapon?.Knockback ?? throw new InvalidOperationException("Parent weapon not set.");
     public float StaminaCost => parentWeapon?.StaminaCost ?? throw new InvalidOperationException("Parent weapon not set.");
@@ -77,13 +76,10 @@ public partial class WeaponArc : Node2D
 
         int sequenceNumber = Mathf.Clamp(preparedSequenceIndex + 1, 1, 4);
 
-        // Prefer the resolved canonical animation name from WeaponAnimations
         string animationToPlay = WeaponAnimations.GetAttackAnimationName(AnimationPlayer, preparedDirection, preparedHeavyAttack, preparedSequenceIndex);
 
-        // Fallback legacy search if resolution failed
         if (string.IsNullOrEmpty(animationToPlay))
         {
-            // sequenceNumber already computed above
             string[] animationNames = new[] {
                 $"Weapon_Attack_{preparedDirection}_{sequenceNumber}",
                 $"attack_{preparedDirection}_{sequenceNumber}",
@@ -113,13 +109,10 @@ public partial class WeaponArc : Node2D
         if (preparedHeavyAttack && HeavyAttackDuration > 0f)
             desiredDuration = HeavyAttackDuration;
 
-        GD.Print($"[Animation] WeaponArc.TriggerHitAnimation -> sequence={sequenceNumber}, animation='{animationToPlay}', desiredDuration={desiredDuration}");
-
         float nativeLength = GetAnimationDuration(animationToPlay);
         float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
         AnimationPlayer.SpeedScale = playbackSpeed;
 
-        // Seek to frame 0 to avoid displaying stale frames from previous animations
         AnimationPlayer.Seek(0);
         AnimationPlayer.Play(animationToPlay);
 
@@ -200,7 +193,6 @@ public partial class WeaponArc : Node2D
 
     public void CheckWeaknessExploited(Enemy enemy)
     {
-        // Types removed — default behavior (no special weakness multiplier)
         enemy.outsideKnockbackForce = 1f;
     }
 

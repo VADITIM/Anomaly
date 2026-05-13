@@ -49,6 +49,7 @@ public static class Dodge
         var currentState = stateMachine.CurrentState;
         if (currentState != PlayerState.Idle && 
             currentState != PlayerState.Moving && 
+            currentState != PlayerState.Airborne && 
             currentState != PlayerState.Attacking && 
             currentState != PlayerState.Healing)
             return false;

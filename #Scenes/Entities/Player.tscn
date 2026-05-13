@@ -691,10 +691,13 @@ script = ExtResource("14_arntx")
 [sub_resource type="CircleShape2D" id="CircleShape2D_2d3aw"]
 radius = 105.38501
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_f1srr"]
+radius = 10.198039
+
 [node name="Player" type="CharacterBody2D" unique_id=996730977 node_paths=PackedStringArray("BodySprite", "AnimationPlayer")]
-collision_mask = 304
+collision_mask = 560
 script = ExtResource("1_88kja")
-BodySprite = NodePath("Player Sprite")
+BodySprite = NodePath("Sprite")
 AnimationPlayer = NodePath("Animator")
 metadata/_edit_horizontal_guides_ = [-154.0]
 
@@ -714,13 +717,13 @@ shape = SubResource("CapsuleShape2D_2d3aw")
 disabled = true
 debug_color = Color(0.19215687, 0.6431373, 0.08627451, 0.16078432)
 
-[node name="Player Shadow" type="Sprite2D" parent="." unique_id=1118241517]
+[node name="Sprite Shadow" type="Sprite2D" parent="." unique_id=1118241517]
 self_modulate = Color(0, 0, 0, 0.53333336)
 position = Vector2(0, 10.999999)
 scale = Vector2(0.050781246, 0.028320314)
 texture = ExtResource("2_2d3aw")
 
-[node name="Player Sprite" type="Sprite2D" parent="." unique_id=1960448699]
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1960448699]
 texture_filter = 1
 texture = SubResource("PortableCompressedTexture2D_f1srr")
 hframes = 13
@@ -753,16 +756,17 @@ metadata/_aseprite_wizard_config_ = {
 metadata/_aseprite_wizard_source_file_hash_ = "c027e691745db433ef71aaba5e3786ec"
 
 [node name="Animator" type="AnimationPlayer" parent="." unique_id=1621135587]
-root_node = NodePath("../Player Sprite")
+root_node = NodePath("../Sprite")
 libraries/ = SubResource("AnimationLibrary_hwgyn")
 
 [node name="WEAPON" parent="." unique_id=54739942 instance=ExtResource("3_f1srr")]
+visible = false
 
 [node name="CAMERA" type="Node2D" parent="." unique_id=1828703016]
 
 [node name="Camera2D" type="Camera2D" parent="CAMERA" unique_id=861298931]
 physics_interpolation_mode = 1
-zoom = Vector2(3.7, 3.7)
+zoom = Vector2(3.2, 3.2)
 process_callback = 0
 editor_draw_limits = true
 script = ExtResource("2_53fn5")
@@ -778,7 +782,7 @@ script = ExtResource("13_1e7my")
 priority = 1
 follow_mode = 2
 follow_target = NodePath("../..")
-zoom = Vector2(3.7, 3.7)
+zoom = Vector2(3.2, 3.2)
 tween_resource = SubResource("Resource_53fn5")
 follow_damping = true
 follow_damping_value = Vector2(0.15, 0.15)
@@ -807,8 +811,17 @@ returnLerpSpeed = 12.0
 [node name="Player UI Layer" type="CanvasLayer" parent="." unique_id=1882075777]
 
 [node name="UI" parent="Player UI Layer" unique_id=1511214651 instance=ExtResource("18_tpvil")]
+visible = false
 
 [node name="Resoruces UI" parent="Player UI Layer" unique_id=2052102617 instance=ExtResource("19_53fn5")]
+
+[node name="Elevation Check Area" type="Area2D" parent="." unique_id=1183942131]
+collision_layer = 1024
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Elevation Check Area" unique_id=1255042910]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_f1srr")
 
 [editable path="Player UI Layer/UI"]
 [editable path="Player UI Layer/UI/Bonfire Interface"]

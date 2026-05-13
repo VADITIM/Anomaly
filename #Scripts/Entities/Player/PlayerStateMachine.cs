@@ -50,6 +50,19 @@ public partial class PlayerStateMachine : StateMachineBase
 
     private void ProcessCurrentState(float delta)
     {
+        if (Player != null && Player.IsJumping)
+        {
+            if (!IsLockedState(CurrentState) && !IsAirborne)
+                TransitionTo(PlayerState.Airborne);
+        }
+        else if (IsAirborne)
+        {
+            if (Movement.CurrentMovementDirection != Player.MovementDirection.None && CanMove)
+                TransitionTo(PlayerState.Moving);
+            else
+                TransitionTo(PlayerState.Idle);
+        }
+
         switch (CurrentState)
         {
             case PlayerState.Staggered:
@@ -85,13 +98,8 @@ public partial class PlayerStateMachine : StateMachineBase
                 attackDuration -= delta;
                 if (attackDuration <= 0)
                 {
-                    // Tell the weapon the swing is done.
-                    // This either opens the 0.2s follow-up window or starts the
-                    // post-combo cooldown (handled entirely inside Weapon).
                     Player?.Weapon?.OnAttackAnimationFinished();
 
-                    // If the player already queued the next hit, consume it now
-                    // and immediately start the next swing without leaving Attacking.
                     if (Player?.Weapon != null &&
                         Player.Weapon.TryConsumeQueuedAttack(
                             CurrentState == PlayerState.HeavyAttacking,
@@ -103,9 +111,6 @@ public partial class PlayerStateMachine : StateMachineBase
                         return;
                     }
 
-                    // No queued follow-up yet — go Idle and wait.
-                    // If the player presses attack during the 0.2s window,
-                    // ProcessInput will pick it up and start the next swing.
                     OnAttackEnded?.Invoke();
                     TransitionTo(PlayerState.Idle);
                 }
@@ -132,6 +137,8 @@ public partial class PlayerStateMachine : StateMachineBase
     private void ProcessInput()
     {
         if (!CanAct) return;
+
+        UpdateMovementDirection();
         
         if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
         {
@@ -149,7 +156,6 @@ public partial class PlayerStateMachine : StateMachineBase
             return;
         }
 
-        // During an active swing: only accept a queued follow-up press.
         if (CurrentState == PlayerState.Attacking)
         {
             if (Input.IsActionJustPressed(Keybinds.Attack))
@@ -160,9 +166,8 @@ public partial class PlayerStateMachine : StateMachineBase
         if (CurrentState == PlayerState.HeavyAttacking)
             return;
 
-        // ---------- Idle / Moving — check if we can start a new attack ----------
-
-        UpdateMovementDirection();
+        if (IsAirborne)
+            return;
         
         if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
         {
@@ -221,20 +226,17 @@ public partial class PlayerStateMachine : StateMachineBase
     // Helpers
     // -------------------------------------------------------------------------
 
-    /// Returns true while the weapon's post-combo cooldown is running.
     private bool IsComboCoolingDown()
     {
         return Player?.Weapon?.IsInComboCooldown ?? false;
     }
 
-    /// Starts the next swing in a combo chain (player pressed attack while the
-    /// follow-up window was open and we were briefly in Idle).
     private void ContinueComboAttack()
     {
         if (Player?.Weapon == null) return;
 
         if (!Player.Weapon.TryConsumeQueuedAttack(false, out float duration))
-            return; // shouldn't happen, but guard anyway
+            return; 
 
         Player.Instance.Stats.SetCurrent(
             "Stamina",
@@ -244,7 +246,6 @@ public partial class PlayerStateMachine : StateMachineBase
         Player.Weapon.StartAttackSequence(false);
         TransitionTo(PlayerState.Attacking);
         OnAttackStarted?.Invoke(false);
-        GD.Print($"[PSM] ContinueComboAttack -> sequenceIndex={Player.Weapon.CurrentAttackSequenceIndex}, duration={duration}");
     }
 
     private void UpdateMovementDirection()
