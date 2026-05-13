@@ -3,6 +3,7 @@
         Idle,
         Moving,
         Airborne,
+        AirAttacking,
         Chasing,
         Attacking,
         HeavyCharging,

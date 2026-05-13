@@ -174,10 +174,13 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="Enemy4" type="CharacterBody2D" unique_id=1778528792]
+[node name="Enemy4" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
 collision_layer = 24
 collision_mask = 295
+motion_mode = 1
+wall_min_slide_angle = 0.0
 script = ExtResource("1_micq5")
+AnimationPlayer = NodePath("AnimationPlayer")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")

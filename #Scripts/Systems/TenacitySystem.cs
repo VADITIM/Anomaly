@@ -274,7 +274,6 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
 {
     if (StateMachine.IsDead) return;
     
-    // Instead of internal velocity, tell the Enemy (Entity) to move
     Enemy.ApplyKnockback(direction, force, duration);
     
     if (!isStaggered)

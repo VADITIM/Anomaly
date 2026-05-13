@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://d1galkq7q1y51"]
 
 [ext_resource type="Script" uid="uid://6gfxi2jwsvlw" path="res://#Scripts/UI/UI.cs" id="1_wqchy"]
-[ext_resource type="PackedScene" uid="uid://y771x2vrsh37" path="res://#Scenes/UI/Menus/Bonfire Menu.tscn" id="2_unt3r"]
 [ext_resource type="PackedScene" uid="uid://bgahxlcxcj3nk" path="res://#Scenes/UI/Menus/Weapon Menu.tscn" id="3_uwjqw"]
+[ext_resource type="Script" uid="uid://cyqb82yrkbxtn" path="res://#Scripts/UI/Menus/WeaponMenu.cs" id="3_wqchy"]
 
 [node name="UI" type="Control" unique_id=1552935471 node_paths=PackedStringArray("WeaponMenu", "BonfireMenu", "BonfireEquipmentButton", "BonfireEquipmentCloseButton", "WeaponInventoryPanel")]
 layout_mode = 3
@@ -13,16 +13,13 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_wqchy")
 WeaponMenu = NodePath("Weapon Menu")
-BonfireMenu = NodePath("Bonfire Interface")
-BonfireEquipmentButton = NodePath("Bonfire Interface/Equipment Button2")
-BonfireEquipmentCloseButton = NodePath("Bonfire Interface/Equipment Button2")
+BonfireMenu = NodePath("")
+BonfireEquipmentButton = NodePath("")
+BonfireEquipmentCloseButton = NodePath("")
 WeaponInventoryPanel = NodePath("Weapon Menu/Weapon Inventory Panel")
-
-[node name="Bonfire Interface" parent="." unique_id=1624975214 instance=ExtResource("2_unt3r")]
-layout_mode = 1
 
 [node name="Weapon Menu" parent="." unique_id=326094923 instance=ExtResource("3_uwjqw")]
 layout_mode = 1
+script = ExtResource("3_wqchy")
 
-[editable path="Bonfire Interface"]
 [editable path="Weapon Menu"]

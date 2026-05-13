@@ -17,7 +17,7 @@ public abstract partial class StateMachineBase : Node
     public bool IsIdle => IsState(State.Idle);
     public bool IsMoving => IsState(State.Moving);
     public bool IsChasing => IsState(State.Chasing);
-    public bool IsAttacking => IsState(State.Attacking, State.HeavyAttacking);
+    public bool IsAttacking => IsState(State.Attacking, State.HeavyAttacking, State.AirAttacking);
     public bool IsHeavyAttacking => IsState(State.HeavyAttacking);
     public bool IsChargingHeavy => IsState(State.HeavyCharging);
     public bool IsDodging => IsState(State.Dodging);

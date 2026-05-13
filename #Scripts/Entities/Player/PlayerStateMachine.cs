@@ -95,6 +95,7 @@ public partial class PlayerStateMachine : StateMachineBase
                 
             case PlayerState.Attacking:
             case PlayerState.HeavyAttacking:
+            case PlayerState.AirAttacking:
                 attackDuration -= delta;
                 if (attackDuration <= 0)
                 {
@@ -112,7 +113,10 @@ public partial class PlayerStateMachine : StateMachineBase
                     }
 
                     OnAttackEnded?.Invoke();
-                    TransitionTo(PlayerState.Idle);
+                    if (CurrentState == PlayerState.AirAttacking)
+                        TransitionTo(PlayerState.Airborne);
+                    else
+                        TransitionTo(PlayerState.Idle);
                 }
                 break;
                 
@@ -166,8 +170,7 @@ public partial class PlayerStateMachine : StateMachineBase
         if (CurrentState == PlayerState.HeavyAttacking)
             return;
 
-        if (IsAirborne)
-            return;
+        // allow air attacks — don't early-return here
         
         if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
         {
@@ -205,7 +208,10 @@ public partial class PlayerStateMachine : StateMachineBase
                 }
                 else
                 {
-                    ExecuteNormalAttack();
+                    if (IsAirborne)
+                        ExecuteAirAttack();
+                    else
+                        ExecuteNormalAttack();
                 }
             }
             return;
@@ -244,7 +250,21 @@ public partial class PlayerStateMachine : StateMachineBase
 
         attackDuration = duration;
         Player.Weapon.StartAttackSequence(false);
-        TransitionTo(PlayerState.Attacking);
+        TransitionTo(IsAirborne ? PlayerState.AirAttacking : PlayerState.Attacking);
+        OnAttackStarted?.Invoke(false);
+    }
+
+    private void ExecuteAirAttack()
+    {
+        if (CurrentState != PlayerState.Airborne) return;
+
+        Player.Instance.Stats.SetCurrent(
+            "Stamina",
+            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+
+        attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+        Player?.Weapon?.StartAttackSequence(false);
+        TransitionTo(PlayerState.AirAttacking);
         OnAttackStarted?.Invoke(false);
     }
 

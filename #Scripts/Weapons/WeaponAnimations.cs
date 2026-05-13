@@ -55,10 +55,10 @@ public static class WeaponAnimations
             return;
         }
 
-        if (animationPlayer.HasAnimation("Weapon_Idle_Down"))
+        if (animationPlayer.HasAnimation("Idle_Down") || animationPlayer.HasAnimation("Weapon_Idle_Down"))
         {
             animationPlayer.SpeedScale = 1f;
-            animationPlayer.Play("Weapon_Idle_Down");
+            animationPlayer.Play(animationPlayer.HasAnimation("Idle_Down") ? "Idle_Down" : "Weapon_Idle_Down");
         }
     }
 
@@ -91,9 +91,10 @@ public static class WeaponAnimations
 
     public static bool IsAttackAnimation(string animationName)
     {
-        return animationName.StartsWith("Weapon_Attack") ||
-               animationName.StartsWith("Attack") ||
-               animationName == "Weapon_Spin";
+         return animationName.StartsWith("Weapon_Attack") ||
+             animationName.StartsWith("Attack") ||
+             animationName == "Weapon_Spin" ||
+             animationName == "Attack_Spin";
     }
 
     public static string ExtractDirection(string animationName)
@@ -120,7 +121,7 @@ public static class WeaponAnimations
 
     public static bool IsHeavyAttack(string animationName)
     {
-        return animationName == "Weapon_Spin" || animationName.Contains("Spin");
+        return animationName == "Weapon_Spin" || animationName == "Attack_Spin" || animationName.Contains("Spin");
     }
 
     public static string[] GetAttackAnimationCandidates(string direction, bool isHeavy, int sequenceIndex = 0)
@@ -129,10 +130,10 @@ public static class WeaponAnimations
         {
             return new[]
             {
-                "Weapon_Spin",
-                "Weapon_Attack_Spin",
-                "Weapon_Attack_Bottom",
-                "Weapon_Attack_Down"    
+                "Attack_Spin",
+                "Attack_Attack_Spin",
+                "Attack_Attack_Bottom",
+                "Attack_Attack_Down"    
             };
         }
 
@@ -141,12 +142,12 @@ public static class WeaponAnimations
 
         return new[]
         {
-            $"Weapon_Attack_{normDir}_{sequenceNumber}",   
-            $"Weapon_Attack_{normDir}",                    
-            $"Weapon_Attack_{direction}_{sequenceNumber}", 
-            $"Weapon_Attack_{direction}",                  
-            "Weapon_Attack_Bottom",
-            "Weapon_Attack_Down"
+            $"Attack_{normDir}_{sequenceNumber}",   
+            $"Attack_{normDir}",                    
+            $"Attack_{direction}_{sequenceNumber}", 
+            $"Attack_{direction}",                  
+            "Attack_Bottom",
+            "Attack_Down"
         };
     }
 

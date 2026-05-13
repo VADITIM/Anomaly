@@ -33,8 +33,11 @@ public partial class Entity : CharacterBody2D
     [Export] public float maxHealth { get; set; } = 99999f;
     [Export] public float health    { get; set; }
 
-    protected Control  ResourceBarControl;
-    protected TextureProgressBar HealthBar;
+    protected Control             ResourceBarControl;
+    protected TextureProgressBar  HealthBar;
+    // ── Ghost / damage-lag bar + shake handled by HealthBarAnimator
+    protected TextureProgressBar  HealthBarGhost;
+    private HealthBarAnimator _healthBarAnimator = null;
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Virtual hooks for subclasses
@@ -67,6 +70,10 @@ public partial class Entity : CharacterBody2D
         YSortSystem.Update(this);
     }
 
+    public override void _Process(double delta)
+    {
+        _healthBarAnimator?.Update((float)delta);
+    }
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Public jump API
@@ -77,7 +84,7 @@ public partial class Entity : CharacterBody2D
         if (jumpTimer <= 0f)
         {
             jumpVelocity = jumpImpulse;
-            jumpTimer = 1f; // Will continue until landing (y position <= 0)
+            jumpTimer = 1f;
         }
     }
 
@@ -161,16 +168,30 @@ public partial class Entity : CharacterBody2D
     public void InitializeResourceBars()
     {
         (ResourceBarControl, HealthBar) = InitializeEntity.InitializeResourceBars(this);
+
+        // Look for a sibling bar named "Health Bar Ghost" (or "HealthBarGhost").
+        // Add it to your scene behind the real health bar and tint it orange/red.
+        if (ResourceBarControl != null)
+        {
+            HealthBarGhost = ResourceBarControl.GetNodeOrNull<TextureProgressBar>("Health Bar Ghost")
+                          ?? ResourceBarControl.GetNodeOrNull<TextureProgressBar>("HealthBarGhost");
+        }
+
         UpdateResourceBars();
+
+        // Initialise animator and ghost to current health so it doesn't drain on spawn
+        _healthBarAnimator = new HealthBarAnimator();
+        _healthBarAnimator.Initialize(ResourceBarControl, HealthBar, HealthBarGhost, GetHealth());
     }
 
     protected virtual void UpdateResourceBars()
     {
-        if (HealthBar == null) return;
-        float max       = Mathf.Max(GetMaxHealth(), 1f);
-        HealthBar.MaxValue = max;
-        HealthBar.Value    = Mathf.Clamp(GetHealth(), 0f, max);
+        _healthBarAnimator?.OnHealthChanged(GetHealth(), GetMaxHealth());
     }
+
+    // ═════════════════════════════════════════════════════════════════════════
+    //  Bar shake / ghost behaviour handled by HealthBarAnimator
+    // ═════════════════════════════════════════════════════════════════════════
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Misc
@@ -192,34 +213,25 @@ public partial class Entity : CharacterBody2D
 
     private void InitializeJump()
     {
-        // Cache the sprite's base position
         if (HasNode("Sprite"))
         {
             var sprite = GetNode<Sprite2D>("Sprite");
             if (sprite != null)
-            {
                 spriteBasePosition = sprite.Position;
-            }
         }
 
-        // Cache the shadow sprite if it exists
         if (HasNode("Sprite Shadow"))
         {
             spriteShadow = GetNode<Sprite2D>("Sprite Shadow");
             if (spriteShadow != null)
-            {
                 shadowBaseScale = spriteShadow.Scale;
-            }
         }
 
-        // Cache the scythe sprite if it exists (in WEAPON node for Player)
         if (HasNode("WEAPON"))
         {
             WeaponNode = GetNode<Node2D>("WEAPON");
             if (WeaponNode != null)
-            {
                 weaponNodeBasePosition = WeaponNode.Position;
-            }
         }
     }
 
@@ -227,25 +239,20 @@ public partial class Entity : CharacterBody2D
     {
         if (jumpTimer <= 0f) return;
 
-        // Apply gravity to velocity
         jumpVelocity -= jumpFallSpeed * delta;
-
-        // Update position
         jumpPosition += jumpVelocity * delta;
-        jumpPosition = Mathf.Max(0f, jumpPosition);
+        jumpPosition  = Mathf.Max(0f, jumpPosition);
 
         UpdateSpriteOffset(jumpPosition);
 
-        // Calculate shadow scale based on height ratio
-        float maxHeight = (jumpImpulse * jumpImpulse) / (2f * jumpFallSpeed);
+        float maxHeight   = (jumpImpulse * jumpImpulse) / (2f * jumpFallSpeed);
         float heightRatio = maxHeight > 0f ? jumpPosition / maxHeight : 0f;
-        heightRatio = Mathf.Clamp(heightRatio, 0f, 1f);
+        heightRatio       = Mathf.Clamp(heightRatio, 0f, 1f);
         UpdateShadowScale(heightRatio);
 
-        // Land when position reaches ground
         if (jumpPosition <= 0f && jumpVelocity < 0f)
         {
-            jumpTimer = 0f;
+            jumpTimer    = 0f;
             jumpVelocity = 0f;
             jumpPosition = 0f;
             UpdateSpriteOffset(0f);
@@ -259,23 +266,16 @@ public partial class Entity : CharacterBody2D
         if (!HasNode("Sprite")) return;
         var sprite = GetNode<Sprite2D>("Sprite");
         if (sprite != null)
-        {
             sprite.Position = spriteBasePosition + new Vector2(0, -offset);
-        }
 
         if (WeaponNode != null)
-        {
             WeaponNode.Position = weaponNodeBasePosition + new Vector2(0, -offset);
-        }
     }
 
     private void UpdateShadowScale(float heightRatio)
     {
         if (spriteShadow == null) return;
-        
-        // Scale down shadow based on how high the jump is
-        // At ground level (0): full scale, at peak (1): minimum scale
-        float shadowScale = Mathf.Lerp(1f, shadowScaleWhenJump, heightRatio);
+        float shadowScale  = Mathf.Lerp(1f, shadowScaleWhenJump, heightRatio);
         spriteShadow.Scale = shadowBaseScale * shadowScale;
     }
 }

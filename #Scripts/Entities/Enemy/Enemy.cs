@@ -150,53 +150,49 @@ public abstract partial class Enemy : Entity
 
 
 
-protected override void UpdateResourceBars()
-{
-    base.UpdateResourceBars();
-
-    if (HealthBar != null)
+    protected override void UpdateResourceBars()
     {
-        float healthMax = Mathf.Max(GetMaxHealth(), 1f);
-        HealthBar.MaxValue = healthMax;
-        HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, healthMax);
+        base.UpdateResourceBars();
+
+        if (HealthBar != null)
+        {
+            float healthMax = Mathf.Max(GetMaxHealth(), 1f);
+            HealthBar.MaxValue = healthMax;
+            HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, healthMax);
+        }
+
+        if (TenacityBar is TextureProgressBar texTenacityBar)
+        {
+            float tenacityMax = Mathf.Max(maxTenacity, 1f);
+            texTenacityBar.MaxValue = tenacityMax;
+            
+            float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
+            texTenacityBar.Value = tenacityMax - clampedTenacity;
+
+            UpdateTenacityTexture(texTenacityBar);
+        }
     }
 
-    // Ensure we cast TenacityBar to TextureProgressBar to access TextureProgress
-    if (TenacityBar is TextureProgressBar texTenacityBar)
+    private void UpdateTenacityTexture(TextureProgressBar bar)
     {
-        float tenacityMax = Mathf.Max(maxTenacity, 1f);
-        texTenacityBar.MaxValue = tenacityMax;
-        
-        float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
-        texTenacityBar.Value = tenacityMax - clampedTenacity;
+        bool isInKnockbackWindow = TenacitySystem?.IsKnockbackActive ?? false;
+        bool isInStaggerWindow = TenacitySystem?.IsInStaggerWindow ?? false;
+        bool isInRecovery = TenacitySystem?.IsInRecoveryCooldown ?? false;
 
-        // Handle the texture swap
-        UpdateTenacityTexture(texTenacityBar);
+        if (isInStaggerWindow || isInKnockbackWindow)
+        {
+            if (Tenacity_Bar_Active != null)
+                bar.TextureProgress = Tenacity_Bar_Active;
+        }
+        else if (isInRecovery)
+        {
+            if (Tenacity_Bar_Cooldown != null)
+                bar.TextureProgress = Tenacity_Bar_Cooldown;
+        }
+        else
+        {
+            if (Tenacity_Bar_Normal != null)
+                bar.TextureProgress = Tenacity_Bar_Normal;
+        }
     }
-}
-
-private void UpdateTenacityTexture(TextureProgressBar bar)
-{
-    bool isInKnockbackWindow = TenacitySystem?.IsKnockbackActive ?? false;
-    bool isInStaggerWindow = TenacitySystem?.IsInStaggerWindow ?? false;
-    bool isInRecovery = TenacitySystem?.IsInRecoveryCooldown ?? false;
-
-    // Show active texture during the stagger window or while knockback is active,
-    // show cooldown during recovery, otherwise show normal (progress) texture.
-    if (isInStaggerWindow || isInKnockbackWindow)
-    {
-        if (Tenacity_Bar_Active != null)
-            bar.TextureProgress = Tenacity_Bar_Active;
-    }
-    else if (isInRecovery)
-    {
-        if (Tenacity_Bar_Cooldown != null)
-            bar.TextureProgress = Tenacity_Bar_Cooldown;
-    }
-    else
-    {
-        if (Tenacity_Bar_Normal != null)
-            bar.TextureProgress = Tenacity_Bar_Normal;
-    }
-}
 }

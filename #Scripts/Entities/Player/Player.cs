@@ -295,9 +295,9 @@ public partial class Player : Entity
         {
             if (AnimationPlayer.HasAnimation(animationName))
             {
-                bool isAttackAnimation = animationName.StartsWith("Weapon_Attack") ||
-                                         animationName.StartsWith("Attack") ||
-                                         animationName == "Weapon_Spin";
+                bool isAttackAnimation = animationName.StartsWith("Attack") ||
+                                         animationName.StartsWith("attack") ||
+                                         animationName == "Attack_Spin";
                 if (isAttackAnimation && Weapon != null)
                 {
                     float desiredDuration = Weapon.GetAttackAnimationDuration(direction, currentState == PlayerState.HeavyAttacking);
@@ -310,7 +310,7 @@ public partial class Player : Entity
                     AnimationPlayer.SpeedScale = 1f;
                 }
 
-                if (PlayAnimation(animationName))
+                if (PlayPlayerAnimation(animationName))
                 {
                     Weapon?.PlayStateAnimation(animationName);
 
@@ -339,24 +339,25 @@ public partial class Player : Entity
     
     private string[] GetAnimationCandidates(PlayerState state, string direction)
     {
-        string idle = $"Weapon_Idle_{direction}";
+        string idle = $"Idle_{direction}";
 
         return state switch
         {
-            PlayerState.Moving => new[] { $"Weapon_Move_{direction}", idle },
+            PlayerState.Moving => new[] { $"Move_{direction}", idle },
             PlayerState.Airborne => new[] { "Jump_Down", idle },
-            PlayerState.Attacking => new[] { $"Weapon_Attack_{direction}_1", $"attack_{direction}_1", $"Weapon_Attack_{direction}", idle },
-            PlayerState.HeavyAttacking => new[] { "Weapon_Spin", "Weapon_Attack_Spin", $"Weapon_Attack_{direction}", idle },
-            PlayerState.Dodging => new[] { $"Dodge_{direction}", $"Weapon_Move_{direction}", idle },
+            PlayerState.Attacking => new[] { $"Attack_{direction}_1", $"attack_{direction}_1", $"Attack_{direction}", idle },
+            PlayerState.HeavyAttacking => new[] { "Attack_Spin", $"Attack_{direction}", idle },
+            PlayerState.AirAttacking => new[] { $"Air_Attack_{direction}", $"Attack_{direction}_1", $"Attack_{direction}", idle },
+            PlayerState.Dodging => new[] { $"Dodge_{direction}", $"Move_{direction}", idle },
             PlayerState.Healing => new[] { idle },
             PlayerState.Staggered => new[] { $"Take_Damage_{direction}", idle },
             PlayerState.Knockback => new[] { $"Take_Damage_{direction}", idle },
-            PlayerState.Dead => new[] { "Die", "Weapon_Idle_Down", idle },
+            PlayerState.Dead => new[] { "Die", "Idle_Down", idle },
             _ => new[] { idle }
         };
     }
 
-    private bool PlayAnimation(string animationName)
+    private bool PlayPlayerAnimation(string animationName)
     {
         if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
             return false;

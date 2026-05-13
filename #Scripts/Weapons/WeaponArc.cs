@@ -81,9 +81,9 @@ public partial class WeaponArc : Node2D
         if (string.IsNullOrEmpty(animationToPlay))
         {
             string[] animationNames = new[] {
-                $"Weapon_Attack_{preparedDirection}_{sequenceNumber}",
+                $"Attack_{preparedDirection}_{sequenceNumber}",
                 $"attack_{preparedDirection}_{sequenceNumber}",
-                $"Weapon_Attack_{preparedDirection}", 
+                $"Attack_{preparedDirection}", 
                 $"Sword_Attack_{preparedDirection}", 
                 "Effect"
             };

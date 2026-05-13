@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://y771x2vrsh37"]
 
-[ext_resource type="Script" uid="uid://m62bwuf6nk05" path="res://#Scripts/UI/PlayerUpgradePanel.cs" id="1_7iacv"]
+[ext_resource type="Script" path="res://#Scripts/UI/PlayerUpgradePanel.cs" id="1_7iacv"]
 [ext_resource type="FontFile" uid="uid://ceiw7dkwk6bie" path="res://#Assets/UI/Fonts/Zodiak-VariableItalic.ttf" id="2_1yf8e"]
 [ext_resource type="Texture2D" uid="uid://kyusuogsyad3" path="res://#Assets/UI/Icons/weapons.png" id="3_7iacv"]
 [ext_resource type="Texture2D" uid="uid://bsaikot68m70g" path="res://#Assets/UI/Icons/inventory.png" id="4_rk6rw"]
@@ -9,7 +9,7 @@
 [ext_resource type="Texture2D" uid="uid://c35x727im5rdb" path="res://#Assets/UI/Icons/gear.png" id="7_n802k"]
 [ext_resource type="Texture2D" uid="uid://ddowx2qixt2e4" path="res://#Assets/UI/Menus/panel.png" id="8_o5wqi"]
 [ext_resource type="PackedScene" uid="uid://d24xrg35vas4m" path="res://#Scenes/UI/Stat.tscn" id="10_rk6rw"]
-[ext_resource type="Script" uid="uid://cyqgrwbn5qrxj" path="res://#Scripts/UI/UpgradeBackground.cs" id="11_rk6rw"]
+[ext_resource type="Script" path="res://#Scripts/UI/UpgradeBackground.cs" id="11_rk6rw"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_glx4g"]
 bg_color = Color(0.6, 0.6, 0.6, 0)
@@ -42,8 +42,8 @@ grow_horizontal = 2
 grow_vertical = 2
 scale = Vector2(0.35, 0.35)
 script = ExtResource("1_7iacv")
-UpgradeContainer = NodePath("Upgrade Container")
 StatUpgradePanelScene = ExtResource("10_rk6rw")
+UpgradeContainer = NodePath("Upgrade Container")
 
 [node name="Panel" type="Panel" parent="." unique_id=183864191]
 custom_minimum_size = Vector2(151, 378)
