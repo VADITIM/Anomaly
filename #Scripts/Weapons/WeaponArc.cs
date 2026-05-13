@@ -9,6 +9,7 @@ public partial class WeaponArc : Node2D
     private Timer attackAnimationStopTimer;
     private string preparedDirection = "Down";
     private bool preparedHeavyAttack = false;
+    private int preparedSequenceIndex = 0;
     private Weapon parentWeapon;
 
     // Properties that reference parent weapon stats
@@ -55,10 +56,11 @@ public partial class WeaponArc : Node2D
         PrepareAttack(direction, isHeavy);
     }
 
-    public void PrepareAttack(string direction = "Down", bool isHeavy = false)
+    public void PrepareAttack(string direction = "Down", bool isHeavy = false, int sequenceIndex = 0)
     {
         preparedDirection = direction;
         preparedHeavyAttack = isHeavy;
+        preparedSequenceIndex = Mathf.Clamp(sequenceIndex, 0, 3);
 
         if (AnimationPlayer == null)
             return;
@@ -73,15 +75,30 @@ public partial class WeaponArc : Node2D
         if (AnimationPlayer == null)
             return;
 
-        string[] animationNames = new[] { $"Sword_Attack_{preparedDirection}", $"Weapon_Attack_{preparedDirection}", "Effect", "Attack1", "default" };
-        string animationToPlay = null;
+        int sequenceNumber = Mathf.Clamp(preparedSequenceIndex + 1, 1, 4);
 
-        foreach (string name in animationNames)
+        // Prefer the resolved canonical animation name from WeaponAnimations
+        string animationToPlay = WeaponAnimations.GetAttackAnimationName(AnimationPlayer, preparedDirection, preparedHeavyAttack, preparedSequenceIndex);
+
+        // Fallback legacy search if resolution failed
+        if (string.IsNullOrEmpty(animationToPlay))
         {
-            if (AnimationPlayer.HasAnimation(name))
+            // sequenceNumber already computed above
+            string[] animationNames = new[] {
+                $"Weapon_Attack_{preparedDirection}_{sequenceNumber}",
+                $"attack_{preparedDirection}_{sequenceNumber}",
+                $"Weapon_Attack_{preparedDirection}", 
+                $"Sword_Attack_{preparedDirection}", 
+                "Effect"
+            };
+
+            foreach (string name in animationNames)
             {
-                animationToPlay = name;
-                break;
+                if (AnimationPlayer.HasAnimation(name))
+                {
+                    animationToPlay = name;
+                    break;
+                }
             }
         }
 
@@ -95,6 +112,8 @@ public partial class WeaponArc : Node2D
         float desiredDuration = AttackDuration;
         if (preparedHeavyAttack && HeavyAttackDuration > 0f)
             desiredDuration = HeavyAttackDuration;
+
+        GD.Print($"[Animation] WeaponArc.TriggerHitAnimation -> sequence={sequenceNumber}, animation='{animationToPlay}', desiredDuration={desiredDuration}");
 
         float nativeLength = GetAnimationDuration(animationToPlay);
         float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);

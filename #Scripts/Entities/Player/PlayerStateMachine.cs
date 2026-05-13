@@ -18,17 +18,15 @@ public partial class PlayerStateMachine : StateMachineBase
     public event Action OnDied;
     public event Action OnRevived;
 
-
     private float staggerDuration = 0f;
     private float knockbackDuration = 0f;
-    private float attackDuration = 0f;
-    private float attackCooldown = 0f;
+    private float attackDuration = 0f;       // duration of the current swing only
     private float heavyChargeDuration = 1f;
     private float healDuration = 0f;
     private const float HEAL_DURATION = 1.5f;
     private Vector2 knockbackVelocity = Vector2.Zero;
     
-    public float HealProgress => CurrentState == PlayerState.Healing  ? 1f - (healDuration / HEAL_DURATION)  : 0f;
+    public float HealProgress => CurrentState == PlayerState.Healing ? 1f - (healDuration / HEAL_DURATION) : 0f;
     public float HeavyChargeProgress { get; private set; } = 0f;
 
     public Vector2 GetKnockbackVelocity() => knockbackVelocity;
@@ -87,6 +85,27 @@ public partial class PlayerStateMachine : StateMachineBase
                 attackDuration -= delta;
                 if (attackDuration <= 0)
                 {
+                    // Tell the weapon the swing is done.
+                    // This either opens the 0.2s follow-up window or starts the
+                    // post-combo cooldown (handled entirely inside Weapon).
+                    Player?.Weapon?.OnAttackAnimationFinished();
+
+                    // If the player already queued the next hit, consume it now
+                    // and immediately start the next swing without leaving Attacking.
+                    if (Player?.Weapon != null &&
+                        Player.Weapon.TryConsumeQueuedAttack(
+                            CurrentState == PlayerState.HeavyAttacking,
+                            out float nextDuration))
+                    {
+                        attackDuration = nextDuration;
+                        ResetStateTime();
+                        OnAttackStarted?.Invoke(CurrentState == PlayerState.HeavyAttacking);
+                        return;
+                    }
+
+                    // No queued follow-up yet — go Idle and wait.
+                    // If the player presses attack during the 0.2s window,
+                    // ProcessInput will pick it up and start the next swing.
                     OnAttackEnded?.Invoke();
                     TransitionTo(PlayerState.Idle);
                 }
@@ -96,9 +115,7 @@ public partial class PlayerStateMachine : StateMachineBase
                 HeavyChargeProgress += delta / heavyChargeDuration;
                 HeavyChargeProgress = Mathf.Clamp(HeavyChargeProgress, 0f, 1f);
                 if (HeavyChargeProgress >= 1f)
-                {
                     ExecuteHeavyAttack();
-                }
                 break;
                 
             case PlayerState.Healing:
@@ -110,9 +127,6 @@ public partial class PlayerStateMachine : StateMachineBase
                 }
                 break;
         }
-        
-        if (attackCooldown > 0)
-            attackCooldown -= delta;
     }
 
     private void ProcessInput()
@@ -122,9 +136,7 @@ public partial class PlayerStateMachine : StateMachineBase
         if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
         {
             if (CurrentState == PlayerState.Healing)
-            {
                 OnHealEnded?.Invoke();
-            }
             TryDodge();
             return;
         }
@@ -136,7 +148,20 @@ public partial class PlayerStateMachine : StateMachineBase
             UpdateMovementDirection();
             return;
         }
-        
+
+        // During an active swing: only accept a queued follow-up press.
+        if (CurrentState == PlayerState.Attacking)
+        {
+            if (Input.IsActionJustPressed(Keybinds.Attack))
+                Player?.Weapon?.QueueAttackFollowUp();
+            return;
+        }
+
+        if (CurrentState == PlayerState.HeavyAttacking)
+            return;
+
+        // ---------- Idle / Moving — check if we can start a new attack ----------
+
         UpdateMovementDirection();
         
         if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
@@ -145,7 +170,7 @@ public partial class PlayerStateMachine : StateMachineBase
             return;
         }
         
-        if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && attackCooldown <= 0)
+        if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && !IsComboCoolingDown())
         {
             if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
             {
@@ -160,12 +185,23 @@ public partial class PlayerStateMachine : StateMachineBase
             ExecuteHeavyAttack();
             return;
         }
-        
-        if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && attackCooldown <= 0)
+
+        // Normal attack — also handles the combo follow-up when the player is
+        // briefly in Idle during the 0.2s window after a swing finishes.
+        if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && !IsComboCoolingDown())
         {
             if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
             {
-                ExecuteNormalAttack();
+                // If there's an open combo window, this press continues the chain.
+                if (Player?.Weapon != null && Player.Weapon.CanQueueAttackFollowUp)
+                {
+                    Player.Weapon.QueueAttackFollowUp();
+                    ContinueComboAttack();
+                }
+                else
+                {
+                    ExecuteNormalAttack();
+                }
             }
             return;
         }
@@ -180,18 +216,46 @@ public partial class PlayerStateMachine : StateMachineBase
             TransitionTo(PlayerState.Idle);
         }
     }
-    
+
+    // -------------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------------
+
+    /// Returns true while the weapon's post-combo cooldown is running.
+    private bool IsComboCoolingDown()
+    {
+        return Player?.Weapon?.IsInComboCooldown ?? false;
+    }
+
+    /// Starts the next swing in a combo chain (player pressed attack while the
+    /// follow-up window was open and we were briefly in Idle).
+    private void ContinueComboAttack()
+    {
+        if (Player?.Weapon == null) return;
+
+        if (!Player.Weapon.TryConsumeQueuedAttack(false, out float duration))
+            return; // shouldn't happen, but guard anyway
+
+        Player.Instance.Stats.SetCurrent(
+            "Stamina",
+            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+
+        attackDuration = duration;
+        Player.Weapon.StartAttackSequence(false);
+        TransitionTo(PlayerState.Attacking);
+        OnAttackStarted?.Invoke(false);
+        GD.Print($"[PSM] ContinueComboAttack -> sequenceIndex={Player.Weapon.CurrentAttackSequenceIndex}, duration={duration}");
+    }
+
     private void UpdateMovementDirection()
     {
-        // Lock direction changes during attacks
-        if (IsAttacking)
-            return;
+        if (IsAttacking) return;
 
         Player.MovementDirection newDirection = Player.MovementDirection.None;
         
-        if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
-        if (Input.IsActionPressed(Keybinds.MoveDown)) newDirection |= Player.MovementDirection.Down;
-        if (Input.IsActionPressed(Keybinds.MoveLeft)) newDirection |= Player.MovementDirection.Left;
+        if (Input.IsActionPressed(Keybinds.MoveUp))    newDirection |= Player.MovementDirection.Up;
+        if (Input.IsActionPressed(Keybinds.MoveDown))  newDirection |= Player.MovementDirection.Down;
+        if (Input.IsActionPressed(Keybinds.MoveLeft))  newDirection |= Player.MovementDirection.Left;
         if (Input.IsActionPressed(Keybinds.MoveRight)) newDirection |= Player.MovementDirection.Right;
         
         if (newDirection != Movement.CurrentMovementDirection)
@@ -223,15 +287,10 @@ public partial class PlayerStateMachine : StateMachineBase
     protected override void OnTransitioned(PlayerState previousState, PlayerState newState, bool wasInLockedState)
     {
         if (wasInLockedState && newState == PlayerState.Idle)
-        {
             Movement.CurrentMovementDirection = Player.MovementDirection.None;
-        }
     }
     
-    private bool IsExitingLockedState(PlayerState newState)
-    {
-        return newState == PlayerState.Idle;
-    }
+    private bool IsExitingLockedState(PlayerState newState) => newState == PlayerState.Idle;
 
     private void TryHeal()
     {
@@ -242,7 +301,6 @@ public partial class PlayerStateMachine : StateMachineBase
             OnHealStarted?.Invoke(HEAL_DURATION);
         }
     }
-    
 
     private void TryDodge()
     {
@@ -264,35 +322,34 @@ public partial class PlayerStateMachine : StateMachineBase
     
     private void ExecuteHeavyAttack()
     {
-        float chargeBonus = HeavyChargeProgress;
         HeavyChargeProgress = 0f;
-        
         attackDuration = Player.GetCurrentAttackAnimationDuration(true);
+        Player?.Weapon?.StartAttackSequence(true);
         TransitionTo(PlayerState.HeavyAttacking);
         OnAttackStarted?.Invoke(true);
-        
-        if (Player?.Weapon != null)
-            attackCooldown = Player.Weapon.HeavyAttackDuration;
     }
     
     private void ExecuteNormalAttack()
     {
-        if (CurrentState == PlayerState.Idle || CurrentState == PlayerState.Moving)
-        {
-            Player.Instance.Stats.SetCurrent("Stamina", Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
-            attackDuration = Player.GetCurrentAttackAnimationDuration(false);
-            TransitionTo(PlayerState.Attacking);
-            OnAttackStarted?.Invoke(false);
-            
-            if (Player?.Weapon != null)
-                attackCooldown = Player.Weapon.AttackDuration;
-        }
+        if (CurrentState != PlayerState.Idle && CurrentState != PlayerState.Moving) return;
+
+        Player.Instance.Stats.SetCurrent(
+            "Stamina",
+            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+
+        attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+        Player?.Weapon?.StartAttackSequence(false);
+        TransitionTo(PlayerState.Attacking);
+        OnAttackStarted?.Invoke(false);
     }
+
+    // -------------------------------------------------------------------------
+    // External requests
+    // -------------------------------------------------------------------------
 
     public void RequestStagger(float duration)
     {
         if (CurrentState == PlayerState.Dead) return;
-        
         staggerDuration = duration;
         TransitionTo(PlayerState.Staggered);
         OnStaggered?.Invoke(duration);
@@ -301,7 +358,6 @@ public partial class PlayerStateMachine : StateMachineBase
     public void RequestKnockback(Vector2 direction, float force, float duration = 0.3f)
     {
         if (CurrentState == PlayerState.Dead) return;
-        
         knockbackVelocity = direction.Normalized() * force;
         knockbackDuration = duration;
         TransitionTo(PlayerState.Knockback);
@@ -322,6 +378,4 @@ public partial class PlayerStateMachine : StateMachineBase
             OnRevived?.Invoke();
         }
     }
-
-
 }

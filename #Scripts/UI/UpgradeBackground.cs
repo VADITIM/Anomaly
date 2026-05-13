@@ -101,11 +101,6 @@ public partial class UpgradeBackground : Panel
         if (playerStats.CanIncrease(statName))
         {
             playerStats.IncreaseStat(statName);
-            GD.Print($"Increased {statName} to {playerStats.GetCurrentMax(statName)}");
-        }
-        else
-        {
-            GD.Print($"Cannot increase {statName} - already at maximum");
         }
     }
     
@@ -114,11 +109,6 @@ public partial class UpgradeBackground : Panel
         if (playerStats.CanDecrease(statName))
         {
             playerStats.DecreaseStat(statName);
-            GD.Print($"Decreased {statName} to {playerStats.GetCurrentMax(statName)}");
-        }
-        else
-        {
-            GD.Print($"Cannot decrease {statName} - no levels added yet");
         }
     }
     

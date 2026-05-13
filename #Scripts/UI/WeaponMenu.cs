@@ -126,7 +126,6 @@ public partial class WeaponMenu : Control
             
             if (button == null || textureRect == null)
             {
-                GD.PrintErr("WeaponButtonScene must contain Button and Button/TextureRect nodes");
                 weaponItemControl.QueueFree();
                 continue;
             }
@@ -153,14 +152,12 @@ public partial class WeaponMenu : Control
             PackedScene weaponScene = scene;
             
             button.Pressed += () => {
-                GD.Print($"Button pressed (Tween swap): {displayName}");
                 _swapAnimator?.AnimateWeaponSwap(textureRect, weaponScene);
                 RefreshGrid();
             };
             button.GuiInput += (InputEvent evt) => {
                 if (evt is InputEventMouseButton mouse && mouse.Pressed && !mouse.IsEcho() && mouse.ButtonIndex == MouseButton.Right)
                 {
-                    GD.Print($"Right click on: {displayName}");
                     // Right-click also triggers swap animation
                     _swapAnimator?.AnimateWeaponSwap(textureRect, weaponScene);
                     RefreshGrid();

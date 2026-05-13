@@ -30,11 +30,6 @@ public partial class StateDisplay : Label
             
             _stateLabel.Text = stateText;
         }
-        else
-        {
-            _stateLabel.Text = "No State Machine (Instance is null)";
-            GD.PrintErr("StateDisplay: PlayerStateMachine.Instance is null!");
-        }
     }
 }
 
