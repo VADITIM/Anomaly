@@ -2,11 +2,14 @@ using Godot;
 
 public partial class Entity : CharacterBody2D
 {
+    private const string DAMAGE_FLASH_SHADER_PATH = "res://#Shaders/damageflash.gdshader";
+
     // ── Knockback ─────────────────────────────────────────────────────────────
     [Export] public bool  canBeKnockedBack  { get; set; } = true;
     [Export] public bool  canBeKnockbacked  { get => canBeKnockedBack; set => canBeKnockedBack = value; }
     [Export] public float weight            { get; set; } = 1f;
     [Export] public float knockbackDecay    { get; set; } = 2000f;
+    [Export] public float maxTenacity        { get; set; } = 10f;
 
     protected Vector2 knockbackVelocity = Vector2.Zero;
     protected float   knockbackDuration = 0f;
@@ -27,6 +30,14 @@ public partial class Entity : CharacterBody2D
 
     // ── Misc exports ──────────────────────────────────────────────────────────
     [Export] public AnimationPlayer AnimationPlayer { get; set; }
+    public StateMachine StateMachine { get; protected set; }
+
+    // ── Attack ────────────────────────────────────────────────────────────────
+    [Export] public float attackDuration { get; set; } = 1f;
+
+    // ── Damage flash ──────────────────────────────────────────────────────────
+    [Export] public float damageFlashDuration { get; set; } = 0.5f;
+    [Export] public Color damageFlashColor { get; set; } = Colors.White;
 
     // ── Health ────────────────────────────────────────────────────────────────
     [ExportGroup("Health")]
@@ -38,6 +49,13 @@ public partial class Entity : CharacterBody2D
     // ── Ghost / damage-lag bar + shake handled by HealthBarAnimator
     protected TextureProgressBar  HealthBarGhost;
     private HealthBarAnimator _healthBarAnimator = null;
+    private Sprite2D _damageFlashSprite = null;
+    private ShaderMaterial _damageFlashMaterial = null;
+    private Tween _damageFlashTween = null;
+
+    private State _lastAnimationState = (State)(-1);
+    private string _lastAnimationDirection = "";
+    private bool _lastAnimationFlipH = false;
 
     // ═════════════════════════════════════════════════════════════════════════
     //  Virtual hooks for subclasses
@@ -54,13 +72,34 @@ public partial class Entity : CharacterBody2D
     protected virtual float GetMaxHealth()            => maxHealth;
     protected virtual void  SetMaxHealth(float value) { maxHealth = Mathf.Max(0f, value); UpdateResourceBars(); }
 
+    protected virtual bool UsesDirectionalAnimations => false;
+
+    public virtual float GetAttackDuration() => attackDuration;
+
+    protected void TriggerDamageFlash()
+    {
+        EnsureDamageFlashMaterial();
+
+        if (_damageFlashMaterial == null)
+            return;
+
+        _damageFlashTween?.Kill();
+        _damageFlashMaterial.SetShaderParameter("flash_color", damageFlashColor);
+        _damageFlashMaterial.SetShaderParameter("flash_value", 1f);
+
+        _damageFlashTween = CreateTween();
+        _damageFlashTween.TweenProperty(_damageFlashMaterial, "shader_parameter/flash_value", 0f, Mathf.Max(0.01f, damageFlashDuration));
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
     //  Godot lifecycle
     // ═════════════════════════════════════════════════════════════════════════
 
     public override void _Ready()
     {
+        EnsureStateMachine();
         InitializeJump();
+        EnsureDamageFlashMaterial();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -73,6 +112,7 @@ public partial class Entity : CharacterBody2D
     public override void _Process(double delta)
     {
         _healthBarAnimator?.Update((float)delta);
+        UpdateAnimation(UsesDirectionalAnimations);
     }
 
     // ═════════════════════════════════════════════════════════════════════════
@@ -189,6 +229,112 @@ public partial class Entity : CharacterBody2D
         _healthBarAnimator?.OnHealthChanged(GetHealth(), GetMaxHealth());
     }
 
+    protected virtual State GetCurrentAnimationState()
+        => IsEntityDead() ? State.Dead : State.Idle;
+
+    protected virtual string GetCurrentAnimationDirection(bool useDirectionalAnimations, out bool flipH)
+    {
+        flipH = false;
+        return "Down";
+    }
+
+    protected virtual bool IsEntityDead() => false;
+
+    protected virtual float GetAnimationDuration(string animationName, bool useDirectionalAnimations)
+        => GetNativeAnimationDuration(animationName);
+
+    protected virtual string[] GetAnimationCandidates(State state, string direction, bool useDirectionalAnimations)
+    {
+        string resolvedDirection = useDirectionalAnimations ? direction : "Down";
+        string idle = $"Idle_{resolvedDirection}";
+
+        return state switch
+        {
+            State.Moving => new[] { $"Move_{resolvedDirection}", idle },
+            State.Chasing => new[] { $"Move_{resolvedDirection}", idle },
+            State.Airborne => new[] { "Jump_Down", idle },
+            State.Attacking => new[] { $"Attack_{resolvedDirection}_1", $"attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
+            State.HeavyAttacking => new[] { "Attack_Spin", $"Attack_{resolvedDirection}", idle },
+            State.AirAttacking => new[] { $"Air_Attack_{resolvedDirection}", $"Attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
+            State.Dodging => new[] { $"Dodge_{resolvedDirection}", $"Move_{resolvedDirection}", idle },
+            State.Healing => new[] { idle },
+            State.Staggered => new[] { idle },
+            State.Knockback => new[] { idle },
+            State.Dead => new[] { $"Die_{resolvedDirection}", "Die_Down", "Idle_Down", idle },
+            _ => new[] { idle }
+        };
+    }
+
+    protected virtual bool PlayPlayerAnimation(string animationName)
+    {
+        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
+            return false;
+
+        PlayAnimation(animationName);
+        return true;
+    }
+
+    protected virtual void ApplyFacing(bool flipH) { }
+
+    protected virtual void OnAnimationPlayed(string animationName, State state, string direction, bool flipH) { }
+
+    protected virtual bool IsAttackAnimation(string animationName)
+    {
+        return animationName.StartsWith("Attack") ||
+               animationName.StartsWith("attack") ||
+               animationName == "Attack_Spin";
+    }
+
+    public virtual void UpdateAnimation()
+    {
+        UpdateAnimation(UsesDirectionalAnimations);
+    }
+
+    public virtual void UpdateAnimation(bool useDirectionalAnimations)
+    {
+        if (AnimationPlayer == null)
+            return;
+
+        State currentState = GetCurrentAnimationState();
+        string direction = GetCurrentAnimationDirection(useDirectionalAnimations, out bool flipH);
+
+        if (currentState == _lastAnimationState &&
+            direction == _lastAnimationDirection &&
+            flipH == _lastAnimationFlipH)
+        {
+            return;
+        }
+
+        _lastAnimationState = currentState;
+        _lastAnimationDirection = direction;
+        _lastAnimationFlipH = flipH;
+
+        ApplyFacing(flipH);
+
+        foreach (string animationName in GetAnimationCandidates(currentState, direction, useDirectionalAnimations))
+        {
+            if (!AnimationPlayer.HasAnimation(animationName))
+                continue;
+
+            if (IsAttackAnimation(animationName))
+            {
+                float desiredDuration = GetAnimationDuration(animationName, useDirectionalAnimations);
+                float nativeLength = GetNativeAnimationDuration(animationName);
+                AnimationPlayer.SpeedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
+            }
+            else
+            {
+                AnimationPlayer.SpeedScale = 1f;
+            }
+
+            if (PlayPlayerAnimation(animationName))
+            {
+                OnAnimationPlayed(animationName, currentState, direction, flipH);
+                return;
+            }
+        }
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
     //  Bar shake / ghost behaviour handled by HealthBarAnimator
     // ═════════════════════════════════════════════════════════════════════════
@@ -207,9 +353,63 @@ public partial class Entity : CharacterBody2D
             AnimationPlayer.Play(animName);
     }
 
+    private float GetNativeAnimationDuration(string animationName)
+    {
+        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
+            return 0.1f;
+
+        Animation animation = AnimationPlayer.GetAnimation(animationName);
+        if (animation == null)
+            return 0.1f;
+
+        return Mathf.Max(0.1f, (float)animation.Length);
+    }
+
     // ═════════════════════════════════════════════════════════════════════════
     //  Jump
     // ═════════════════════════════════════════════════════════════════════════
+
+    private void EnsureStateMachine()
+    {
+        StateMachine = GetNodeOrNull<StateMachine>("StateMachine");
+
+        if (StateMachine == null)
+        {
+            StateMachine = new StateMachine();
+            StateMachine.Name = "StateMachine";
+            AddChild(StateMachine);
+        }
+    }
+
+    private void EnsureDamageFlashMaterial()
+    {
+        if (_damageFlashMaterial != null)
+            return;
+
+        _damageFlashSprite = GetNodeOrNull<Sprite2D>("Sprite");
+        if (_damageFlashSprite == null)
+            return;
+
+        Shader shader = GD.Load<Shader>(DAMAGE_FLASH_SHADER_PATH);
+        if (shader == null)
+            return;
+
+        if (_damageFlashSprite.Material is ShaderMaterial existingMaterial && existingMaterial.Shader == shader)
+        {
+            _damageFlashMaterial = existingMaterial;
+        }
+        else
+        {
+            _damageFlashMaterial = new ShaderMaterial
+            {
+                Shader = shader
+            };
+            _damageFlashSprite.Material = _damageFlashMaterial;
+        }
+
+        _damageFlashMaterial.SetShaderParameter("flash_color", damageFlashColor);
+        _damageFlashMaterial.SetShaderParameter("flash_value", 0f);
+    }
 
     private void InitializeJump()
     {

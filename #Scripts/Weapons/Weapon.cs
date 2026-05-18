@@ -98,7 +98,26 @@ public partial class Weapon : Node2D
     public override void _Process(double delta)
     {
         UpdateComboTimers((float)delta);
-        weaponHitbox.Monitoring = PlayerStateMachine.Instance != null && PlayerStateMachine.Instance.IsAttacking;
+        // Enable hitbox monitoring when the owner (player or enemy) is attacking.
+        if (weaponHitbox != null)
+        {
+            StateMachine ownerSM = FindOwnerStateMachine();
+            weaponHitbox.Monitoring = ownerSM != null && ownerSM.IsAttacking;
+        }
+    }
+
+    private StateMachine FindOwnerStateMachine()
+    {
+        Node current = GetParent();
+        while (current != null)
+        {
+            if (current is Entity entity && entity.StateMachine != null)
+                return entity.StateMachine;
+
+            current = current.GetParent();
+        }
+
+        return Player.Instance?.StateMachine;
     }
 
     public void PlayStateAnimation(string animationName)
@@ -130,9 +149,9 @@ public partial class Weapon : Node2D
     {
         float rawDamage = damage;
 
-        if (PlayerStateMachine.Instance?.IsHeavyAttacking ?? false)
+        if (Player.Instance?.StateMachine?.IsHeavyAttacking ?? false)
         {
-            float heavyMultiplier = 1f + (2f * (PlayerStateMachine.Instance?.HeavyChargeProgress ?? 0f));
+            float heavyMultiplier = 1f + (2f * (Player.Instance?.StateMachine?.HeavyChargeProgress ?? 0f));
             rawDamage *= heavyMultiplier;
         }
         else
@@ -172,7 +191,7 @@ public partial class Weapon : Node2D
     }
 
     // -------------------------------------------------------------------------
-    // Combo API — called by the PlayerStateMachine
+    // Combo API — called by the player state machine
     // -------------------------------------------------------------------------
 
     public void StartAttackSequence(bool isHeavy)

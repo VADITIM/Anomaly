@@ -5,22 +5,22 @@ public static partial class Combat
 {
     public static bool IsAttacking()
     {
-        return PlayerStateMachine.Instance?.IsAttacking ?? false;
+        return Player.Instance?.StateMachine?.IsAttacking ?? false;
     }
     
     public static bool IsChargingHeavy()
     {
-        return PlayerStateMachine.Instance?.IsChargingHeavy ?? false;
+        return Player.Instance?.StateMachine?.IsChargingHeavy ?? false;
     }
     
     public static bool IsHeavyAttacking()
     {
-        return PlayerStateMachine.Instance?.IsHeavyAttacking ?? false;
+        return Player.Instance?.StateMachine?.IsHeavyAttacking ?? false;
     }
     
     public static float HeavyChargeProgress()
     {
-        return PlayerStateMachine.Instance?.HeavyChargeProgress ?? 0f;
+        return Player.Instance?.StateMachine?.HeavyChargeProgress ?? 0f;
     }
 
     public static float GetHeavyDamageMultiplier()

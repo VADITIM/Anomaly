@@ -20,7 +20,7 @@ public static class Movement
     
     public static float GetSpeedModifier()
     {
-        var sm = PlayerStateMachine.Instance;
+        var sm = Player.Instance?.StateMachine;
         if (sm != null && sm.CurrentState == PlayerState.Healing)
             return HEAL_SPEED_MODIFIER;
         return 1f;
@@ -28,11 +28,11 @@ public static class Movement
 
     public static Vector2 GetInputVector() { return GetMovementVector(); }
     
-    public static bool IsMoving() { return PlayerStateMachine.Instance?.IsMoving ?? false; }
+    public static bool IsMoving() { return Player.Instance?.StateMachine?.IsMoving ?? false; }
 
     public static void ProcessMovement(this CharacterBody2D body, float delta)
     {
-        var sm = PlayerStateMachine.Instance;
+        var sm = Player.Instance?.StateMachine;
         if (sm == null || Player.Instance == null)
             return;
 

@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://bo8wy1jc7h2bo"]
 
-[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Entities/Enemy/Types/Enemy4.cs" id="1_micq5"]
+[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Entities/Enemy/Types/Bee.cs" id="1_micq5"]
+[ext_resource type="Shader" uid="uid://ehmd2835rdgo" path="res://#Shaders/damageflash.gdshader" id="2_icawu"]
 [ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="3_4upu0"]
 [ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="4_5b6a6"]
 [ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="5_keduy"]
@@ -23,9 +24,42 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
 size = Vector2(12.5, 18.75)
 
-[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_wsip8"]
-_data = PackedByteArray("AAADAAUAAAABAAAAwAAAAMAAAAA6AwAAUklGRjIDAABXRUJQVlA4TCUDAAAvv8AvED9AtAHR/EDSzP/Hid5Q1EgKI+Re9KYA/44wgOJIMqBdROAnFfknxPua//i/XSVSNaCMyHlGtkHOtu1tU32yT1n10rI6oq0G5ZAZcGCt38XMqSv9+/+RcvmNrbO1iP5LlCRZaJt+YDuAVKPTq3yE/H21PETgij6TAQ+PHFy5nIQgntKEUFGlQAgA0e/yTu+IMTRdVwGOGOfZ3WKPGihwt1hijtTpHTOGM9U9gPi4006120A/56EK55njVHXLUXN+MNuBEAAzgBjoktmS69d8N7uoCKudw5EmqYQBM1C+QhUH/XNOVBPplXcy8k7m31/T93uAfis9TGneI8yZLgOE0Jl1gfnAeY8M1gMg9YA4fPNqdlk5ZhCpB4y8kzFNPRvMr+fjl/nuofTzT6ln4oTtZOQ9a+D7h+NynhCap0kVRMrtkWa6UUnZPVVTUs//T5aHW3knRghDWu32ILQx1gTvpOm6SrwjNCFUDEjqFxBwrjoDnPQfZ6p71Clnd4s9iju/W8x8PwHuVBcA841dq25TZ9OpdhUDqQcEj9QPavyvZpcVUYnpd7OLDWLQwIPZDjUfPJlNIAyYgYLUA4LkPdyLzbhXA6oAR5XzLfWcLA3VA5yqbgGEr+n7PaCkHsq5LteM2ydm1D6RkHoC0x9TT6S8md1TpumRDYDdb4w29dRUz7vZr5rxfPwy3z1k5D2Ml/gyj/PheuByvlgioXmaVGHIntg+TWrqckyoHmmmG5UM2tMebdZcT3yaROFUDatqWHXLyf+//ffb8q54KATcGkWFzB29hx/tA4B/3/F5gJw/5OrjKBsBjqLi4cbfnkAbYw3mCxAtxq3qF4aIDr3Lr2SNpdtw5GiMssaNddgapBQTcv7Kf4AR4KhwuoYrHV97AVV8r+nNWMAD3zpdrtkJPdLMuG8fuzez+1lc46HRyTczsxPuvU3GWVe9l3/Fl3l8rwlCGmGfvcQkzskoswLENqkjoa3l0ewzlfqYrn8e8o+nSaRy5rWYRTJ/aG2MNflYrtz1mBj9vi9WygXqt2VBmbJn+vutzyvbreCX/iZE/vvvzykCAA==")
-size_override = Vector2(192, 192)
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nxe0n"]
+shader = ExtResource("2_icawu")
+shader_parameter/flash_color = Color(1, 1, 1, 1)
+shader_parameter/flash_value = 0.0
+
+[sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_icawu"]
+_data = PackedByteArray("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")
+size_override = Vector2(240, 192)
+
+[sub_resource type="Animation" id="Animation_icawu"]
+length = 0.6
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.6),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Body:frame")
+tracks/1/interp = 1
+tracks/1/loop_wrap = false
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [6, 5, 4, 3, 2, 1]
+}
 
 [sub_resource type="Animation" id="Animation_xjnca"]
 length = 0.7
@@ -40,7 +74,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [6, 7, 8, 9, 10, 11, 12]
+"values": [13, 12, 11, 0, 9, 8, 7]
 }
 
 [sub_resource type="Animation" id="Animation_jvqkt"]
@@ -56,13 +90,30 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 1, 2, 3, 4, 5]
+"values": [10, 18, 17, 16, 15, 14]
+}
+
+[sub_resource type="Animation" id="Animation_nmi03"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 1,
+"values": [true]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_lhous"]
 _data = {
+&"Attack_Down": SubResource("Animation_icawu"),
 &"Die_Down": SubResource("Animation_xjnca"),
-&"Move_Down": SubResource("Animation_jvqkt")
+&"Move_Down": SubResource("Animation_jvqkt"),
+&"RESET": SubResource("Animation_nmi03")
 }
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vu8ro"]
@@ -174,6 +225,9 @@ animations = [{
 "speed": 30.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_nmi03"]
+radius = 46.173584
+
 [node name="Enemy4" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
 collision_layer = 24
 collision_mask = 295
@@ -188,9 +242,10 @@ debug_color = Color(0.18003303, 0.6432267, 3.85046e-07, 0.41960785)
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2095261304]
 texture_filter = 1
+material = SubResource("ShaderMaterial_nxe0n")
 position = Vector2(0, -3.125)
-texture = SubResource("PortableCompressedTexture2D_wsip8")
-hframes = 4
+texture = SubResource("PortableCompressedTexture2D_icawu")
+hframes = 5
 vframes = 4
 frame = 6
 metadata/_aseprite_wizard_interface_config_ = {
@@ -214,7 +269,7 @@ metadata/_aseprite_wizard_config_ = {
 "source": "res://#Assets/Entities/Enemies/4/Bee.aseprite",
 "source_uid": 240037519164549629
 }
-metadata/_aseprite_wizard_source_file_hash_ = "f75002a07b66c9ed6456caa66d8f2f6e"
+metadata/_aseprite_wizard_source_file_hash_ = "e8f61ff5f5d318cdcf850351f96af355"
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1594877807]
 libraries/ = SubResource("AnimationLibrary_lhous")
@@ -236,3 +291,12 @@ offset_right = 3143.349
 offset_bottom = 911.7493
 scale = Vector2(0.25810045, 0.25810045)
 theme_override_font_sizes/normal_font_size = 100
+
+[node name="Hitbox Area" type="Area2D" parent="." unique_id=50013941]
+collision_layer = 16
+collision_mask = 34
+
+[node name="Hitbox" type="CollisionShape2D" parent="Hitbox Area" unique_id=426460604]
+shape = SubResource("CircleShape2D_nmi03")
+disabled = true
+debug_color = Color(0.92119426, 0.2201151, 0.44672298, 0.41960785)

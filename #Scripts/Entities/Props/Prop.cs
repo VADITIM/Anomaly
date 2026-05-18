@@ -8,6 +8,11 @@ public partial class Prop : Entity
     
     private bool _isDead = false;
 
+    protected override State GetCurrentAnimationState()
+    {
+        return _isDead ? State.Dead : State.Idle;
+    }
+
     public override void _Ready()
     {
         base._Ready();
@@ -26,7 +31,7 @@ public partial class Prop : Entity
 
         Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
 
-        PlayAnimation("Take_Damage_Down");
+        TriggerDamageFlash();
 
         float newHealth = GetHealth() - weapon.Damage;
         SetHealth(newHealth);

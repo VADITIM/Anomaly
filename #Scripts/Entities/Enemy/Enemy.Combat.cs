@@ -1,5 +1,13 @@
 using Godot;
 
+public enum EnemyAttackPhase
+{
+    None,
+    WindUp,        
+    Active,        
+    Recovery       
+}
+
 public abstract partial class Enemy
 {
     public override void TakeDamage(WeaponArc weapon, Node2D damageSource)
@@ -9,14 +17,13 @@ public abstract partial class Enemy
 
         Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
 
-        PlayAnimation("Take_Damage_Down");
+        TriggerDamageFlash();
         MarkCameraFocus();
 
         Camera camera = GetViewport().GetCamera2D() as Camera;
         camera?.ShakeCamera(0.5f);
 
         float calculatedDamage = weapon.ApplyDamage(this);
-        // weapon attack types removed — no weakness exploitation by attack type
         bool weaknessExploit = false;
 
         SetHealth(GetHealth() - calculatedDamage);

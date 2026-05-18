@@ -15,9 +15,6 @@ public partial class UI : Control
         if (Player == null)
             Player = GetTree().Root.FindChild("Player", true, false) as Player;
 
-        BonfireMenu.Visible = false;
-        WeaponMenu.Visible = false;
-
         ConnectPressed(BonfireEquipmentButton);
         ConnectPressed(BonfireEquipmentCloseButton);
 

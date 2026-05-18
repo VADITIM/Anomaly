@@ -13,16 +13,14 @@ public partial class Player : Entity
     }
 
     public static Player Instance;
-    public PlayerStateMachine StateMachine { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
     public Weapon Weapon { get; set; }
     [Export] public Node2D WeaponSlot;
     
     [Export] public Sprite2D BodySprite { get; set; }
-    private PlayerState lastAnimation = (PlayerState)(-1);
     private string lastAnimationDirection = "";
-    private bool _lastAirborne = false;
     private string _lastDamageDirection = "Down";
+    private bool _lastFlipH = false;
 
     private Vector2 _bodySpriteBasePosition;
     private Vector2 _weaponSlotBasePosition;
@@ -31,28 +29,25 @@ public partial class Player : Entity
     private float _staminaRegenerationCooldown = 0f;
     public float STAMINA_REGEN_COOLDOWN = 1.5f;
 
-    private bool wasAirborneLastFrame = false;
-
     public static bool canMove
     {
-        get => PlayerStateMachine.Instance?.CanMove ?? true;
-        set { if (PlayerStateMachine.Instance != null) PlayerStateMachine.Instance.CanMove = value; }
+        get => Player.Instance?.StateMachine?.CanMove ?? true;
+        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanMove = value; }
     }
     public static bool canAttack
     {
-        get => PlayerStateMachine.Instance?.CanAttack ?? true;
-        set { if (PlayerStateMachine.Instance != null) PlayerStateMachine.Instance.CanAttack = value; }
+        get => Player.Instance?.StateMachine?.CanAttack ?? true;
+        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanAttack = value; }
     }
     public static bool isPaused
     {
-        get => PlayerStateMachine.Instance?.IsPaused ?? false;
-        set { if (PlayerStateMachine.Instance != null) PlayerStateMachine.Instance.IsPaused = value; }
+        get => Player.Instance?.StateMachine?.IsPaused ?? false;
+        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.IsPaused = value; }
     }
 
     public void OnActionPerformed() { _staminaRegenerationCooldown = STAMINA_REGEN_COOLDOWN; }
     private void OnAttackStarted(bool isHeavy)
     {
-        lastAnimation = (PlayerState)(-1);
     }
     private void OnAttackEnded() { }
     private void OnDodgeStarted(Vector2 direction) { }
@@ -61,6 +56,14 @@ public partial class Player : Entity
     protected override bool CanTakeDamage(float damage, Vector2 sourcePosition)
     {
         return !Dodge.IsIFrameActive;
+    }
+
+    public override void TakeDamage(float damage, Vector2 sourcePosition)
+    {
+        if (StateMachine != null && StateMachine.IsDead)
+            return;
+
+        base.TakeDamage(damage, sourcePosition);
     }
 
     protected override float GetHealth() => Stats?.GetCurrent("Health") ?? base.GetHealth();
@@ -114,7 +117,6 @@ public partial class Player : Entity
         BodySprite = GetNode<Sprite2D>("Sprite");
         AnimationPlayer = GetNode<AnimationPlayer>("Animator");
         ResourceManager = new ResourceManager(this);
-        StateMachine = new PlayerStateMachine();
 
         Node firstChild = WeaponSlot.GetChildCount() > 0 ? WeaponSlot.GetChild(0) : null;
         if (firstChild is Weapon weaponNode)
@@ -142,12 +144,9 @@ public partial class Player : Entity
             Weapon = weaponContainer;
         }
 
-    _bodySpriteBasePosition = BodySprite?.Position ?? Vector2.Zero;
-    _weaponSlotBasePosition = WeaponSlot?.Position ?? Vector2.Zero;
- 
-        StateMachine.Name = "PlayerStateMachine";
-        AddChild(StateMachine);
-        
+        _bodySpriteBasePosition = BodySprite?.Position ?? Vector2.Zero;
+        _weaponSlotBasePosition = WeaponSlot?.Position ?? Vector2.Zero;
+
         StateMachine.OnAttackStarted += OnAttackStarted;
         StateMachine.OnAttackEnded += OnAttackEnded;
         StateMachine.OnDodgeStarted += OnDodgeStarted;
@@ -162,6 +161,8 @@ public partial class Player : Entity
 
     public override void _Process(double delta)
     {
+        base._Process(delta);
+
         if (Dodge.IsDodging())
         {
             Dodge.UseStamina();
@@ -169,8 +170,6 @@ public partial class Player : Entity
 
         if (WeaponSlot != null)
             WeaponSlot.Visible = true;
-        
-        UpdateAnimation();
     }
 
     public override void _PhysicsProcess(double delta)
@@ -193,9 +192,16 @@ public partial class Player : Entity
         {
             if (keyEvent.Keycode == Key.F1)
             {
+                // Debug: take damage from above
+                float debugDamage = 10f;
+                Vector2 sourcePos = GlobalPosition + new Vector2(0f, -50f);
+                TakeDamage(debugDamage, sourcePos);
             }
             else if (keyEvent.Keycode == Key.F2)
             {
+                // Debug: heal player
+                float debugHeal = 10f;
+                SetHealth(GetHealth() + debugHeal);
             }
         }
     }
@@ -217,6 +223,76 @@ public partial class Player : Entity
         }
     }
 
+    protected override bool UsesDirectionalAnimations => true;
+
+    protected override State GetCurrentAnimationState()
+    {
+        return StateMachine?.CurrentState ?? State.Idle;
+    }
+
+    protected override string GetCurrentAnimationDirection(bool useDirectionalAnimations, out bool flipH)
+    {
+        State currentState = StateMachine?.CurrentState ?? State.Idle;
+
+        if (currentState == PlayerState.Dodging)
+        {
+            Vector2 dodgeVel = Dodge.GetDodgeVelocity();
+            return GetDirectionFromVector(dodgeVel, out flipH);
+        }
+
+        if (currentState == PlayerState.Staggered || currentState == PlayerState.Knockback || currentState == PlayerState.Dead)
+        {
+            flipH = false;
+            return _lastDamageDirection;
+        }
+
+        if (StateMachine != null && StateMachine.IsAirborne)
+        {
+            flipH = false;
+            return "Down";
+        }
+
+        if (currentState == PlayerState.Attacking || currentState == PlayerState.HeavyAttacking)
+        {
+            flipH = _lastFlipH;
+            return lastAnimationDirection;
+        }
+
+        Vector2 mousePos = GetGlobalMousePosition();
+        Vector2 toMouse = mousePos - GlobalPosition;
+        return GetDirectionFromVector(toMouse, out flipH);
+    }
+
+    protected override void ApplyFacing(bool flipH)
+    {
+        if (BodySprite != null)
+            BodySprite.FlipH = flipH;
+    }
+
+    protected override void OnAnimationPlayed(string animationName, State state, string direction, bool flipH)
+    {
+        lastAnimationDirection = direction;
+
+        if (Weapon != null && (animationName.StartsWith("Attack") ||
+                               animationName.StartsWith("attack") ||
+                               animationName == "Attack_Spin"))
+        {
+            float desiredDuration = Weapon.GetAttackAnimationDuration(direction, state == PlayerState.HeavyAttacking);
+            float nativeLength = AnimationPlayer != null && AnimationPlayer.HasAnimation(animationName)
+                ? Mathf.Max(0.1f, (float)AnimationPlayer.GetAnimation(animationName).Length)
+                : 0.1f;
+
+            AnimationPlayer.SpeedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
+        }
+
+        Weapon?.PlayStateAnimation(animationName);
+
+        int playerZ = BodySprite != null ? BodySprite.ZIndex : 0;
+        bool weaponAbove = direction == "Right" || direction == "Up";
+        if (Weapon != null)
+            Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
+    }
+
     private string GetDirectionFromAngle(float angleDegrees, out bool flipH)
     {
         while (angleDegrees > 180) angleDegrees -= 360;
@@ -234,8 +310,6 @@ public partial class Player : Entity
         return "Left";
     }
     
-    private bool _lastFlipH = false;
-    
     private string GetDirectionFromVector(Vector2 direction, out bool flipH)
     {
         flipH = false;
@@ -246,128 +320,6 @@ public partial class Player : Entity
         return GetDirectionFromAngle(angle, out flipH);
     }
     
-    private void UpdateAnimation()
-    {
-        if (AnimationPlayer == null || StateMachine == null) return;
-        
-        PlayerState currentState = StateMachine.CurrentState;
-        string direction;
-        bool flipH;
-        
-        if (currentState == PlayerState.Dodging)
-        {
-            Vector2 dodgeVel = Dodge.GetDodgeVelocity();
-            direction = GetDirectionFromVector(dodgeVel, out flipH);
-        }
-        else if (currentState == PlayerState.Staggered || currentState == PlayerState.Knockback || currentState == PlayerState.Dead)
-        {
-            direction = _lastDamageDirection;
-            flipH = false;
-        }
-        else if (StateMachine.IsAirborne)
-        {
-            direction = "Down";
-            flipH = false;
-        }
-        else if (currentState == PlayerState.Attacking || currentState == PlayerState.HeavyAttacking)
-        {
-            direction = lastAnimationDirection;
-            flipH = _lastFlipH;
-        }
-        else
-        {
-            Vector2 mousePos = GetGlobalMousePosition();
-            Vector2 toMouse = mousePos - GlobalPosition;
-            direction = GetDirectionFromVector(toMouse, out flipH);
-        }
-        
-        if (currentState == lastAnimation && direction == lastAnimationDirection && flipH == _lastFlipH == _lastAirborne)
-            return;
-        
-        lastAnimation = currentState;
-        lastAnimationDirection = direction;
-        _lastFlipH = flipH;
-        
-        if (BodySprite != null)
-            BodySprite.FlipH = flipH;
-
-        foreach (string animationName in GetAnimationCandidates(currentState, direction))
-        {
-            if (AnimationPlayer.HasAnimation(animationName))
-            {
-                bool isAttackAnimation = animationName.StartsWith("Attack") ||
-                                         animationName.StartsWith("attack") ||
-                                         animationName == "Attack_Spin";
-                if (isAttackAnimation && Weapon != null)
-                {
-                    float desiredDuration = Weapon.GetAttackAnimationDuration(direction, currentState == PlayerState.HeavyAttacking);
-                    float nativeLength = GetAnimationDuration(animationName);
-                    float speedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
-                    AnimationPlayer.SpeedScale = speedScale;
-                }
-                else
-                {
-                    AnimationPlayer.SpeedScale = 1f;
-                }
-
-                if (PlayPlayerAnimation(animationName))
-                {
-                    Weapon?.PlayStateAnimation(animationName);
-
-                    int playerZ = BodySprite != null ? BodySprite.ZIndex : 0;
-                    bool weaponAbove = direction == "Right" || direction == "Up";
-                    if (Weapon != null)
-                        Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
-
-                    return;
-                }
-            }
-        }
-    }
-
-    private float GetAnimationDuration(string animationName)
-    {
-        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
-            return 0.1f;
-
-        Animation animation = AnimationPlayer.GetAnimation(animationName);
-        if (animation == null)
-            return 0.1f;
-
-        return Mathf.Max(0.1f, (float)animation.Length);
-    }
-    
-    private string[] GetAnimationCandidates(PlayerState state, string direction)
-    {
-        string idle = $"Idle_{direction}";
-
-        return state switch
-        {
-            PlayerState.Moving => new[] { $"Move_{direction}", idle },
-            PlayerState.Airborne => new[] { "Jump_Down", idle },
-            PlayerState.Attacking => new[] { $"Attack_{direction}_1", $"attack_{direction}_1", $"Attack_{direction}", idle },
-            PlayerState.HeavyAttacking => new[] { "Attack_Spin", $"Attack_{direction}", idle },
-            PlayerState.AirAttacking => new[] { $"Air_Attack_{direction}", $"Attack_{direction}_1", $"Attack_{direction}", idle },
-            PlayerState.Dodging => new[] { $"Dodge_{direction}", $"Move_{direction}", idle },
-            PlayerState.Healing => new[] { idle },
-            PlayerState.Staggered => new[] { $"Take_Damage_{direction}", idle },
-            PlayerState.Knockback => new[] { $"Take_Damage_{direction}", idle },
-            PlayerState.Dead => new[] { "Die", "Idle_Down", idle },
-            _ => new[] { idle }
-        };
-    }
-
-    private bool PlayPlayerAnimation(string animationName)
-    {
-        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
-            return false;
-
-        if (AnimationPlayer.CurrentAnimation != animationName || !AnimationPlayer.IsPlaying())
-            AnimationPlayer.Play(animationName);
-
-        return true;
-    }
-
     private void PlayWeaponAttackAnimation(bool isHeavy)
     {
         if (Weapon == null) return;
@@ -389,6 +341,13 @@ public partial class Player : Entity
         string direction = GetDirectionFromVector(toMouse, out _);
 
         return Weapon.GetAttackAnimationDuration(direction, isHeavy);
+    }
+
+    public override float GetAttackDuration()
+    {
+        if (Weapon == null)
+            return base.GetAttackDuration();
+        return GetCurrentAttackAnimationDuration(false);
     }
 
 }

@@ -4,19 +4,10 @@ using System.Collections.Generic;
 public abstract partial class Enemy : Entity
 {
     private static readonly List<Enemy> ActiveEnemies = new();
-    private const float CAMERA_FOCUS_RANGE = 500f;
 
     public Player Player { get; private set; }
     private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
-    private EnemyStateMachine StateMachine;
-    public TenacitySystem TenacitySystem;
 
-    public Texture2D Tenacity_Bar_Normal = ResourceLoader.Load<Texture2D>("uid://brl8bddmdruyt");
-    public Texture2D Tenacity_Bar_Active = ResourceLoader.Load<Texture2D>("uid://b2fo3fwaguoep");
-    public Texture2D Tenacity_Bar_Cooldown = ResourceLoader.Load<Texture2D>("uid://0s2uvwfy3s50");
-    private RichTextLabel testDisplay;
-    private TextureProgressBar TenacityBar;
-    public AnimatedSprite2D TenacityCooldownCue { get; private set; }
 
     [Export] public float armor { get; set; } = 0f;
     [Export] public float health { get; set; } = 100f;
@@ -25,13 +16,11 @@ public abstract partial class Enemy : Entity
     [Export] public float damage { get; set; } = 10f;
     [Export] public float vesselReward { get; set; } = 10f;
     [Export] public float soulReward { get; set; } = 50f;
-    protected float cameraPriority = 1f;
 
     [Export] public float outsideKnockbackForce { get; set; } = 1f;
-    [Export] public float tenacity { get => _tenacity; set => _tenacity = Mathf.Clamp(value, 0f, 10f); }
-    [Export] public float maxTenacity { get; set; }
+    [Export] public float tenacity { get; set; } = 5f;
     [Export] public int maxStaggers { get; set; }
-    private float _tenacity;
+    protected float cameraPriority = 1f;
     
     [Export] public DamageType damageType { get; set; }
     [Export] public WeaknessType weaknessType { get; set; }
@@ -39,29 +28,33 @@ public abstract partial class Enemy : Entity
     public enum WeaknessType { Piercing, Slashing, Smashing }
     public enum DificultyScaling { Regular, Corrupted }
 
-    [Export] public float DefaultStaggerDuration { get; set; } = .5f;
-    [Export] public float DefaultRecoveryDuration { get; set; } = 5f;
-    [Export] public float DefaultKnockbackDuration { get; set; } = 0.2f;
-    [Export] public float ChaseRange { get; set; } = 500f;
+
+    [Export] public float ChaseRange { get; set; } = 200f;
     [Export] public float AttackRange { get; set; } = 50f;
     [Export] public float StopDistance { get; set; } = 20f;
 
-    public float attackDuration;
     private float hitTimer = 0f;
     private const float HIT_WINDOW = 1.5f;
-    
-    public bool IsStaggered => TenacitySystem?.IsStaggered ?? false;
-    public bool IsInStaggerWindow => TenacitySystem?.IsInStaggerWindow ?? false;
-    public bool IsRecovering => TenacitySystem?.IsRecovering ?? false;
-    public bool IsDead => StateMachine?.IsDead ?? false;
-    public int CurrentStaggers => TenacitySystem?.CurrentStaggerCount ?? 0;
-    public float CameraPriority => cameraPriority;
-    public bool HasCameraFocus => HasBeenHit && !IsDead && IsWithinCameraFocusRange();
+    private const float CAMERA_FOCUS_RANGE = 200f;
+ 
 
     private bool HasBeenHit = false;
 
-    public void MarkCameraFocus() { HasBeenHit = true; }
+    private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
     private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CAMERA_FOCUS_RANGE; }
+    public void MarkCameraFocus() { HasBeenHit = true; }
+
+    public void InitializeEnemy()
+    {
+        Player = GetTree().Root.FindChild("Player", true, false) as Player;
+
+        StatsDisplay();
+        InitializeTenacity();
+        InitializeBars();
+        InitializeStateMachine();
+
+        UpdateAnimation();
+    }
 
     public override void _Ready()
     {
@@ -129,7 +122,6 @@ public abstract partial class Enemy : Entity
     }
 
 
-    private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
 
     private void DisplayStats()
     {
@@ -150,49 +142,4 @@ public abstract partial class Enemy : Entity
 
 
 
-    protected override void UpdateResourceBars()
-    {
-        base.UpdateResourceBars();
-
-        if (HealthBar != null)
-        {
-            float healthMax = Mathf.Max(GetMaxHealth(), 1f);
-            HealthBar.MaxValue = healthMax;
-            HealthBar.Value = Mathf.Clamp(GetHealth(), 0f, healthMax);
-        }
-
-        if (TenacityBar is TextureProgressBar texTenacityBar)
-        {
-            float tenacityMax = Mathf.Max(maxTenacity, 1f);
-            texTenacityBar.MaxValue = tenacityMax;
-            
-            float clampedTenacity = Mathf.Clamp(tenacity, 0f, tenacityMax);
-            texTenacityBar.Value = tenacityMax - clampedTenacity;
-
-            UpdateTenacityTexture(texTenacityBar);
-        }
-    }
-
-    private void UpdateTenacityTexture(TextureProgressBar bar)
-    {
-        bool isInKnockbackWindow = TenacitySystem?.IsKnockbackActive ?? false;
-        bool isInStaggerWindow = TenacitySystem?.IsInStaggerWindow ?? false;
-        bool isInRecovery = TenacitySystem?.IsInRecoveryCooldown ?? false;
-
-        if (isInStaggerWindow || isInKnockbackWindow)
-        {
-            if (Tenacity_Bar_Active != null)
-                bar.TextureProgress = Tenacity_Bar_Active;
-        }
-        else if (isInRecovery)
-        {
-            if (Tenacity_Bar_Cooldown != null)
-                bar.TextureProgress = Tenacity_Bar_Cooldown;
-        }
-        else
-        {
-            if (Tenacity_Bar_Normal != null)
-                bar.TextureProgress = Tenacity_Bar_Normal;
-        }
-    }
 }

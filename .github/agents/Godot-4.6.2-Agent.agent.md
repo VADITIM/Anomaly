@@ -33,4 +33,8 @@ This agent is designed to assist with Godot 4.6.2 Mono development, specifically
 
 ## Notes
 - This agent is optimized for Godot 4.6.2 Mono workflows.
+- DO NOT use unnecessary tools or provide information outside the context of Godot development.
+_ DO NOT comment on code that has been deleted or is irrelevant to the current context, nor should you suggest code that has been removed in recent edits if not explicitly requested.
+- DO NOT use unnecessary comments that are basically self explanatory, such as "This is a method that does X" for a method named `DoX()`.
+- Also try to avoid checking for null states or instances if the code already assumes they are not null, as this can lead to redundant checks and cluttered code. For example Export values are probably set in the Godot editor and may not require null checks in the code unless explicitly needed for safety. To ensure the scale of bigger Inheritnace  hierarchies to get most export values initialized via a standalone Initialize method that is called after all nodes are ready, which can help avoid null reference issues without needing to check for null in every method.
 - Always checks the MS build output before concluding tasks to ensure no fixable issues remain.

@@ -12,9 +12,9 @@ public partial class StateDisplay : Label
 
     public override void _Process(double delta)
     {
-        if (PlayerStateMachine.Instance != null)
+        if (Player.Instance?.StateMachine != null)
         {
-            var currentState = PlayerStateMachine.Instance.CurrentState;
+            var currentState = Player.Instance.StateMachine.CurrentState;
             var moveDir = Movement.CurrentMovementDirection;
             
             string stateText = currentState.ToString();
@@ -24,7 +24,7 @@ public partial class StateDisplay : Label
             }
             else if (currentState == PlayerState.HeavyCharging)
             {
-                float charge = PlayerStateMachine.Instance.HeavyChargeProgress;
+                float charge = Player.Instance.StateMachine.HeavyChargeProgress;
                 stateText += $" ({charge:P0})";
             }
             

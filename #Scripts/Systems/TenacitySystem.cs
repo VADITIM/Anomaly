@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 public class TenacitySystem
 {
-    public TenacitySystem(Enemy enemy, Node parent, StateMachineBase stateMachine)
+    public TenacitySystem(Enemy enemy, Node parent, StateMachine stateMachine)
     {
         Enemy = enemy;
         Parent = parent;
@@ -14,7 +14,7 @@ public class TenacitySystem
     
     private Enemy Enemy;
     private Node Parent;
-    private StateMachineBase StateMachine;
+    private StateMachine StateMachine;
 
     public event Action<Vector2, float> OnKnockbackStarted;
     public event Action OnKnockbackEnded;

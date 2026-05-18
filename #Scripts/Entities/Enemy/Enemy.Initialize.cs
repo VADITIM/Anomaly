@@ -2,17 +2,6 @@ using Godot;
 
 public abstract partial class Enemy
 {
-    public void InitializeEnemy()
-    {
-        Player = GetTree().Root.FindChild("Player", true, false) as Player;
-
-        StatsDisplay();
-        InitializeTenacity();
-        InitializeBars();
-        InitializeStateMachine();
-
-        PlayAnimation(GetCurrentEnemyAnimation());
-    }
 
     private void StatsDisplay()
     {
@@ -23,6 +12,11 @@ public abstract partial class Enemy
         if (testDisplay != null)
             testDisplay.BbcodeEnabled = true;
     }
+    public TenacitySystem TenacitySystem;
+
+    [Export] public float DefaultStaggerDuration { get; set; } = .5f;
+    [Export] public float DefaultRecoveryDuration { get; set; } = 5f;
+    [Export] public float DefaultKnockbackDuration { get; set; } = 0.2f;
 
     private void InitializeTenacity()
     {
@@ -34,31 +28,5 @@ public abstract partial class Enemy
         maxTenacity = tenacity;
     }
 
-    private void InitializeStateMachine()
-    {
-        StateMachine = GetNodeOrNull<EnemyStateMachine>("EnemyStateMachine");
 
-        if (StateMachine == null)
-        {
-            StateMachine = new EnemyStateMachine();
-            AddChild(StateMachine);
-        }
-
-        StateMachine.SetMaxStaggers(maxStaggers);
-        StateMachine.Target = Player;
-
-        StateMachine.OnDied += OnDeathHandler;
-        StateMachine.OnStateChanged += OnStateChangedHandler;
-
-        TenacitySystem = new TenacitySystem(this, this, StateMachine);
-    }
-
-    public override void InitializeBars()
-    {
-        SetHealth(health);
-        SetMaxHealth(health);
-
-        base.InitializeBars();
-        TenacityBar = InitializeEntity.FindTextureProgressBar(ResourceBarControl, "Tenacity Bar");
-    }
 }

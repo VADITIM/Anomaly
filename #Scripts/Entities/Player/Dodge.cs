@@ -43,7 +43,7 @@ public static class Dodge
     {
         if (!CanDodge()) return false;
         
-        var stateMachine = PlayerStateMachine.Instance;
+        var stateMachine = Player.Instance?.StateMachine;
         if (stateMachine == null) return false;
         
         var currentState = stateMachine.CurrentState;
