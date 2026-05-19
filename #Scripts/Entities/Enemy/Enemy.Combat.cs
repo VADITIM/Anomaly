@@ -78,23 +78,12 @@ public abstract partial class Enemy
             float staggeredForce = force > 0f ? force * 2.5f : 75f;
             float weaknessMultiplier = 1f;
 
-            if (weapon != null)
-            {
-                // attack types removed — no weakness multiplier
-                weaknessMultiplier = 1f;
-            }
-
             Vector2 knockbackDirection = (GlobalPosition - sourcePosition).Normalized();
             TenacitySystem?.RequestKnockback(knockbackDirection, staggeredForce * weaknessMultiplier, 0.2f);
             return;
         }
 
         float defaultMultiplier = 1f;
-        if (weapon != null)
-        {
-            // attack types removed — no weakness multiplier
-            defaultMultiplier = 1f;
-        }
 
         Vector2 normalDirection = (GlobalPosition - sourcePosition).Normalized();
         TenacitySystem?.RequestKnockback(normalDirection, subtleForce * defaultMultiplier, duration);

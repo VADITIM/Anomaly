@@ -36,7 +36,6 @@ public partial class UI : Control
             return;
         }
 
-        // BonfireMenu.Visible = true;
         WeaponMenu.Visible = true;
         GetViewport().SetInputAsHandled();
     }
@@ -53,9 +52,6 @@ public partial class UI : Control
 
     private void ConnectPressed(Button button)
     {
-        if (button == null)
-            return;
-
         Callable callable = Callable.From(OnEquipmentButtonDown);
 
         if (button.IsConnected(Button.SignalName.Pressed, callable))

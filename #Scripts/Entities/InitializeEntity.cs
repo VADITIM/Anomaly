@@ -1,16 +1,7 @@
 using Godot;
 
-/// <summary>
-/// Static helper class for initializing entity resource bars and related UI elements.
-/// Handles discovery and initialization of resource bar controls for entities.
-/// </summary>
 public static class InitializeEntity
 {
-    /// <summary>
-    /// Initializes resource bars for an entity by finding and setting up the health bar UI.
-    /// </summary>
-    /// <param name="entity">The entity to initialize resource bars for</param>
-    /// <returns>Tuple containing (resourceBarControl, healthBar)</returns>
     public static (Control, TextureProgressBar) InitializeResourceBars(Entity entity)
     {
         Control resourceBarControl = FindResourceBarControl(entity);
@@ -23,9 +14,6 @@ public static class InitializeEntity
         return (resourceBarControl, healthBar);
     }
 
-    /// <summary>
-    /// Finds the resource bar control for an entity by checking candidates.
-    /// </summary>
     private static Control FindResourceBarControl(Entity entity)
     {
         foreach (string candidate in GetResourceBarCandidates(entity))
@@ -38,9 +26,6 @@ public static class InitializeEntity
         return null;
     }
 
-    /// <summary>
-    /// Recursively searches for a child control with a specific name.
-    /// </summary>
     private static Control FindChildControl(Node node, string nodeName)
     {
         foreach (Node child in node.GetChildren())
@@ -56,9 +41,6 @@ public static class InitializeEntity
         return null;
     }
 
-    /// <summary>
-    /// Finds a TextureProgressBar at a given node path, recursively if needed.
-    /// </summary>
     public static TextureProgressBar FindTextureProgressBar(Node node, string nodePath)
     {
         if (node == null)
@@ -71,9 +53,6 @@ public static class InitializeEntity
         return node.FindChild(nodePath, true, false) as TextureProgressBar;
     }
 
-    /// <summary>
-    /// Gets the list of candidate names for resource bar controls for an entity.
-    /// </summary>
     private static string[] GetResourceBarCandidates(Entity entity)
     {
         if (entity is Enemy)
@@ -85,17 +64,11 @@ public static class InitializeEntity
         return new[] { "Resource Bar" };
     }
 
-    /// <summary>
-    /// Generic helper to get a node by path from an entity.
-    /// </summary>
     private static T GetNodeOrNull<T>(Entity entity, string path) where T : Node
     {
         return entity.GetNodeOrNull<T>(path);
     }
 
-    /// <summary>
-    /// Generic helper to get a node by path from any node.
-    /// </summary>
     private static T GetNodeOrNull<T>(Node node, string path) where T : Node
     {
         return node.GetNodeOrNull<T>(path);

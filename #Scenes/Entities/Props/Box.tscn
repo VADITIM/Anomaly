@@ -58,8 +58,7 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_jqbvc"]
 _data = {
 &"Die_Down": SubResource("Animation_xjnca"),
-&"Idle_Down": SubResource("Animation_okhwv"),
-&"Take_Damage_Down": SubResource("Animation_k6eut")
+&"Idle_Down": SubResource("Animation_okhwv")
 }
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dh61d"]

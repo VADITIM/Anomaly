@@ -103,7 +103,6 @@ public static class WeaponAnimations
         if (animationName.Contains("Bottom")) return "Bottom";
         if (animationName.Contains("Left"))   return "Left";
         if (animationName.Contains("Right"))  return "Right";
-        // Legacy aliases kept for backwards-compat.
         if (animationName.Contains("Up"))     return "Top";
         if (animationName.Contains("Down"))   return "Bottom";
         return "Bottom";

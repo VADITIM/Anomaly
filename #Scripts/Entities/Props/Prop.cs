@@ -55,7 +55,6 @@ public partial class Prop : Entity
 
     public override void ApplyKnockback(Vector2 direction, float force, float duration = 0.2f)
     {
-        // Standard knockback calculation based on weight
         float effectiveForce = force / Mathf.Max(weight, 0.1f);
         knockbackVelocity = direction.Normalized() * effectiveForce;
         knockbackDuration = duration;
@@ -66,13 +65,11 @@ public partial class Prop : Entity
         if (_isDead) return;
         _isDead = true;
 
-        // Disable interaction layers (matching Prop layer logic)
         CollisionLayer = 0;
         CollisionMask = 0;
         
         PlayAnimation("Die_Down");
 
-        // Wait for the Die_Down animation to finish before removing from tree
         if (AnimationPlayer != null && AnimationPlayer.HasAnimation("Die_Down"))
         {
             float length = AnimationPlayer.GetAnimation("Die_Down").Length;

@@ -24,18 +24,15 @@ public partial class WeaponMenu : Control
 
     public override void _Ready()
     {
-
-
         Visible = false;
         MouseFilter = MouseFilterEnum.Pass;
-        ProcessMode = ProcessModeEnum.Inherit;  // Only process when parent allows
+        ProcessMode = ProcessModeEnum.Inherit;
 
         Player ??= GetTree().Root.FindChild("Player", true, false) as Player;
         WeaponManager ??= Player?.GetNodeOrNull<WeaponManager>("WeaponManager");
         WeaponInventory ??= Player?.GetNodeOrNull<WeaponArcInventory>("WeaponInventory");
         _swapAnimator ??= Player?.GetNodeOrNull<WeaponSwapAnimator>("WeaponSwapAnimator");
 
-        // Create animator if it doesn't exist (defer to avoid blocking parent setup)
         if (_swapAnimator == null && Player != null)
         {
             _swapAnimator = new WeaponSwapAnimator();
@@ -124,12 +121,6 @@ public partial class WeaponMenu : Control
             Button button = weaponItemControl.GetNode<Button>("Button");
             TextureRect textureRect = weaponItemControl.GetNode<TextureRect>("Button/TextureRect");
             
-            if (button == null || textureRect == null)
-            {
-                weaponItemControl.QueueFree();
-                continue;
-            }
-
             button.Disabled = isEquipped;
             button.MouseFilter = MouseFilterEnum.Stop;
             button.FocusMode = FocusModeEnum.All;
@@ -158,7 +149,6 @@ public partial class WeaponMenu : Control
             button.GuiInput += (InputEvent evt) => {
                 if (evt is InputEventMouseButton mouse && mouse.Pressed && !mouse.IsEcho() && mouse.ButtonIndex == MouseButton.Right)
                 {
-                    // Right-click also triggers swap animation
                     _swapAnimator?.AnimateWeaponSwap(textureRect, weaponScene);
                     RefreshGrid();
                     GetViewport().SetInputAsHandled();

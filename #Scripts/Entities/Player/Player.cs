@@ -125,19 +125,16 @@ public partial class Player : Entity
         }
         else if (firstChild is WeaponArc arcNode)
         {
-            // Load weapon from scene file
             PackedScene weaponScene = GD.Load<PackedScene>("res://#Scenes/Entities/Weapon.tscn");
             Weapon weaponContainer = weaponScene.Instantiate<Weapon>();
-            // Move existing arc under new container and slot it
             WeaponSlot.RemoveChild(arcNode);
             weaponContainer.AddChild(arcNode);
-            weaponContainer.SlotArc(arcNode);  // Slot the arc into the container
+            weaponContainer.SlotArc(arcNode);
             WeaponSlot.AddChild(weaponContainer);
             Weapon = weaponContainer;
         }
         else
         {
-            // No valid child found; load weapon from scene file
             PackedScene weaponScene = GD.Load<PackedScene>("res://#Scenes/Entities/Weapon.tscn");
             Weapon weaponContainer = weaponScene.Instantiate<Weapon>();
             WeaponSlot.AddChild(weaponContainer);
@@ -168,8 +165,7 @@ public partial class Player : Entity
             Dodge.UseStamina();
         }
 
-        if (WeaponSlot != null)
-            WeaponSlot.Visible = true;
+        WeaponSlot.Visible = true;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -192,14 +188,12 @@ public partial class Player : Entity
         {
             if (keyEvent.Keycode == Key.F1)
             {
-                // Debug: take damage from above
                 float debugDamage = 10f;
                 Vector2 sourcePos = GlobalPosition + new Vector2(0f, -50f);
                 TakeDamage(debugDamage, sourcePos);
             }
             else if (keyEvent.Keycode == Key.F2)
             {
-                // Debug: heal player
                 float debugHeal = 10f;
                 SetHealth(GetHealth() + debugHeal);
             }
@@ -265,32 +259,28 @@ public partial class Player : Entity
 
     protected override void ApplyFacing(bool flipH)
     {
-        if (BodySprite != null)
-            BodySprite.FlipH = flipH;
+        BodySprite.FlipH = flipH;
     }
 
     protected override void OnAnimationPlayed(string animationName, State state, string direction, bool flipH)
     {
         lastAnimationDirection = direction;
 
-        if (Weapon != null && (animationName.StartsWith("Attack") ||
-                               animationName.StartsWith("attack") ||
-                               animationName == "Attack_Spin"))
+        if (animationName.StartsWith("Attack") ||
+            animationName.StartsWith("attack") ||
+            animationName == "Attack_Spin")
         {
             float desiredDuration = Weapon.GetAttackAnimationDuration(direction, state == PlayerState.HeavyAttacking);
-            float nativeLength = AnimationPlayer != null && AnimationPlayer.HasAnimation(animationName)
-                ? Mathf.Max(0.1f, (float)AnimationPlayer.GetAnimation(animationName).Length)
-                : 0.1f;
+            float nativeLength = Mathf.Max(0.1f, (float)AnimationPlayer.GetAnimation(animationName).Length);
 
             AnimationPlayer.SpeedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
         }
 
-        Weapon?.PlayStateAnimation(animationName);
+        Weapon.PlayStateAnimation(animationName);
 
-        int playerZ = BodySprite != null ? BodySprite.ZIndex : 0;
+        int playerZ = BodySprite.ZIndex;
         bool weaponAbove = direction == "Right" || direction == "Up";
-        if (Weapon != null)
-            Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
+        Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
     }
 
     private string GetDirectionFromAngle(float angleDegrees, out bool flipH)
@@ -322,8 +312,6 @@ public partial class Player : Entity
     
     private void PlayWeaponAttackAnimation(bool isHeavy)
     {
-        if (Weapon == null) return;
-
         Vector2 mousePos = GetGlobalMousePosition();
         Vector2 toMouse = mousePos - GlobalPosition;
         string direction = GetDirectionFromVector(toMouse, out _);
@@ -333,7 +321,7 @@ public partial class Player : Entity
 
     public float GetCurrentAttackAnimationDuration(bool isHeavy)
     {
-        if (AnimationPlayer == null || Weapon == null)
+        if (AnimationPlayer == null)
             return 0.5f;
 
         Vector2 mousePos = GetGlobalMousePosition();
@@ -345,8 +333,6 @@ public partial class Player : Entity
 
     public override float GetAttackDuration()
     {
-        if (Weapon == null)
-            return base.GetAttackDuration();
         return GetCurrentAttackAnimationDuration(false);
     }
 

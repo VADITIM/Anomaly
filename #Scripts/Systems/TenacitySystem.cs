@@ -300,7 +300,6 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
         float maxTenacityReduction = 1f - (Enemy.maxTenacity / 100f);
         maxTenacityReduction = Mathf.Clamp(maxTenacityReduction, 0.3f, 1f);
 
-        // attack types removed — no weakness multiplier
         float weaknessMultiplier = 1f;
         
         float effectiveKnockback = baseForce * tenacityDistanceMultiplier * maxTenacityReduction * weaknessMultiplier * 10f;

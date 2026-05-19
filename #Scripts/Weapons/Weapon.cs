@@ -98,7 +98,6 @@ public partial class Weapon : Node2D
     public override void _Process(double delta)
     {
         UpdateComboTimers((float)delta);
-        // Enable hitbox monitoring when the owner (player or enemy) is attacking.
         if (weaponHitbox != null)
         {
             StateMachine ownerSM = FindOwnerStateMachine();
@@ -190,10 +189,6 @@ public partial class Weapon : Node2D
         hitCount = 0;
     }
 
-    // -------------------------------------------------------------------------
-    // Combo API — called by the player state machine
-    // -------------------------------------------------------------------------
-
     public void StartAttackSequence(bool isHeavy)
     {
         if (isHeavy)
@@ -259,17 +254,13 @@ public partial class Weapon : Node2D
         queuedAttackFollowUp = false;
     }
 
-    // -------------------------------------------------------------------------
-    // Internal timer management
-    // -------------------------------------------------------------------------
-
     private void UpdateComboTimers(float delta)
     {
         if (comboCooldownTimer > 0f)
         {
             comboCooldownTimer = Mathf.Max(comboCooldownTimer - delta, 0f);
             if (comboCooldownTimer <= 0f)
-            return; // cooldown takes priority; window can't tick during it
+                    return;
         }
 
         if (comboWindowTimer > 0f)
@@ -277,15 +268,10 @@ public partial class Weapon : Node2D
             comboWindowTimer = Mathf.Max(comboWindowTimer - delta, 0f);
             if (comboWindowTimer <= 0f)
             {
-                // Window expired without input — reset the combo.
                 ResetAttackSequence();
             }
         }
     }
-
-    // -------------------------------------------------------------------------
-    // Duration / animation helpers
-    // -------------------------------------------------------------------------
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {

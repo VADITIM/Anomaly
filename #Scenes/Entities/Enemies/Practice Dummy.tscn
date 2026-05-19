@@ -77,8 +77,7 @@ tracks/0/keys = {
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_rwfqm"]
 _data = {
 &"Idle_Down": SubResource("Animation_u8rv5"),
-&"Spin_Down": SubResource("Animation_wqa6d"),
-&"Take_Damage_Down": SubResource("Animation_3sdvt")
+&"Spin_Down": SubResource("Animation_wqa6d")
 }
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_tt53j"]

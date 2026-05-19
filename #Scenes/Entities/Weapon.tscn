@@ -1215,11 +1215,7 @@ _data = {
 &"Move_Left": SubResource("Animation_131ah"),
 &"Move_Right": SubResource("Animation_aft2g"),
 &"Move_Up": SubResource("Animation_rlmp7"),
-&"RESET": SubResource("Animation_tkwsq"),
-&"Take_Damage_Down": SubResource("Animation_845jr"),
-&"Take_Damage_Left": SubResource("Animation_pvkrm"),
-&"Take_Damage_Right": SubResource("Animation_0y2dh"),
-&"Take_Damage_Up": SubResource("Animation_lgbu0")
+&"RESET": SubResource("Animation_tkwsq")
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wh5xt"]

@@ -4,7 +4,6 @@ public partial class Entity : CharacterBody2D
 {
     private const string DAMAGE_FLASH_SHADER_PATH = "res://#Shaders/damageflash.gdshader";
 
-    // ── Knockback ─────────────────────────────────────────────────────────────
     [Export] public bool  canBeKnockedBack  { get; set; } = true;
     [Export] public bool  canBeKnockbacked  { get => canBeKnockedBack; set => canBeKnockedBack = value; }
     [Export] public float weight            { get; set; } = 1f;
@@ -14,7 +13,6 @@ public partial class Entity : CharacterBody2D
     protected Vector2 knockbackVelocity = Vector2.Zero;
     protected float   knockbackDuration = 0f;
 
-    // ── Jump ───────────────────────────────────────────────────────────────────
     [Export] public float jumpImpulse         { get; set; } = 300f;
     [Export] public float jumpFallSpeed       { get; set; } = 1200f;
     [Export] public float shadowScaleWhenJump { get; set; } = 0.5f;
@@ -28,25 +26,20 @@ public partial class Entity : CharacterBody2D
     protected Vector2 weaponNodeBasePosition = Vector2.Zero;
     protected Node2D WeaponNode = null;
 
-    // ── Misc exports ──────────────────────────────────────────────────────────
     [Export] public AnimationPlayer AnimationPlayer { get; set; }
     public StateMachine StateMachine { get; protected set; }
 
-    // ── Attack ────────────────────────────────────────────────────────────────
     [Export] public float attackDuration { get; set; } = 1f;
 
-    // ── Damage flash ──────────────────────────────────────────────────────────
     [Export] public float damageFlashDuration { get; set; } = 0.5f;
     [Export] public Color damageFlashColor { get; set; } = Colors.White;
 
-    // ── Health ────────────────────────────────────────────────────────────────
     [ExportGroup("Health")]
     [Export] public float maxHealth { get; set; } = 99999f;
     [Export] public float health    { get; set; }
 
     protected Control             ResourceBarControl;
     protected TextureProgressBar  HealthBar;
-    // ── Ghost / damage-lag bar + shake handled by HealthBarAnimator
     protected TextureProgressBar  HealthBarGhost;
     private HealthBarAnimator _healthBarAnimator = null;
     private Sprite2D _damageFlashSprite = null;
@@ -56,10 +49,6 @@ public partial class Entity : CharacterBody2D
     private State _lastAnimationState = (State)(-1);
     private string _lastAnimationDirection = "";
     private bool _lastAnimationFlipH = false;
-
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Virtual hooks for subclasses
-    // ═════════════════════════════════════════════════════════════════════════
 
     protected virtual bool  CanTakeDamage(float damage, Vector2 sourcePosition)                                          => true;
     protected virtual float ApplyDamageModifiers(float damage, Vector2 sourcePosition)                                   => damage;
@@ -91,10 +80,6 @@ public partial class Entity : CharacterBody2D
         _damageFlashTween.TweenProperty(_damageFlashMaterial, "shader_parameter/flash_value", 0f, Mathf.Max(0.01f, damageFlashDuration));
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Godot lifecycle
-    // ═════════════════════════════════════════════════════════════════════════
-
     public override void _Ready()
     {
         EnsureStateMachine();
@@ -115,10 +100,6 @@ public partial class Entity : CharacterBody2D
         UpdateAnimation(UsesDirectionalAnimations);
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Public jump API
-    // ═════════════════════════════════════════════════════════════════════════
-
     public virtual void Jump()
     {
         if (jumpTimer <= 0f)
@@ -129,10 +110,6 @@ public partial class Entity : CharacterBody2D
     }
 
     public virtual bool IsJumping => jumpTimer > 0f;
-
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Knockback
-    // ═════════════════════════════════════════════════════════════════════════
 
     protected void ProcessKnockback(float delta)
     {
@@ -167,10 +144,6 @@ public partial class Entity : CharacterBody2D
         ApplyKnockback(dir, force, duration);
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Damage
-    // ═════════════════════════════════════════════════════════════════════════
-
     public virtual void TakeDamage(float damage, Vector2 sourcePosition)
     {
         if (damage <= 0f || !CanTakeDamage(damage, sourcePosition))
@@ -199,18 +172,12 @@ public partial class Entity : CharacterBody2D
         TakeKnockback(sourcePosition, weapon.Knockback);
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Resource bars
-    // ═════════════════════════════════════════════════════════════════════════
-
     public virtual void InitializeBars() => InitializeResourceBars();
 
     public void InitializeResourceBars()
     {
         (ResourceBarControl, HealthBar) = InitializeEntity.InitializeResourceBars(this);
 
-        // Look for a sibling bar named "Health Bar Ghost" (or "HealthBarGhost").
-        // Add it to your scene behind the real health bar and tint it orange/red.
         if (ResourceBarControl != null)
         {
             HealthBarGhost = ResourceBarControl.GetNodeOrNull<TextureProgressBar>("Health Bar Ghost")
@@ -219,7 +186,6 @@ public partial class Entity : CharacterBody2D
 
         UpdateResourceBars();
 
-        // Initialise animator and ghost to current health so it doesn't drain on spawn
         _healthBarAnimator = new HealthBarAnimator();
         _healthBarAnimator.Initialize(ResourceBarControl, HealthBar, HealthBarGhost, GetHealth());
     }
@@ -335,14 +301,6 @@ public partial class Entity : CharacterBody2D
         }
     }
 
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Bar shake / ghost behaviour handled by HealthBarAnimator
-    // ═════════════════════════════════════════════════════════════════════════
-
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Misc
-    // ═════════════════════════════════════════════════════════════════════════
-
     protected void SpawnDamageNumber(float damageAmount, DamageNumberStyle style)
         => DamageNumberSpawner.Spawn(this, damageAmount, style);
 
@@ -364,10 +322,6 @@ public partial class Entity : CharacterBody2D
 
         return Mathf.Max(0.1f, (float)animation.Length);
     }
-
-    // ═════════════════════════════════════════════════════════════════════════
-    //  Jump
-    // ═════════════════════════════════════════════════════════════════════════
 
     private void EnsureStateMachine()
     {

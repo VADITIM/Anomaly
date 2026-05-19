@@ -680,11 +680,7 @@ _data = {
 &"Move_Left": SubResource("Animation_07fq3"),
 &"Move_Right": SubResource("Animation_xtq74"),
 &"Move_Up": SubResource("Animation_7ra2a"),
-&"RESET": SubResource("Animation_bcb4c"),
-&"Take_Damage_Down": SubResource("Animation_cq2wp"),
-&"Take_Damage_Left": SubResource("Animation_pdwa2"),
-&"Take_Damage_Right": SubResource("Animation_eg1dr"),
-&"Take_Damage_Up": SubResource("Animation_iwyk8")
+&"RESET": SubResource("Animation_bcb4c")
 }
 
 [sub_resource type="Resource" id="Resource_53fn5"]
