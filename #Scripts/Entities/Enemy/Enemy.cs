@@ -8,19 +8,8 @@ public abstract partial class Enemy : Entity
     public Player Player { get; private set; }
     private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
 
-
-    [Export] public float armor { get; set; } = 0f;
-    [Export] public float health { get; set; } = 100f;
-    [Export] public float maxHealth { get; set; } = 100f;
-    [Export] public float speed { get; set; } = 80f;
-    [Export] public float damage { get; set; } = 10f;
     [Export] public float vesselReward { get; set; } = 10f;
     [Export] public float soulReward { get; set; } = 50f;
-
-    [Export] public float outsideKnockbackForce { get; set; } = 1f;
-    [Export] public float tenacity { get; set; } = 5f;
-    [Export] public int maxStaggers { get; set; }
-    protected float cameraPriority = 1f;
     
     [Export] public DamageType damageType { get; set; }
     [Export] public WeaknessType weaknessType { get; set; }
@@ -29,19 +18,18 @@ public abstract partial class Enemy : Entity
     public enum DificultyScaling { Regular, Corrupted }
 
 
-    [Export] public float ChaseRange { get; set; } = 200f;
-    [Export] public float AttackRange { get; set; } = 50f;
-    [Export] public float StopDistance { get; set; } = 20f;
+    [Export] public float chaseRange { get; set; } = 200f;
+    [Export] public float attackRange { get; set; } = 50f;
+    [Export] public float stopDistance { get; set; } = 20f;
 
     private float hitTimer = 0f;
     private const float HIT_WINDOW = 1.5f;
-    private const float CAMERA_FOCUS_RANGE = 200f;
  
 
     private bool HasBeenHit = false;
 
     private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
-    private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CAMERA_FOCUS_RANGE; }
+    private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CameraFocus.CAMERA_FOCUS_RANGE; }
     public void MarkCameraFocus() { HasBeenHit = true; }
 
     public void InitializeEnemy()
@@ -121,8 +109,6 @@ public abstract partial class Enemy : Entity
         Player.Instance.Stats.SetCurrent("Soul", Mathf.Min(currentSoul + soulReward, maxSoul));
     }
 
-
-
     private void DisplayStats()
     {
         if (testDisplay == null) return;
@@ -139,7 +125,4 @@ public abstract partial class Enemy : Entity
                            $"\n[color=green]Tenacity:[/color] {tenacity:F1} / 10 [color=orange]Staggers:[/color] {CurrentStaggers} / {maxStaggers}" +
                            $"\n[color=cyan]Weakness:[/color] {weaknessType}";
     }
-
-
-
 }

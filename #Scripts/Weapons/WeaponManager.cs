@@ -71,8 +71,8 @@ public partial class WeaponManager : Node
 
     private Node GetWeaponParent()
     {
-        if (Player?.WeaponSlot != null)
-            return Player.WeaponSlot;
+        if (Player?.Weapon != null)
+            return Player.Weapon;
         return Player ?? GetParent();
     }
 

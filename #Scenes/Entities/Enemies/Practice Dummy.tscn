@@ -1,10 +1,8 @@
 [gd_scene format=4 uid="uid://b1135sndfmxq0"]
 
-[ext_resource type="Script" uid="uid://f2o25s7igb6w" path="res://#Scripts/Entities/Enemy/Types/Enemy5.cs" id="1_u8rv5"]
+[ext_resource type="Script" uid="uid://duypkkeuqxm24" path="res://#Scripts/Entities/Enemy/Types/PracticeDummy.cs" id="1_u8rv5"]
 [ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="1_vnapa"]
-[ext_resource type="Texture2D" uid="uid://brl8bddmdruyt" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Progress.png" id="2_3sdvt"]
 [ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="2_u8rv5"]
-[ext_resource type="Texture2D" uid="uid://b2fo3fwaguoep" path="res://#Assets/UI/Resources UI/Enemy/Tenacity Bar/Tenacity_Bar_Active.png" id="3_rtvfq"]
 [ext_resource type="Texture2D" uid="uid://crb58nbj2e5hg" path="res://#Assets/VFX/Tenacity VFX/cue3.png" id="3_wqa6d"]
 [ext_resource type="Texture2D" uid="uid://dtum370lchaq1" path="res://#Assets/VFX/Tenacity VFX/cue4.png" id="4_3sdvt"]
 [ext_resource type="Texture2D" uid="uid://ittl4mkf231e" path="res://#Assets/VFX/Tenacity VFX/cue5.png" id="5_rtvfq"]
@@ -57,21 +55,6 @@ tracks/0/keys = {
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
 "values": [0, 8, 9, 10, 11, 12, 13, 14]
-}
-
-[sub_resource type="Animation" id="Animation_3sdvt"]
-length = 0.5
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 4, 5, 6, 7]
 }
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_rwfqm"]
@@ -193,16 +176,10 @@ animations = [{
 collision_layer = 8
 collision_mask = 61
 script = ExtResource("1_u8rv5")
-maxHealth = 0.0
-speed = 0.0
 outsideKnockbackForce = 0.0
+speed = 0.0
 tenacity = 1.0
 maxTenacity = 1.0
-AttackRange = 0.0
-StopDistance = 0.0
-Tenacity_Bar_Normal = ExtResource("2_3sdvt")
-Tenacity_Bar_Active = ExtResource("3_rtvfq")
-maxHealth = 0.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1370027202]
 shape = SubResource("RectangleShape2D_7wtq7")

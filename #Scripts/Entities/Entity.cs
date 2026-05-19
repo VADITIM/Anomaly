@@ -8,7 +8,14 @@ public partial class Entity : CharacterBody2D
     [Export] public bool  canBeKnockbacked  { get => canBeKnockedBack; set => canBeKnockedBack = value; }
     [Export] public float weight            { get; set; } = 1f;
     [Export] public float knockbackDecay    { get; set; } = 2000f;
-    [Export] public float maxTenacity        { get; set; } = 10f;
+    [Export] public float outsideKnockbackForce { get; set; } = 1f;
+    [Export] public float speed                 { get; set; } = 100f;
+    [Export] public float damage                { get; set; } = 10f;
+    [Export] public float armor                 { get; set; } = 0f;
+    [Export] public float tenacity              { get; set; } = 5f;
+    [Export] public float maxTenacity           { get; set; } = 10f;
+    [Export] public int maxStaggers             { get; set; } = 0;
+    [Export] public float cameraPriority        { get; set; } = 0f;
 
     protected Vector2 knockbackVelocity = Vector2.Zero;
     protected float   knockbackDuration = 0f;

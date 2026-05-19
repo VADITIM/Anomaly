@@ -51,7 +51,7 @@ tracks/0/keys = {
 tracks/1/type = "value"
 tracks/1/imported = false
 tracks/1/enabled = true
-tracks/1/path = NodePath("Body:frame")
+tracks/1/path = NodePath("Sprite:frame")
 tracks/1/interp = 1
 tracks/1/loop_wrap = false
 tracks/1/keys = {
@@ -67,7 +67,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
+tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = false
 tracks/0/keys = {
@@ -83,7 +83,7 @@ loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
 tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
+tracks/0/path = NodePath("Sprite:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = false
 tracks/0/keys = {
@@ -228,19 +228,19 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_nmi03"]
 radius = 46.173584
 
-[node name="Enemy4" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
+[node name="Bee" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
 collision_layer = 24
 collision_mask = 295
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_micq5")
-AnimationPlayer = NodePath("AnimationPlayer")
+AnimationPlayer = NodePath("Animation Player")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")
 debug_color = Color(0.18003303, 0.6432267, 3.85046e-07, 0.41960785)
 
-[node name="Body" type="Sprite2D" parent="." unique_id=2095261304]
+[node name="Sprite" type="Sprite2D" parent="." unique_id=2095261304]
 texture_filter = 1
 material = SubResource("ShaderMaterial_nxe0n")
 position = Vector2(0, -3.125)
@@ -271,7 +271,7 @@ metadata/_aseprite_wizard_config_ = {
 }
 metadata/_aseprite_wizard_source_file_hash_ = "e8f61ff5f5d318cdcf850351f96af355"
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=1594877807]
+[node name="Animation Player" type="AnimationPlayer" parent="." unique_id=1594877807]
 libraries/ = SubResource("AnimationLibrary_lhous")
 
 [node name="Tenacity Broken Animation" type="AnimatedSprite2D" parent="." unique_id=766473252]

@@ -1,13 +1,14 @@
 using Godot;
 using System;
 
-public partial class Enemy5 : Enemy
+public partial class PracticeDummy : Enemy
 {
-    public Enemy5()
+    public PracticeDummy()
     {
         canBeKnockedBack = false;
         armor = 100f;
         health = 1000f;
+        maxHealth = 1000f;
         speed = 0f;
         damage = 0f;
         cameraPriority = 0.85f;

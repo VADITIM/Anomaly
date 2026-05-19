@@ -2,6 +2,13 @@ using Godot;
 
 public static class InitializeEntity
 {
+    public static void InitializeNodes(Entity entity)
+    {
+        entity.AnimationPlayer = entity.GetNodeOrNull<AnimationPlayer>("Animation Player")
+                              ?? entity.GetNodeOrNull<AnimationPlayer>("AnimationPlayer")
+                              ?? entity.GetNodeOrNull<AnimationPlayer>("Animator");
+    }
+
     public static (Control, TextureProgressBar) InitializeResourceBars(Entity entity)
     {
         Control resourceBarControl = FindResourceBarControl(entity);

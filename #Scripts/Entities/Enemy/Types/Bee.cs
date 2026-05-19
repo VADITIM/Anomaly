@@ -9,6 +9,7 @@ public partial class Bee : Enemy
         health = 150f;
         speed = 150f;
         damage = 15f;
+        attackRange = 10f;
         cameraPriority = 1.25f;
         tenacity = 3f; maxTenacity = 3f;
         maxStaggers = 5;

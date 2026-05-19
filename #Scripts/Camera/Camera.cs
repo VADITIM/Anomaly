@@ -1,44 +1,19 @@
 using Godot;
 using System;
 
-public partial class Camera : CameraFocus
+public partial class Camera : Camera2D
 {
-    private float shakeDecay = .01f;
-    private float shakeIntensity = 0f;
-    private float shakeTimer = 0f;
-    private Vector2 shakeOffset = Vector2.Zero;
+    protected Player Player;
+    protected Enemy Enemy;
 
-    public override void _Process(double delta)
+    public virtual bool IsLocked => false;
+
+    public override void _Ready()
     {
-        if (Input.IsActionJustPressed(Keybinds.FocusToggle))
-        {
-            focusActive = !focusActive;
-            if (!focusActive)
-            {
-                focusOffset = Vector2.Zero;
-                Enemy = null;
-                shakeOffset = Vector2.Zero;
-                Offset = Vector2.Zero;
-            }
-        }
-
-        if (!focusActive)
-            return;
-
-        UpdateFocusOffset((float)delta);
-        shakeOffset = CameraFeedback.TenacityBreakShake(delta, ref shakeDecay, ref shakeIntensity, ref shakeTimer);
-        Offset = focusOffset + shakeOffset;
-        
-        if (debugSphere != null && Player != null)
-        {
-            Vector2 focusPoint = Player.GlobalPosition + focusOffset;
-            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4);
-            debugSphere.Visible = showDebugSphere;
-        }
+        Player = GetTree().Root.FindChild("Player", true, false) as Player;
     }
 
-    public void ShakeCamera(float intensity = 0f)
+    public virtual void ShakeCamera(float intensity = 0f)
     {
-        CameraFeedback.ShakeCamera(ref shakeIntensity, ref shakeTimer, intensity);
     }
 }

@@ -4,7 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://b1135sndfmxq0" path="res://#Scenes/Entities/Enemies/Practice Dummy.tscn" id="3_tx5dj"]
 [ext_resource type="PackedScene" uid="uid://jty1m1ihrgmf" path="res://#Scenes/Entities/Props/Box.tscn" id="4_2nxyx"]
 [ext_resource type="PackedScene" uid="uid://danivmopm7dpo" path="res://#Scenes/Entities/Props/Vase.tscn" id="5_gdl6d"]
-[ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Entities/Enemies/Enemy4.tscn" id="6_0ennt"]
+[ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Entities/Enemies/Bee.tscn" id="6_0ennt"]
 [ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Entities/Player.tscn" id="7_mjgta"]
 
 [node name="Node2D" type="Node2D" unique_id=835527753]

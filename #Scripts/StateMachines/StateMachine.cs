@@ -544,20 +544,20 @@ public partial class StateMachine : Node
         switch (CurrentState)
         {
             case State.Idle:
-                if (distanceToTarget <= Enemy.ChaseRange)
+                if (distanceToTarget <= Enemy.chaseRange)
                     TransitionTo(State.Chasing);
                 break;
 
             case State.Chasing:
-                if (distanceToTarget > Enemy.ChaseRange)
+                if (distanceToTarget > Enemy.chaseRange)
                 {
                     TransitionTo(State.Idle);
                 }
-                else if (distanceToTarget <= Enemy.AttackRange)
+                else if (distanceToTarget <= Enemy.attackRange)
                 {
                     TryEnemyAttack();
                 }
-                else if (distanceToTarget <= Enemy.StopDistance)
+                else if (distanceToTarget <= Enemy.stopDistance)
                 {
                     Enemy.Velocity = Vector2.Zero;
                 }

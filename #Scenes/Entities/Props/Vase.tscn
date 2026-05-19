@@ -39,22 +39,6 @@ tracks/0/keys = {
 "values": [0]
 }
 
-[sub_resource type="Animation" id="Animation_k6eut"]
-length = 0.1
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Body:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [0]
-}
-
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_3w2vh"]
 _data = {
 &"Die_Down": SubResource("Animation_xjnca"),
@@ -65,7 +49,7 @@ _data = {
 
 [node name="Vase" type="CharacterBody2D" unique_id=652208677]
 collision_layer = 32
-collision_mask = 21
+collision_mask = 573
 script = ExtResource("2_4wmry")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2082875857]
