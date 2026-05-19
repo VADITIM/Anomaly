@@ -7,7 +7,7 @@ public partial class WeaponArc : Node2D
     [Export] public Sprite2D Sprite;
     [Export] public AnimationPlayer AnimationPlayer;
     [Export] private float attackDuration = 0.37f;
-    [Export] private float[] attackDurations = new float[4] { 0.37f, 0.45f, 0.35f, 0.6f };
+    [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
     [Export] private float heavyAttackDuration = 1.5f;
     private Timer attackAnimationStopTimer;
     private string preparedDirection = "Down";

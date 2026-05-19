@@ -12,7 +12,7 @@ public partial class Weapon : Node2D
     public Area2D Hitbox => weaponHitbox;
     public WeaponArc CurrentArc => currentArc;
 
-    private float damage = 20f;
+    private float damage = 0f;
     private float knockback = 100f;
     private float staminaCost = 2f;
     private float tenacityDamage = 10f;
