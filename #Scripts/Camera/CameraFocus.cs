@@ -17,10 +17,6 @@ public partial class CameraFocus : Camera
     protected float shakeIntensity = 0f;
     protected float shakeTimer = 0f;
 
-    private Tween centerOffsetTween;
-    private bool isCenteringToPlayer = false;
-    private float tweenDuration = .4f;
-
     protected bool focusActive = true;
     public bool FocusActive => focusActive;
     public override bool IsLocked => focusActive && Enemy != null;
@@ -46,16 +42,8 @@ public partial class CameraFocus : Camera
             focusActive = !focusActive;
             if (!focusActive)
             {
-                StartCenterTween();
                 Enemy = null;
-                ResetShakeOffset();
             }
-        }
-
-        if (!focusActive)
-        {
-            Offset = GetCameraOffset();
-            return;
         }
 
         UpdateFocusOffset((float)delta);
@@ -66,24 +54,28 @@ public partial class CameraFocus : Camera
 
     protected virtual void UpdateFocusOffset(float delta)
     {
-        Vector2 cursorPosition = GetGlobalMousePosition();
-        Enemy targetEnemy = Enemy.GetBestCameraTarget(cursorPosition);
-        Enemy = targetEnemy;
-
-        if (targetEnemy == null)
-        {
-            StartCenterTween();
-            return;
-        }
-
-        StopCenterTween();
-
         Vector2 desiredOffset = Vector2.Zero;
-        Vector2 toEnemy = targetEnemy.GlobalPosition - Player.GlobalPosition;
-        desiredOffset = toEnemy * 0.5f;
 
-        if (desiredOffset.Length() > offsetRadius)
-            desiredOffset = desiredOffset.Normalized() * offsetRadius;
+        if (focusActive)
+        {
+            Vector2 cursorPosition = GetGlobalMousePosition();
+            Enemy targetEnemy = Enemy.GetBestCameraTarget(cursorPosition);
+            Enemy = targetEnemy;
+
+            if (targetEnemy != null)
+            {
+                Vector2 toEnemy = targetEnemy.GlobalPosition - Player.GlobalPosition;
+                desiredOffset = toEnemy * 0.5f;
+            }
+            else
+            {
+                Enemy = null;
+            }
+        }
+        else
+        {
+            Enemy = null;
+        }
 
         float lerpWeight = 1f - Mathf.Exp(-focusSpeed * delta);
         FocusOffset = FocusOffset.Lerp(desiredOffset, lerpWeight);
@@ -115,36 +107,6 @@ public partial class CameraFocus : Camera
             debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4);
             debugSphere.Visible = showDebugSphere;
         }
-    }
-
-    protected void StartCenterTween()
-    {
-        if (isCenteringToPlayer)
-            return;
-
-        centerOffsetTween?.Kill();
-        isCenteringToPlayer = true;
-        centerOffsetTween = CreateTween();
-        centerOffsetTween.SetTrans(Tween.TransitionType.Sine);
-        centerOffsetTween.SetEase(Tween.EaseType.InOut);
-        centerOffsetTween.TweenProperty(this, nameof(FocusOffset), Vector2.Zero, tweenDuration);
-        centerOffsetTween.Finished += OnCenterTweenFinished;
-    }
-
-    protected void StopCenterTween()
-    {
-        if (!isCenteringToPlayer)
-            return;
-
-        centerOffsetTween?.Kill();
-        centerOffsetTween = null;
-        isCenteringToPlayer = false;
-    }
-
-    private void OnCenterTweenFinished()
-    {
-        centerOffsetTween = null;
-        isCenteringToPlayer = false;
     }
 
     public override void ShakeCamera(float intensity = 0f)

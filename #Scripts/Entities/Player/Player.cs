@@ -11,7 +11,7 @@ public partial class Player : Entity
     
     public Sprite2D Sprite { get; set; }
     private string lastAnimationDirection = "";
-    private string _lastDamageDirection = "Down";
+    private string _lastDamageDirection = "S";
     private bool _lastFlipH = false;
 
     private Vector2 _bodySpriteBasePosition;

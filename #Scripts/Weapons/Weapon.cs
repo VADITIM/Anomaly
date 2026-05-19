@@ -89,7 +89,7 @@ public partial class Weapon : Node2D
             weaponAnimationPlayer, direction, isHeavy, attackSequenceIndex);
 
 
-        float duration = isHeavy ? heavyAttackDuration : GetCurrentAttackSequenceDuration(false);
+        float duration = GetCurrentAttackSequenceDuration(isHeavy);
         WeaponAnimations.PlayAttackAnimation(weaponAnimationPlayer, resolvedAnim, duration);
 
         currentArc?.PrepareAttack(direction, isHeavy, attackSequenceIndex);
@@ -236,14 +236,16 @@ public partial class Weapon : Node2D
 
         if (isHeavy)
         {
-            duration = heavyAttackDuration;
+            duration = currentArc?.HeavyAttackDuration ?? heavyAttackDuration;
             return true;
         }
 
         attackSequenceIndex = Mathf.Min(attackSequenceIndex + 1, MaxComboSteps - 1);
 
         int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
-        duration = attackDurations[clampedIndex];
+        duration = currentArc != null
+            ? currentArc.GetAttackSequenceDuration(clampedIndex)
+            : attackDurations[clampedIndex];
         return true;
     }
 
@@ -275,6 +277,14 @@ public partial class Weapon : Node2D
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
+        if (currentArc != null)
+        {
+            if (isHeavy)
+                return currentArc.HeavyAttackDuration;
+
+            return currentArc.GetAttackSequenceDuration(attackSequenceIndex);
+        }
+
         return GetCurrentAttackSequenceDuration(isHeavy);
     }
 
@@ -285,6 +295,14 @@ public partial class Weapon : Node2D
 
     private float GetCurrentAttackSequenceDuration(bool isHeavy)
     {
+        if (currentArc != null)
+        {
+            if (isHeavy)
+                return currentArc.HeavyAttackDuration;
+
+            return currentArc.GetAttackSequenceDuration(attackSequenceIndex);
+        }
+
         if (isHeavy)
             return heavyAttackDuration;
 
@@ -300,9 +318,7 @@ public partial class Weapon : Node2D
         if (!WeaponAnimations.IsAttackAnimation(animationName))
             return 0f;
 
-        return WeaponAnimations.IsHeavyAttack(animationName)
-            ? heavyAttackDuration
-            : GetCurrentAttackSequenceDuration(false);
+        return GetCurrentAttackSequenceDuration(WeaponAnimations.IsHeavyAttack(animationName));
     }
 
     private float GetCurrentAttackDamageMultiplier()

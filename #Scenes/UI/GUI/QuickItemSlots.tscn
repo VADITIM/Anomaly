@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dmovjpiadixon"]
 
 [ext_resource type="Texture2D" uid="uid://cdtlhrl0iuc1e" path="res://#Assets/UI/GUI/quick_item_slots.png" id="1_kgfbw"]
-[ext_resource type="Texture2D" uid="uid://c86gbbkpst8d3" path="res://#Assets/Entities/Weapons/scythe.png" id="2_couue"]
+[ext_resource type="Texture2D" uid="uid://c86gbbkpst8d3" path="res://#Assets/Weapons/scythe.png" id="2_couue"]
 
 [node name="Quick Item Slots" type="TextureRect"]
 anchors_preset = 15

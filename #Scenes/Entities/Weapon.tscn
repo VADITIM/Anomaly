@@ -4,11 +4,11 @@
 [ext_resource type="Script" uid="uid://cdaodovpxkcw7" path="res://#Scripts/Weapons/Weapon.cs" id="1_tkwsq"]
 
 [sub_resource type="PortableCompressedTexture2D" id="PortableCompressedTexture2D_tkwsq"]
-_data = PackedByteArray("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")
-size_override = Vector2(1280, 1280)
+_data = PackedByteArray("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")
+size_override = Vector2(768, 672)
 
-[sub_resource type="Animation" id="Animation_wtc66"]
-length = 0.8
+[sub_resource type="Animation" id="Animation_wh5xt"]
+length = 0.525
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -17,10 +17,10 @@ tracks/0/path = NodePath("Scythe:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = false
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [76, 75, 74, 73, 36, 23, 22, 21]
+"values": [15, 42, 16, 17, 18, 19, 20]
 }
 tracks/1/type = "value"
 tracks/1/imported = false
@@ -29,7 +29,7 @@ tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
 tracks/1/interp = 1
 tracks/1/loop_wrap = true
 tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
+"times": PackedFloat32Array(0, 0.15, 0.36),
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 1,
 "values": [true, false, true]
@@ -44,7 +44,7 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 24)]
+"values": [Vector2(13, -1)]
 }
 tracks/3/type = "value"
 tracks/3/imported = false
@@ -56,11 +56,487 @@ tracks/3/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [1.5707964]
+"values": [-1.3077987]
+}
+
+[sub_resource type="Animation" id="Animation_152fn"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [29, 30, 31, 32, 33, 34, 35]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2, -10)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [3.1415927]
+}
+
+[sub_resource type="Animation" id="Animation_trnug"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [21, 22, 23, 24, 25, 26, 27]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(11, -8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [3.9551914]
+}
+
+[sub_resource type="Animation" id="Animation_uhr4u"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [36, 37, 38, 39, 40, 41, 28]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-11, -8)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [2.3918014]
+}
+
+[sub_resource type="Animation" id="Animation_0oq87"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [1, 2, 3, 4, 5, 6, 7]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-3, 10)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_poej3"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [8, 9, 10, 11, 12, 13, 0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(11, 9)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_845jr"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [49, 50, 51, 52, 53, 54, 14]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-10, 9)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_pvkrm"]
+length = 0.525
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 43, 44, 45, 46, 47, 48]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.15, 0.35),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 1,
+"values": [true, false, true]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(-12, -1)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [1.3089969]
+}
+
+[sub_resource type="Animation" id="Animation_0y2dh"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_lgbu0"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_pxgo5"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_hitb4"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_4qvhx"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_c5ymx"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
+}
+
+[sub_resource type="Animation" id="Animation_wtc66"]
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Scythe:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_r875y"]
-length = 0.8
+length = 1.38
 loop_mode = 1
 tracks/0/type = "value"
 tracks/0/imported = false
@@ -69,46 +545,10 @@ tracks/0/path = NodePath("Scythe:frame")
 tracks/0/interp = 1
 tracks/0/loop_wrap = false
 tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [76, 75, 74, 73, 36, 23, 22, 21]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 24)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
+"values": [42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_8kayw"]
@@ -124,43 +564,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [76, 75, 74, 73, 36, 23, 22, 21]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 24)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_tfxw5"]
@@ -176,43 +580,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [76, 75, 74, 73, 36, 23, 22, 21]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, 24)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_4lier"]
@@ -228,43 +596,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [20, 19, 18, 17, 16, 15, 14, 13]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-22, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_g5ijr"]
@@ -280,43 +612,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [20, 19, 18, 17, 16, 15, 14, 13]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-22, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_57igp"]
@@ -332,43 +628,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [20, 19, 18, 17, 16, 15, 14, 13]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-22, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_2kqw4"]
@@ -384,43 +644,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [20, 19, 18, 17, 16, 15, 14, 13]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(-22, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_7siy8"]
@@ -436,46 +660,10 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 11, 10, 9, 8, 7, 6, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(21, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
-[sub_resource type="Animation" id="Animation_xscb0"]
+[sub_resource type="Animation" id="Animation_x3lom"]
 length = 0.8
 loop_mode = 1
 tracks/0/type = "value"
@@ -488,595 +676,7 @@ tracks/0/keys = {
 "times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
 "transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
 "update": 1,
-"values": [0, 11, 10, 9, 8, 7, 6, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(21, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
-}
-
-[sub_resource type="Animation" id="Animation_j1m6e"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 11, 10, 9, 8, 7, 6, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(21, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
-}
-
-[sub_resource type="Animation" id="Animation_fsrr3"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [0, 11, 10, 9, 8, 7, 6, 5]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(21, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [3.1415927]
-}
-
-[sub_resource type="Animation" id="Animation_74obt"]
-length = 2.4
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2, 2.1, 2.2, 2.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [44, 43, 42, 41, 40, 39, 38, 37, 24, 35, 34, 37, 24, 35, 34, 33, 32, 31, 30, 29, 28, 27, 26, 25]
-}
-
-[sub_resource type="Animation" id="Animation_1iusx"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [4, 3, 2, 1, 12, 47, 46, 45]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -22)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
-}
-
-[sub_resource type="Animation" id="Animation_8vpw3"]
-length = 0.7
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [3, 2, 1, 12, 47, 46, 45]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -22)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
-}
-
-[sub_resource type="Animation" id="Animation_11s7u"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [4, 3, 2, 1, 12, 47, 46, 45]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -22)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-
-[sub_resource type="Animation" id="Animation_v1djg"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [4, 3, 2, 1, 12, 47, 46, 45]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Hitbox Area/Hitbox:disabled")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.3, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [true, false, true]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Hitbox Area/Hitbox:position")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [Vector2(0, -22)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Hitbox Area/Hitbox:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 0,
-"values": [1.5707964]
-}
-
-[sub_resource type="Animation" id="Animation_wh5xt"]
-length = 1.1
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_152fn"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_trnug"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_uhr4u"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_0oq87"]
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_otlvq"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [71, 70, 69, 68, 67, 67]
-}
-
-[sub_resource type="Animation" id="Animation_2sny4"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [66, 65, 64, 63, 63, 62]
-}
-
-[sub_resource type="Animation" id="Animation_jd7pe"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [61, 48, 59, 58, 58, 57]
-}
-
-[sub_resource type="Animation" id="Animation_crkmk"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [56, 55, 54, 53, 52, 52]
-}
-
-[sub_resource type="Animation" id="Animation_poej3"]
-length = 0.9
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84, 84, 84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_2xumu"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [51, 50, 49, 60, 50, 95]
-}
-
-[sub_resource type="Animation" id="Animation_131ah"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [94, 93, 92, 91, 90, 89]
-}
-
-[sub_resource type="Animation" id="Animation_aft2g"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [88, 87, 86, 85, 72, 83]
-}
-
-[sub_resource type="Animation" id="Animation_rlmp7"]
-length = 0.6
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
-"update": 1,
-"values": [82, 81, 80, 79, 78, 77]
+"values": [42, 42, 42, 42, 42, 42, 42, 42]
 }
 
 [sub_resource type="Animation" id="Animation_tkwsq"]
@@ -1103,7 +703,7 @@ tracks/1/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [Vector2(0, 24)]
+"values": [Vector2(-3, 10)]
 }
 tracks/2/type = "value"
 tracks/2/imported = false
@@ -1115,112 +715,41 @@ tracks/2/keys = {
 "times": PackedFloat32Array(0),
 "transitions": PackedFloat32Array(1),
 "update": 0,
-"values": [1.5707964]
+"values": [0.0]
 }
 
-[sub_resource type="Animation" id="Animation_845jr"]
-length = 0.4
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_pvkrm"]
-length = 0.4
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_0y2dh"]
-length = 0.3
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 1,
-"values": [84, 84, 84]
-}
-
-[sub_resource type="Animation" id="Animation_lgbu0"]
-length = 0.4
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Scythe:frame")
-tracks/0/interp = 1
-tracks/0/loop_wrap = false
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.1, 0.2, 0.3),
-"transitions": PackedFloat32Array(1, 1, 1, 1),
-"update": 1,
-"values": [84, 84, 84, 84]
-}
-
-[sub_resource type="AnimationLibrary" id="AnimationLibrary_x3lom"]
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_at7v8"]
 _data = {
-&"Attack_Down_1": SubResource("Animation_wtc66"),
-&"Attack_Down_2": SubResource("Animation_r875y"),
-&"Attack_Down_3": SubResource("Animation_8kayw"),
-&"Attack_Down_4": SubResource("Animation_tfxw5"),
-&"Attack_Left_1": SubResource("Animation_4lier"),
-&"Attack_Left_2": SubResource("Animation_g5ijr"),
-&"Attack_Left_3": SubResource("Animation_57igp"),
-&"Attack_Left_4": SubResource("Animation_2kqw4"),
-&"Attack_Right_1": SubResource("Animation_7siy8"),
-&"Attack_Right_2": SubResource("Animation_xscb0"),
-&"Attack_Right_3": SubResource("Animation_j1m6e"),
-&"Attack_Right_4": SubResource("Animation_fsrr3"),
-&"Attack_Spin": SubResource("Animation_74obt"),
-&"Attack_Up_1": SubResource("Animation_1iusx"),
-&"Attack_Up_2": SubResource("Animation_8vpw3"),
-&"Attack_Up_3": SubResource("Animation_11s7u"),
-&"Attack_Up_4": SubResource("Animation_v1djg"),
-&"Die": SubResource("Animation_wh5xt"),
-&"Dodge_Down": SubResource("Animation_152fn"),
-&"Dodge_Left": SubResource("Animation_trnug"),
-&"Dodge_Right": SubResource("Animation_uhr4u"),
-&"Dodge_Up": SubResource("Animation_0oq87"),
-&"Idle_Down": SubResource("Animation_otlvq"),
-&"Idle_Left": SubResource("Animation_2sny4"),
-&"Idle_Right": SubResource("Animation_jd7pe"),
-&"Idle_Up": SubResource("Animation_crkmk"),
-&"Jump_Down": SubResource("Animation_poej3"),
-&"Move_Down": SubResource("Animation_2xumu"),
-&"Move_Left": SubResource("Animation_131ah"),
-&"Move_Right": SubResource("Animation_aft2g"),
-&"Move_Up": SubResource("Animation_rlmp7"),
+&"Attack_E": SubResource("Animation_wh5xt"),
+&"Attack_N": SubResource("Animation_152fn"),
+&"Attack_NE": SubResource("Animation_trnug"),
+&"Attack_NW": SubResource("Animation_uhr4u"),
+&"Attack_S": SubResource("Animation_0oq87"),
+&"Attack_SE": SubResource("Animation_poej3"),
+&"Attack_SW": SubResource("Animation_845jr"),
+&"Attack_W": SubResource("Animation_pvkrm"),
+&"Idle_E": SubResource("Animation_0y2dh"),
+&"Idle_N": SubResource("Animation_lgbu0"),
+&"Idle_NE": SubResource("Animation_pxgo5"),
+&"Idle_NW": SubResource("Animation_hitb4"),
+&"Idle_S": SubResource("Animation_4qvhx"),
+&"Idle_SE": SubResource("Animation_c5ymx"),
+&"Idle_SW": SubResource("Animation_wtc66"),
+&"Idle_W": SubResource("Animation_r875y"),
+&"Move_E": SubResource("Animation_8kayw"),
+&"Move_N": SubResource("Animation_tfxw5"),
+&"Move_NE": SubResource("Animation_4lier"),
+&"Move_NW": SubResource("Animation_g5ijr"),
+&"Move_S": SubResource("Animation_57igp"),
+&"Move_SE": SubResource("Animation_2kqw4"),
+&"Move_SW": SubResource("Animation_7siy8"),
+&"Move_W": SubResource("Animation_x3lom"),
 &"RESET": SubResource("Animation_tkwsq")
 }
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wh5xt"]
-radius = 17.0
-height = 100.0
+radius = 16.963816
+height = 46.690365
 
 [node name="WEAPON" type="Node2D" unique_id=54739942 node_paths=PackedStringArray("weaponAnimationPlayer")]
 z_index = 1
@@ -1230,9 +759,9 @@ weaponAnimationPlayer = NodePath("Animation Player")
 [node name="Scythe" type="Sprite2D" parent="." unique_id=1422090214]
 texture_filter = 1
 texture = SubResource("PortableCompressedTexture2D_tkwsq")
-hframes = 10
-vframes = 10
-frame = 76
+hframes = 8
+vframes = 7
+frame = 15
 metadata/_aseprite_wizard_interface_config_ = {
 "layer_section": true,
 "pending_changes": {}
@@ -1252,13 +781,13 @@ metadata/_aseprite_wizard_config_ = {
 "player": "Animation Player",
 "scale": "1.0",
 "slice": "",
-"source": "res://#Assets/Entities/Player/Animation Player/Player.aseprite",
-"source_uid": 6307295636354847703
+"source": "res://#Assets/Entities/Player/Player.aseprite",
+"source_uid": 902374654419268229
 }
-metadata/_aseprite_wizard_source_file_hash_ = "3e1b8536063c6b8ab5e129a7f54965d9"
+metadata/_aseprite_wizard_source_file_hash_ = "babb238bdd2f8b7036158a199d97e222"
 
 [node name="Animation Player" type="AnimationPlayer" parent="." unique_id=2008265202]
-libraries/ = SubResource("AnimationLibrary_x3lom")
+libraries/ = SubResource("AnimationLibrary_at7v8")
 autoplay = &"Die"
 
 [node name="Soul Scythe Arc" parent="." unique_id=317822717 instance=ExtResource("1_mg3cl")]
@@ -1269,7 +798,6 @@ collision_layer = 4
 collision_mask = 40
 
 [node name="Hitbox" type="CollisionShape2D" parent="Hitbox Area" unique_id=1570707522]
-position = Vector2(0, 24)
-rotation = 1.5707964
+position = Vector2(-3, 10)
 shape = SubResource("CapsuleShape2D_wh5xt")
 disabled = true

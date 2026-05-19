@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public abstract partial class Enemy : Entity
 {
     private static readonly List<Enemy> ActiveEnemies = new();
+    private static bool ShowDebugLabels = false;
 
     public Player Player { get; private set; }
     private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
@@ -42,6 +43,19 @@ public abstract partial class Enemy : Entity
         InitializeStateMachine();
 
         UpdateAnimation();
+    }
+
+    public static void ToggleDebugLabels()
+    {
+        ShowDebugLabels = !ShowDebugLabels;
+
+        foreach (Enemy enemy in ActiveEnemies)
+        {
+            if (enemy == null || !GodotObject.IsInstanceValid(enemy))
+                continue;
+
+            enemy.UpdateDebugLabelVisibility();
+        }
     }
 
     public override void _Ready()
@@ -113,9 +127,9 @@ public abstract partial class Enemy : Entity
     {
         if (testDisplay == null) return;
 
-        bool shouldShowStats = HasCameraFocus;
-        testDisplay.Visible = shouldShowStats;
-        if (!shouldShowStats)
+        UpdateDebugLabelVisibility();
+
+        if (!testDisplay.Visible)
             return;
         
         string stateInfo = StateMachine != null ? StateMachine.CurrentState.ToString() : "Unknown";
@@ -124,5 +138,13 @@ public abstract partial class Enemy : Entity
                            $"\n[color=red]Health:[/color] {GetHealth():F0} / {GetMaxHealth():F0} [color=gray]Armor:[/color] {armor}" +
                            $"\n[color=green]Tenacity:[/color] {tenacity:F1} / 10 [color=orange]Staggers:[/color] {CurrentStaggers} / {maxStaggers}" +
                            $"\n[color=cyan]Weakness:[/color] {weaknessType}";
+    }
+
+    private void UpdateDebugLabelVisibility()
+    {
+        if (testDisplay == null)
+            return;
+
+        testDisplay.Visible = ShowDebugLabels;
     }
 }

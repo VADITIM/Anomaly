@@ -4,9 +4,9 @@ public partial class PhantomCameraCursorOffset : Node2D
 {
 	[Export] private NodePath phantomCameraPath;
 	[Export] private NodePath cursorDeadzonePath;
-	[Export] private Vector2 maxCursorOffset = new Vector2(64f, 32f);
-	[Export] private float offsetLerpSpeed = 20f;
-	[Export] private float returnLerpSpeed = 10f;
+	[Export] private Vector2 maxCursorOffset = new Vector2(18f, 12f);
+	[Export] private float offsetLerpSpeed = 6f;
+	[Export] private float returnLerpSpeed = 6f;
 
 	private Node2D phantomCamera;
 	private Area2D cursorDeadzone;
@@ -82,10 +82,23 @@ public partial class PhantomCameraCursorOffset : Node2D
 			return localRect.HasPoint(localPoint);
 		}
 
-		if (cursorDeadzoneShape.Shape is CircleShape2D circleShape)
+		if (cursorDeadzoneShape.Shape is CapsuleShape2D capsuleShape)
 		{
 			Vector2 localPoint = cursorDeadzoneShape.ToLocal(mouseGlobal);
-			return localPoint.Length() <= circleShape.Radius;
+
+			float radius = capsuleShape.Radius;
+			float halfHeight = Mathf.Max(0f, capsuleShape.Height * 0.5f - radius);
+			float absX = Mathf.Abs(localPoint.X);
+			float absY = Mathf.Abs(localPoint.Y);
+
+			if (absX <= radius && absY <= halfHeight)
+				return true;
+
+			if (absY > halfHeight)
+			{
+				Vector2 circleCenter = new Vector2(0f, Mathf.Sign(localPoint.Y) * halfHeight);
+				return localPoint.DistanceTo(circleCenter) <= radius;
+			}
 		}
 
 		return false;

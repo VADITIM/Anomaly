@@ -80,7 +80,7 @@ public partial class Player
         Weapon.PlayStateAnimation(animationName);
 
         int playerZ = Sprite.ZIndex;
-        bool weaponAbove = direction == "Right" || direction == "Up";
+        bool weaponAbove = direction == "E" || direction == "NE" || direction == "N" || direction == "NW";
         Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
     }
 

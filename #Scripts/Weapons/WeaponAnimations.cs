@@ -55,7 +55,12 @@ public static class WeaponAnimations
             return;
         }
 
-        if (animationPlayer.HasAnimation("Idle_Down") || animationPlayer.HasAnimation("Weapon_Idle_Down"))
+        if (animationPlayer.HasAnimation("Idle_S") || animationPlayer.HasAnimation("Weapon_Idle_S"))
+        {
+            animationPlayer.SpeedScale = 1f;
+            animationPlayer.Play(animationPlayer.HasAnimation("Idle_S") ? "Idle_S" : "Weapon_Idle_S");
+        }
+        else if (animationPlayer.HasAnimation("Idle_Down") || animationPlayer.HasAnimation("Weapon_Idle_Down"))
         {
             animationPlayer.SpeedScale = 1f;
             animationPlayer.Play(animationPlayer.HasAnimation("Idle_Down") ? "Idle_Down" : "Weapon_Idle_Down");
@@ -114,6 +119,15 @@ public static class WeaponAnimations
         {
             "Up"    => "Top",
             "Down"  => "Bottom",
+            // Map 8-directional NWSE to 4-directional for backward compatibility
+            "N"     => "Up",
+            "NE"    => "Right",
+            "E"     => "Right",
+            "SE"    => "Down",
+            "S"     => "Down",
+            "SW"    => "Left",
+            "W"     => "Left",
+            "NW"    => "Up",
             _       => direction   
         };
     }

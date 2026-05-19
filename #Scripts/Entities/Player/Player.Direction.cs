@@ -18,21 +18,29 @@ public partial class Player
 
         flipH = false;
 
-        if (angleDegrees >= -45f && angleDegrees < 45f)
-            return "Right";
-        if (angleDegrees >= 45f && angleDegrees < 135f)
-            return "Down";
-        if (angleDegrees >= -135f && angleDegrees < -45f)
-            return "Up";
-
-        return "Left";
+        if (angleDegrees >= -22.5f && angleDegrees < 22.5f)
+            return "E";
+        if (angleDegrees >= 22.5f && angleDegrees < 67.5f)
+            return "SE";
+        if (angleDegrees >= 67.5f && angleDegrees < 112.5f)
+            return "S";
+        if (angleDegrees >= 112.5f && angleDegrees < 157.5f)
+            return "SW";
+        if (angleDegrees >= 157.5f || angleDegrees < -157.5f)
+            return "W";
+        if (angleDegrees >= -157.5f && angleDegrees < -112.5f)
+            return "NW";
+        if (angleDegrees >= -112.5f && angleDegrees < -67.5f)
+            return "N";
+        
+        return "NE";
     }
     
     private string GetDirectionFromVector(Vector2 direction, out bool flipH)
     {
         flipH = false;
         if (direction == Vector2.Zero)
-            return "Down"; 
+            return "S";
         
         float angle = Mathf.RadToDeg(direction.Angle());
         return GetDirectionFromAngle(angle, out flipH);

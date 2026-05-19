@@ -26,6 +26,13 @@ public partial class UI : Control
         if (@event is not InputEventKey keyEvent || !keyEvent.Pressed || keyEvent.Echo)
             return;
 
+        if (keyEvent.Keycode == Key.F5 || keyEvent.PhysicalKeycode == Key.F5)
+        {
+            Enemy.ToggleDebugLabels();
+            GetViewport().SetInputAsHandled();
+            return;
+        }
+
         if (keyEvent.Keycode != Key.Escape && keyEvent.PhysicalKeycode != Key.Escape)
             return;
 

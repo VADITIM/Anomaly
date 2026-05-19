@@ -282,16 +282,6 @@ animation = &"tenacity recovered"
 
 [node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("19_ggf2l")]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1075992845]
-
-[node name="Label" parent="CanvasLayer" unique_id=1362593918 instance=ExtResource("19_bj8pf")]
-offset_left = 1482.0
-offset_top = 9.0
-offset_right = 3143.349
-offset_bottom = 911.7493
-scale = Vector2(0.25810045, 0.25810045)
-theme_override_font_sizes/normal_font_size = 100
-
 [node name="Hitbox Area" type="Area2D" parent="." unique_id=50013941]
 collision_layer = 16
 collision_mask = 34
@@ -300,3 +290,5 @@ collision_mask = 34
 shape = SubResource("CircleShape2D_nmi03")
 disabled = true
 debug_color = Color(0.92119426, 0.2201151, 0.44672298, 0.41960785)
+
+[node name="Label" parent="." unique_id=1617985564 instance=ExtResource("19_bj8pf")]

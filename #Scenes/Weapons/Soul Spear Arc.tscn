@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://drls02dfnacq0"]
 
 [ext_resource type="Script" uid="uid://rsftpla73pqh" path="res://#Scripts/Weapons/Weapon Arcs/SpearArc.cs" id="1_0msrr"]
-[ext_resource type="Texture2D" uid="uid://s0mt200dgsge" path="res://#Assets/Entities/Weapons/spear.png" id="2_0msrr"]
+[ext_resource type="Texture2D" uid="uid://s0mt200dgsge" path="res://#Assets/Weapons/spear.png" id="2_0msrr"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lqgd4"]
 height = 48.78862

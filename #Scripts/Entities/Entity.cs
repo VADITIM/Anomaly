@@ -208,7 +208,7 @@ public partial class Entity : CharacterBody2D
     protected virtual string GetCurrentAnimationDirection(bool useDirectionalAnimations, out bool flipH)
     {
         flipH = false;
-        return "Down";
+        return "S";
     }
 
     protected virtual bool IsEntityDead() => false;
@@ -218,14 +218,14 @@ public partial class Entity : CharacterBody2D
 
     protected virtual string[] GetAnimationCandidates(State state, string direction, bool useDirectionalAnimations)
     {
-        string resolvedDirection = useDirectionalAnimations ? direction : "Down";
+        string resolvedDirection = useDirectionalAnimations ? direction : "S";
         string idle = $"Idle_{resolvedDirection}";
 
         return state switch
         {
             State.Moving => new[] { $"Move_{resolvedDirection}", idle },
             State.Chasing => new[] { $"Move_{resolvedDirection}", idle },
-            State.Airborne => new[] { "Jump_Down", idle },
+            State.Airborne => new[] { "Jump_S", idle },
             State.Attacking => new[] { $"Attack_{resolvedDirection}_1", $"attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
             State.HeavyAttacking => new[] { "Attack_Spin", $"Attack_{resolvedDirection}", idle },
             State.AirAttacking => new[] { $"Air_Attack_{resolvedDirection}", $"Attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
@@ -233,7 +233,7 @@ public partial class Entity : CharacterBody2D
             State.Healing => new[] { idle },
             State.Staggered => new[] { idle },
             State.Knockback => new[] { idle },
-            State.Dead => new[] { $"Die_{resolvedDirection}", "Die_Down", "Idle_Down", idle },
+            State.Dead => new[] { $"Die_{resolvedDirection}", "Die_S", "Idle_S", idle },
             _ => new[] { idle }
         };
     }
