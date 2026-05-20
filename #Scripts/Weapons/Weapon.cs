@@ -12,15 +12,11 @@ public partial class Weapon : Node2D
     public Area2D Hitbox => weaponHitbox;
     public WeaponArc CurrentArc => currentArc;
 
-    private float damage = 0f;
-    private float knockback = 100f;
-    private float staminaCost = 2f;
-    private float tenacityDamage = 10f;
-    private float penetration = 50f;
-    private float attackDuration = 0.37f;
+    private WeaponStats weaponStats = new WeaponStats();
+    public WeaponStats Stats => weaponStats;
+
     private float[] attackDurations = new float[4] { 0.37f, 0.45f, 0.35f, 0.6f };
     private float[] attackDamageMultipliers = new float[4] { 1f, 1.15f, 1.3f, 1.5f };
-    private float heavyAttackDuration = 1.5f;
     private int specialHitInterval = 4;
     private int hitCount = 0;
     private float currentTenacityDamageMultiplier = 1f;
@@ -39,13 +35,10 @@ public partial class Weapon : Node2D
     public void UnslotArc() { currentArc = null; }
     public WeaponArc GetCurrentArc() { return currentArc; }
 
-    public float Damage { get => damage; set => damage = value; }
-    public float Knockback { get => knockback; set => knockback = value; }
-    public float StaminaCost { get => staminaCost; set => staminaCost = value; }
-    public float TenacityDamage { get => tenacityDamage; set => tenacityDamage = Mathf.Clamp(value, 0f, 100f); }
-    public float Penetration { get => penetration; set => penetration = Mathf.Clamp(value, 0f, 100f); }
-    public float AttackDuration { get => attackDuration; set => attackDuration = Mathf.Clamp(value, 0.1f, 1.5f); }
-    public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
+    public float Damage { get => weaponStats.GetCurrent("Damage"); set => weaponStats.SetCurrent("Damage", value); }
+    public float StaminaCost { get => weaponStats.GetCurrent("Stamina Cost"); set => weaponStats.SetCurrent("Stamina Cost", value); }
+    public float TenacityDamage { get => weaponStats.GetCurrent("TenacityDamage"); set => weaponStats.SetCurrent("TenacityDamage", Mathf.Clamp(value, 0f, 100f)); }
+    public float Penetration { get => weaponStats.GetCurrent("Penetration"); set => weaponStats.SetCurrent("Penetration", Mathf.Clamp(value, 0f, 100f)); }
     public int SpecialHitInterval { get => specialHitInterval; set => specialHitInterval = value; }
     public int HitCount { get => hitCount; set => hitCount = value; }
     public float CurrentTenacityDamageMultiplier { get => currentTenacityDamageMultiplier; set => currentTenacityDamageMultiplier = value; }
@@ -146,7 +139,7 @@ public partial class Weapon : Node2D
 
     public float ApplyDamage(Enemy enemy)
     {
-        float rawDamage = damage;
+        float rawDamage = Damage;
 
         if (Player.Instance?.StateMachine?.IsHeavyAttacking ?? false)
         {
@@ -158,7 +151,7 @@ public partial class Weapon : Node2D
             rawDamage *= GetCurrentAttackDamageMultiplier();
         }
 
-        float penetrationPercent = penetration / 100f;
+        float penetrationPercent = Penetration / 100f;
         float effectiveArmor = enemy.armor * (1f - penetrationPercent);
         float damageReductionPercent = effectiveArmor / 200f;
         float damageMultiplier = 1f - damageReductionPercent;
@@ -236,7 +229,7 @@ public partial class Weapon : Node2D
 
         if (isHeavy)
         {
-            duration = currentArc?.HeavyAttackDuration ?? heavyAttackDuration;
+            duration = currentArc?.HeavyAttackDuration ?? 1.5f;
             return true;
         }
 
@@ -304,10 +297,10 @@ public partial class Weapon : Node2D
         }
 
         if (isHeavy)
-            return heavyAttackDuration;
+            return 1.5f;
 
         if (attackDurations == null || attackDurations.Length == 0)
-            return attackDuration;
+            return 0.37f;
 
         int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
         return attackDurations[clampedIndex];

@@ -33,7 +33,7 @@ public partial class Entity : CharacterBody2D
     protected Vector2 weaponNodeBasePosition = Vector2.Zero;
     protected Node2D WeaponNode = null;
 
-    [Export] public AnimationPlayer AnimationPlayer { get; set; }
+    public AnimationPlayer AnimationPlayer { get; set; }
     public StateMachine StateMachine { get; protected set; }
 
     [Export] public float attackDuration { get; set; } = 1f;

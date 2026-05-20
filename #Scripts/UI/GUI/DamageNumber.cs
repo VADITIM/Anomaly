@@ -11,7 +11,7 @@ public partial class DamageNumber : Label
         HorizontalAlignment = HorizontalAlignment.Center;
         VerticalAlignment = VerticalAlignment.Center;
         MouseFilter = MouseFilterEnum.Ignore;
-        ZIndex = 1000;
+        ZIndex = 32767;
 
         if (DamageFont != null)
         {

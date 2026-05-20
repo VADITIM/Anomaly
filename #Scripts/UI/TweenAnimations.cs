@@ -5,7 +5,7 @@ public static class TweenAnimations
     public static void DamageNumberPopup(Label damageLabel, Vector2 spawnPosition, bool isWeakness)
     {
         damageLabel.Scale = Vector2.One * 0.1f;
-        damageLabel.GlobalPosition = spawnPosition;
+        damageLabel.GlobalPosition = new Vector2(spawnPosition.X, -50000f);
         damageLabel.Modulate = new Color(1f, 1f, 1f, 1f);
 
         Vector2 drift = new Vector2(RandomRange(-5f, 5f), RandomRange(-5f, 5f));

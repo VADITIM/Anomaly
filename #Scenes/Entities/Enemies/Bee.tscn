@@ -24,6 +24,9 @@
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_0a874"]
 size = Vector2(12.5, 18.75)
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_nmi03"]
+radius = 46.173584
+
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nxe0n"]
 shader = ExtResource("2_icawu")
 shader_parameter/flash_color = Color(1, 1, 1, 1)
@@ -225,9 +228,6 @@ animations = [{
 "speed": 30.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_nmi03"]
-radius = 46.173584
-
 [node name="Bee" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
 collision_layer = 24
 collision_mask = 295
@@ -239,6 +239,15 @@ AnimationPlayer = NodePath("Animation Player")
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")
 debug_color = Color(0.18003303, 0.6432267, 3.85046e-07, 0.41960785)
+
+[node name="Hitbox Area" type="Area2D" parent="." unique_id=50013941]
+collision_layer = 16
+collision_mask = 34
+
+[node name="Hitbox" type="CollisionShape2D" parent="Hitbox Area" unique_id=426460604]
+shape = SubResource("CircleShape2D_nmi03")
+disabled = true
+debug_color = Color(0.92119426, 0.2201151, 0.44672298, 0.41960785)
 
 [node name="Sprite" type="Sprite2D" parent="." unique_id=2095261304]
 texture_filter = 1
@@ -281,14 +290,5 @@ sprite_frames = SubResource("SpriteFrames_vu8ro")
 animation = &"tenacity recovered"
 
 [node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("19_ggf2l")]
-
-[node name="Hitbox Area" type="Area2D" parent="." unique_id=50013941]
-collision_layer = 16
-collision_mask = 34
-
-[node name="Hitbox" type="CollisionShape2D" parent="Hitbox Area" unique_id=426460604]
-shape = SubResource("CircleShape2D_nmi03")
-disabled = true
-debug_color = Color(0.92119426, 0.2201151, 0.44672298, 0.41960785)
 
 [node name="Label" parent="." unique_id=1617985564 instance=ExtResource("19_bj8pf")]

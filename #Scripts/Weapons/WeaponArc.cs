@@ -6,21 +6,26 @@ public partial class WeaponArc : Node2D
     [Export] public Area2D Hitbox;
     [Export] public Sprite2D Sprite;
     [Export] public AnimationPlayer AnimationPlayer;
-    [Export] private float attackDuration = 0.37f;
     [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
     [Export] private float heavyAttackDuration = 1.5f;
+
+    private float knockback = 0f;
+
+    // Multipliers - the arc modifies the parent weapon's base stats
+    public float DamageMultiplier { get; set; } = 1f;
+    public float TenacityMultiplier { get; set; } = 1f;
+    public float PenetrationMultiplier { get; set; } = 1f;
     private Timer attackAnimationStopTimer;
     private string preparedDirection = "Down";
     private bool preparedHeavyAttack = false;
     private int preparedSequenceIndex = 0;
     private Weapon parentWeapon;
 
-    public float Damage => parentWeapon?.Damage ?? throw new InvalidOperationException("Parent weapon not set.");
-    public float Knockback => parentWeapon?.Knockback ?? throw new InvalidOperationException("Parent weapon not set.");
-    public float StaminaCost => parentWeapon?.StaminaCost ?? throw new InvalidOperationException("Parent weapon not set.");
-    public float TenacityDamage { get => parentWeapon?.TenacityDamage ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.TenacityDamage = value; } }
-    public float Penetration { get => parentWeapon?.Penetration ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
-    public float AttackDuration { get => attackDuration; set => attackDuration = Mathf.Clamp(value, 0.1f, 1.5f); }
+    public float Damage => parentWeapon != null ? parentWeapon.Damage * DamageMultiplier : throw new InvalidOperationException("Parent weapon not set.");
+    public float Knockback { get => knockback; set => knockback = value; }
+    public float StaminaCost => parentWeapon != null ? parentWeapon.StaminaCost : throw new InvalidOperationException("Parent weapon not set.");
+    public float TenacityDamage { get => parentWeapon != null ? parentWeapon.TenacityDamage * TenacityMultiplier : throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.TenacityDamage = value; } }
+    public float Penetration { get => parentWeapon != null ? parentWeapon.Penetration * PenetrationMultiplier : throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
     public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
     public int SpecialHitInterval { get => parentWeapon?.SpecialHitInterval ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.SpecialHitInterval = value; } }
     public int HitCount { get => parentWeapon?.HitCount ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.HitCount = value; } }
@@ -153,7 +158,7 @@ public partial class WeaponArc : Node2D
     public float GetAttackSequenceDuration(int sequenceIndex)
     {
         if (attackDurations == null || attackDurations.Length == 0)
-            return AttackDuration;
+            return 0.37f;
 
         int clampedIndex = Mathf.Clamp(sequenceIndex, 0, attackDurations.Length - 1);
         return attackDurations[clampedIndex];

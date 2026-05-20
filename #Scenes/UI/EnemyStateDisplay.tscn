@@ -4,9 +4,9 @@
 bg_color = Color(0, 0, 0, 0.18431373)
 
 [node name="Label" type="RichTextLabel" unique_id=1617985564]
-offset_left = -42.0
+offset_left = -34.0
 offset_top = -64.0
-offset_right = 935.41235
+offset_right = 759.42883
 offset_bottom = 291.82184
 scale = Vector2(0.08696432, 0.08696432)
 theme_override_font_sizes/normal_font_size = 50
@@ -16,3 +16,5 @@ text = "State
 Health Armor
 Tenacity Staggers
 Weakness"
+horizontal_alignment = 1
+vertical_alignment = 1

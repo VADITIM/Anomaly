@@ -6,7 +6,7 @@ public partial class PracticeDummy : Enemy
     public PracticeDummy()
     {
         canBeKnockedBack = false;
-        armor = 100f;
+        armor = 0f;
         health = 1000f;
         maxHealth = 1000f;
         speed = 0f;

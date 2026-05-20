@@ -172,7 +172,7 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="Practice Dummy" type="CharacterBody2D" unique_id=970362701]
+[node name="Practice Dummy" type="CharacterBody2D" unique_id=970362701 node_paths=PackedStringArray("AnimationPlayer")]
 collision_layer = 8
 collision_mask = 61
 script = ExtResource("1_u8rv5")
@@ -180,6 +180,7 @@ outsideKnockbackForce = 0.0
 speed = 0.0
 tenacity = 1.0
 maxTenacity = 1.0
+AnimationPlayer = NodePath("AnimationPlayer")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1370027202]
 shape = SubResource("RectangleShape2D_7wtq7")
@@ -224,7 +225,5 @@ sprite_frames = SubResource("SpriteFrames_tt53j")
 animation = &"tenacity recovered"
 
 [node name="Enemy Resource Bar" parent="." unique_id=1987811369 instance=ExtResource("17_e3lcm")]
-
-[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1713865982]
 
 [node name="Label" parent="." unique_id=1617985564 instance=ExtResource("18_utdlp")]

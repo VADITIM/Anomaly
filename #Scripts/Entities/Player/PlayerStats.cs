@@ -12,6 +12,41 @@ public class PlayerStats
         public int UpgradeLevels { get; set; } = 0;
     }
 
+    public Godot.Collections.Dictionary ToDictionary()
+    {
+        var outDict = new Godot.Collections.Dictionary();
+        foreach (var kv in Stats)
+        {
+            var s = kv.Value;
+            var statDict = new Godot.Collections.Dictionary();
+            statDict["Current"] = s.Current;
+            statDict["CurrentMax"] = s.CurrentMax;
+            statDict["TotalMax"] = s.TotalMax;
+            statDict["UpgradeLevels"] = s.UpgradeLevels;
+            outDict[kv.Key] = statDict;
+        }
+        return outDict;
+    }
+
+    public void LoadFromDictionary(Godot.Collections.Dictionary data)
+    {
+        if (data == null) return;
+        foreach (var keyObj in data.Keys)
+        {
+            var key = (string)keyObj;
+            if (string.IsNullOrEmpty(key)) continue;
+            if (!Stats.ContainsKey(key)) continue;
+            if (!data.TryGetValue(key, out var statDictVar)) continue;
+            var statDict = statDictVar.AsGodotDictionary();
+            if (statDict == null) continue;
+            var s = Stats[key];
+            if (statDict.TryGetValue("Current", out var curr)) s.Current = (float)curr;
+            if (statDict.TryGetValue("CurrentMax", out var currMax)) s.CurrentMax = (float)currMax;
+            if (statDict.TryGetValue("TotalMax", out var totMax)) s.TotalMax = (float)totMax;
+            if (statDict.TryGetValue("UpgradeLevels", out var upLvl)) s.UpgradeLevels = (int)upLvl;
+        }
+    }
+
     private Dictionary<string, Stat> Stats = new Dictionary<string, Stat>();
     private float staminaRegenTimer = 0f;
     private const float STAMINA_REGEN_COOLDOWN = .9f;

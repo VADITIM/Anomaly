@@ -8,11 +8,15 @@ public partial class SlashingWeapon : WeaponArc
         if (weapon != null)
         {
             weapon.Damage = 20f;
-            TenacityDamage = 10f;
+            weapon.TenacityDamage = 10f;
             weapon.StaminaCost = 2f;
+            Knockback = 10f;
             SpecialHitInterval = 4;
-            AttackDuration = 0.5f;
             HeavyAttackDuration = 0.5f;
+            
+            DamageMultiplier = 1f;
+            TenacityMultiplier = 1f;
+            PenetrationMultiplier = 1f;
         }
     }
 }

@@ -41,6 +41,8 @@ public partial class Player : Entity
         
         StateMachine.OnAttackStarted += (isHeavy) => OnActionPerformed();
         StateMachine.OnDodgeStarted += (direction) => OnActionPerformed();
+
+        SaveSystem.ApplyLoadedData();
     }
 
     public override void _Process(double delta)
@@ -86,6 +88,14 @@ public partial class Player : Entity
             {
                 float debugHeal = 10f;
                 SetHealth(GetHealth() + debugHeal);
+            }
+            else if (keyEvent.Keycode == Key.F3)
+            {
+                SaveSystem.SaveGame();
+            }
+            else if (keyEvent.Keycode == Key.F4)
+            {
+                SaveSystem.LoadGame();
             }
         }
     }
