@@ -3,11 +3,14 @@ using System;
 
 public partial class WeaponArc : Node2D
 {
+    public enum WeaponAttackType { Slashing, Piercing, Smashing }
+
     [Export] public Area2D Hitbox;
     [Export] public Sprite2D Sprite;
     [Export] public AnimationPlayer AnimationPlayer;
     [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
     [Export] private float heavyAttackDuration = 1.5f;
+    [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
 
     private float knockback = 0f;
 

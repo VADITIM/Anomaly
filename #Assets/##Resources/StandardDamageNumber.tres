@@ -1,0 +1,9 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://b3fckkt7fb5ia"]
+
+[ext_resource type="FontFile" uid="uid://caioxnnh3n682" path="res://#Assets/UI/Fonts/NCLGasdrifo-Demo.otf" id="1_pspxd"]
+
+[resource]
+font = ExtResource("1_pspxd")
+font_size = 64
+outline_size = 2
+outline_color = Color(0, 0, 0, 1)

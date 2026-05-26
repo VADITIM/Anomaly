@@ -15,6 +15,6 @@ public partial class PracticeDummy : Enemy
         tenacity = 6f; maxTenacity = 6f;
         maxStaggers = 5;
         damageType = DamageType.Corrupted;
-        weaknessType = WeaknessType.Piercing;
+        weaknessType = WeaknessType.Slashing;
     }
 }

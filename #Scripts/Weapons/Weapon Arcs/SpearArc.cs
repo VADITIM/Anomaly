@@ -5,6 +5,7 @@ public partial class SpearArc : WeaponArc
     public override void SetParentWeapon(Weapon weapon)
     {
         base.SetParentWeapon(weapon);
+        AttackType = WeaponArc.WeaponAttackType.Piercing;
         if (weapon != null)
         {
             weapon.Damage = 6f;

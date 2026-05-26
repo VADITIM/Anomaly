@@ -12,8 +12,12 @@
 [ext_resource type="PackedScene" uid="uid://d1galkq7q1y51" path="res://#Scenes/UI/UI.tscn" id="18_tpvil"]
 [ext_resource type="PackedScene" uid="uid://dpw5xycjoyqy4" path="res://#Scenes/UI/ResourcesUIControl.tscn" id="19_53fn5"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_0vi5m"]
-radius = 2.0
+[sub_resource type="Resource" id="Resource_53fn5"]
+script = ExtResource("14_arntx")
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qe7pv"]
+radius = 132.0
+height = 534.0
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_2d3aw"]
 radius = 6.3157897
@@ -21,6 +25,9 @@ height = 29.473684
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_f1srr"]
 radius = 10.198039
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_0vi5m"]
+radius = 2.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nfknd"]
 shader = ExtResource("3_qe7pv")
@@ -459,87 +466,18 @@ _data = {
 &"RESET": SubResource("Animation_bcb4c")
 }
 
-[sub_resource type="Resource" id="Resource_53fn5"]
-script = ExtResource("14_arntx")
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_qe7pv"]
-radius = 132.0
-height = 534.0
-
-[node name="Player" type="CharacterBody2D" unique_id=996730977 node_paths=PackedStringArray("AnimationPlayer")]
+[node name="Player" type="CharacterBody2D" unique_id=996730977 node_paths=PackedStringArray("Weapon")]
 collision_mask = 560
 script = ExtResource("1_88kja")
-AnimationPlayer = NodePath("Animation Player")
+Weapon = NodePath("WEAPON")
 metadata/_edit_horizontal_guides_ = [-154.0]
 
-[node name="Collision" type="CollisionShape2D" parent="." unique_id=1399266141]
-position = Vector2(0, 9)
-shape = SubResource("CircleShape2D_0vi5m")
-debug_color = Color(0.87058824, 0, 0.85490197, 0.03529412)
+[node name="Player UI Layer" type="CanvasLayer" parent="." unique_id=1882075777]
 
-[node name="Hurtbox Area" type="Area2D" parent="." unique_id=369174644]
-collision_layer = 2
-collision_mask = 16
+[node name="UI" parent="Player UI Layer" unique_id=1511214651 instance=ExtResource("18_tpvil")]
+visible = false
 
-[node name="Hurtbox" type="CollisionShape2D" parent="Hurtbox Area" unique_id=1256938737]
-position = Vector2(0, 2)
-scale = Vector2(0.475, 0.475)
-shape = SubResource("CapsuleShape2D_2d3aw")
-disabled = true
-debug_color = Color(0.19215687, 0.6431373, 0.08627451, 0.16078432)
-
-[node name="Elevation Check Area" type="Area2D" parent="." unique_id=1183942131]
-collision_layer = 1024
-collision_mask = 0
-
-[node name="Elevation Check" type="CollisionShape2D" parent="Elevation Check Area" unique_id=1255042910]
-position = Vector2(0, 2)
-shape = SubResource("CircleShape2D_f1srr")
-
-[node name="Sprite Shadow" type="Sprite2D" parent="." unique_id=1118241517]
-self_modulate = Color(0, 0, 0, 0.53333336)
-position = Vector2(0, 10.999999)
-scale = Vector2(0.050781246, 0.028320314)
-texture = ExtResource("2_2d3aw")
-
-[node name="Sprite" type="Sprite2D" parent="." unique_id=1960448699]
-texture_filter = 1
-material = SubResource("ShaderMaterial_nfknd")
-texture = SubResource("PortableCompressedTexture2D_qe7pv")
-hframes = 13
-vframes = 12
-frame = 58
-metadata/_aseprite_wizard_interface_config_ = {
-"animation_section": false,
-"layer_section": true,
-"output_section": true,
-"pending_changes": {}
-}
-metadata/_aseprite_wizard_config_ = {
-"convert_fps_field": 60.0,
-"convert_ms_field": 16.0,
-"convert_to_fps": false,
-"embed_tex": true,
-"i_mode": 0,
-"keep_anim_length": false,
-"layers": ["Body"],
-"o_ex_p": "",
-"o_folder": "res://#Assets/Entities/Player/Animation Player",
-"o_name": "",
-"only_visible": false,
-"player": "Animation Player",
-"scale": "1.0",
-"slice": "",
-"source": "res://#Assets/Entities/Player/Player.aseprite",
-"source_uid": 902374654419268229
-}
-metadata/_aseprite_wizard_source_file_hash_ = "1adc071d01d8a1bb833ac686b057c1ac"
-
-[node name="Animation Player" type="AnimationPlayer" parent="." unique_id=1621135587]
-root_node = NodePath("../Sprite")
-libraries/ = SubResource("AnimationLibrary_hwgyn")
-
-[node name="WEAPON" parent="." unique_id=54739942 instance=ExtResource("3_f1srr")]
+[node name="Resoruces UI" parent="Player UI Layer" unique_id=2052102617 instance=ExtResource("19_53fn5")]
 
 [node name="CAMERA" type="Node2D" parent="." unique_id=1828703016]
 visible = false
@@ -585,12 +523,74 @@ phantomCameraPath = NodePath("../PhantomCamera2D")
 cursorDeadzonePath = NodePath("../Drag Deadozone Area")
 returnLerpSpeed = 4.0
 
-[node name="Player UI Layer" type="CanvasLayer" parent="." unique_id=1882075777]
+[node name="Hurtbox Area" type="Area2D" parent="." unique_id=369174644]
+collision_layer = 2
+collision_mask = 16
 
-[node name="UI" parent="Player UI Layer" unique_id=1511214651 instance=ExtResource("18_tpvil")]
-visible = false
+[node name="Hurtbox" type="CollisionShape2D" parent="Hurtbox Area" unique_id=1256938737]
+position = Vector2(0, 2)
+scale = Vector2(0.475, 0.475)
+shape = SubResource("CapsuleShape2D_2d3aw")
+disabled = true
+debug_color = Color(0.19215687, 0.6431373, 0.08627451, 0.16078432)
 
-[node name="Resoruces UI" parent="Player UI Layer" unique_id=2052102617 instance=ExtResource("19_53fn5")]
+[node name="Elevation Check Area" type="Area2D" parent="." unique_id=1183942131]
+collision_layer = 1024
+collision_mask = 0
+
+[node name="Elevation Check" type="CollisionShape2D" parent="Elevation Check Area" unique_id=1255042910]
+position = Vector2(0, 2)
+shape = SubResource("CircleShape2D_f1srr")
+
+[node name="Collision" type="CollisionShape2D" parent="." unique_id=1399266141]
+position = Vector2(0, 9)
+shape = SubResource("CircleShape2D_0vi5m")
+debug_color = Color(0.87058824, 0, 0.85490197, 0.03529412)
+
+[node name="Sprite Shadow" type="Sprite2D" parent="." unique_id=1118241517]
+self_modulate = Color(0, 0, 0, 0.53333336)
+position = Vector2(0, 10.999999)
+scale = Vector2(0.050781246, 0.028320314)
+texture = ExtResource("2_2d3aw")
+
+[node name="Sprite" type="Sprite2D" parent="." unique_id=1960448699]
+texture_filter = 1
+material = SubResource("ShaderMaterial_nfknd")
+texture = SubResource("PortableCompressedTexture2D_qe7pv")
+hframes = 13
+vframes = 12
+frame = 44
+metadata/_aseprite_wizard_interface_config_ = {
+"animation_section": false,
+"layer_section": true,
+"output_section": true,
+"pending_changes": {}
+}
+metadata/_aseprite_wizard_config_ = {
+"convert_fps_field": 60.0,
+"convert_ms_field": 16.0,
+"convert_to_fps": false,
+"embed_tex": true,
+"i_mode": 0,
+"keep_anim_length": false,
+"layers": ["Body"],
+"o_ex_p": "",
+"o_folder": "res://#Assets/Entities/Player/Animation Player",
+"o_name": "",
+"only_visible": false,
+"player": "Animation Player",
+"scale": "1.0",
+"slice": "",
+"source": "res://#Assets/Entities/Player/Player.aseprite",
+"source_uid": 902374654419268229
+}
+metadata/_aseprite_wizard_source_file_hash_ = "1adc071d01d8a1bb833ac686b057c1ac"
+
+[node name="Animation Player" type="AnimationPlayer" parent="." unique_id=1621135587]
+root_node = NodePath("../Sprite")
+libraries/ = SubResource("AnimationLibrary_hwgyn")
+
+[node name="WEAPON" parent="." unique_id=54739942 instance=ExtResource("3_f1srr")]
 
 [editable path="Player UI Layer/UI"]
 [editable path="Player UI Layer/Resoruces UI"]

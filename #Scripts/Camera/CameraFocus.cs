@@ -13,7 +13,6 @@ public partial class CameraFocus : Camera
     protected Vector2 ShakeOffset { get; set; } = Vector2.Zero;
     protected ColorRect debugSphere;
 
-    protected float shakeDecay = .01f;
     protected float shakeIntensity = 0f;
     protected float shakeTimer = 0f;
 
@@ -83,13 +82,12 @@ public partial class CameraFocus : Camera
 
     protected void UpdateShakeOffset(double delta)
     {
-        ShakeOffset = CameraFeedback.TenacityBreakShake(delta, ref shakeDecay, ref shakeIntensity, ref shakeTimer);
+        ShakeOffset = CameraFeedback.ApplyShake(delta, ref shakeIntensity, ref shakeTimer);
     }
 
     protected void ResetShakeOffset()
     {
         ShakeOffset = Vector2.Zero;
-        shakeDecay = .01f;
         shakeIntensity = 0f;
         shakeTimer = 0f;
     }
@@ -111,6 +109,19 @@ public partial class CameraFocus : Camera
 
     public override void ShakeCamera(float intensity = 0f)
     {
-        CameraFeedback.ShakeCamera(ref shakeIntensity, ref shakeTimer, intensity);
+        if (intensity <= 0f)
+            return;
+
+        CameraFeedback.ShakeParams param;
+        if (intensity >= 4.5f)
+            param = CameraFeedback.TenacityBreakShake();
+        else if (intensity >= 1f)
+            param = CameraFeedback.StaggerShake();
+        else if (intensity >= 0.75f)
+            param = CameraFeedback.WeaknessShake();
+        else
+            param = CameraFeedback.NormalShake();
+
+        CameraFeedback.InitiateShake(ref shakeIntensity, ref shakeTimer, param);
     }
 }

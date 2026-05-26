@@ -20,22 +20,30 @@ public abstract partial class Enemy
         TriggerDamageFlash();
         MarkCameraFocus();
 
-        Camera camera = GetViewport().GetCamera2D() as Camera;
-        camera?.ShakeCamera(0.5f);
-
         float calculatedDamage = weapon.ApplyDamage(this);
-        bool weaknessExploit = false;
+        
+        // Check if weakness is exploited
+        bool weaknessExploit = weapon.AttackType switch
+        {
+            WeaponArc.WeaponAttackType.Slashing => weaknessType == WeaknessType.Slashing,
+            WeaponArc.WeaponAttackType.Piercing => weaknessType == WeaknessType.Piercing,
+            WeaponArc.WeaponAttackType.Smashing => weaknessType == WeaknessType.Smashing,
+            _ => false
+        };
+
+        Camera camera = GetViewport().GetCamera2D() as Camera;
+        if (weaknessExploit)
+            CameraFeedback.TriggerWeaknessShake(camera);
+        else
+            CameraFeedback.TriggerNormalShake(camera);
 
         SetHealth(GetHealth() - calculatedDamage);
-        SpawnDamageNumber(
+        DamageNumber.Spawn(
+            this,
             calculatedDamage,
-            TenacitySystem?.IsInStaggerWindow ?? false
-                ? DamageNumberStyle.Staggered
-                : weaknessExploit
-                    ? DamageNumberStyle.Weakness
-                    : DamageNumberStyle.Standard
+            weaknessExploit ? DamageNumberStyle.Weakness : DamageNumberStyle.Standard,
+            this
         );
-
         StateMachine?.NotifyDamageTaken(calculatedDamage);
 
         if (GetHealth() <= 0)
@@ -53,7 +61,7 @@ public abstract partial class Enemy
 
         if (staggerTriggered)
         {
-            camera?.ShakeCamera(5f);
+            CameraFeedback.TriggerTenacityBreakShake(camera);
             if (TenacityCooldownCue != null)
                 TenacityCooldownCue.Visible = true;
         }

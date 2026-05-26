@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://xc0fbhhjqr6k"]
+
+[ext_resource type="LabelSettings" uid="uid://b3fckkt7fb5ia" path="res://#Assets/##Resources/StandardDamageNumber.tres" id="2_powjd"]
+[ext_resource type="Script" uid="uid://dc4kxf6h8dglm" path="res://#Scripts/UI/GUI/DamageNumber.cs" id="2_vhuhy"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_vhuhy"]
+radius = 14.142124
+
+[node name="Damage Number" type="Node2D" unique_id=1570427993]
+z_index = 4096
+scale = Vector2(0.1, 0.1)
+script = ExtResource("2_vhuhy")
+
+[node name="Label" type="Label" parent="." unique_id=939491613]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -57.5
+offset_top = -200.00003
+offset_right = 57.5
+offset_bottom = -121.00003
+grow_horizontal = 2
+grow_vertical = 2
+text = "2409"
+label_settings = ExtResource("2_powjd")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Area2D" type="Area2D" parent="." unique_id=546640557]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1558801827]
+position = Vector2(0, -159.99998)
+shape = SubResource("CircleShape2D_vhuhy")

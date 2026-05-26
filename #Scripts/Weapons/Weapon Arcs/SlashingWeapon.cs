@@ -5,6 +5,7 @@ public partial class SlashingWeapon : WeaponArc
     public override void SetParentWeapon(Weapon weapon)
     {
         base.SetParentWeapon(weapon);
+        AttackType = WeaponArc.WeaponAttackType.Slashing;
         if (weapon != null)
         {
             weapon.Damage = 20f;

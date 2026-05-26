@@ -172,7 +172,7 @@ animations = [{
 "speed": 30.0
 }]
 
-[node name="Practice Dummy" type="CharacterBody2D" unique_id=970362701 node_paths=PackedStringArray("AnimationPlayer")]
+[node name="Practice Dummy" type="CharacterBody2D" unique_id=970362701]
 collision_layer = 8
 collision_mask = 61
 script = ExtResource("1_u8rv5")
@@ -180,7 +180,6 @@ outsideKnockbackForce = 0.0
 speed = 0.0
 tenacity = 1.0
 maxTenacity = 1.0
-AnimationPlayer = NodePath("AnimationPlayer")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1370027202]
 shape = SubResource("RectangleShape2D_7wtq7")

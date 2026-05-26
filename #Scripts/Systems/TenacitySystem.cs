@@ -45,6 +45,7 @@ public class TenacitySystem
     private Timer staggerWindowTimer = null;
 
     private bool cuePlayed = false;
+    private bool hasPlayedTenacityBreakShake = false;
     private WeaponArc pendingWeaponReset = null;
     public bool IsInRecoveryCooldown => isRecovering;
     public bool IsInStaggerWindow => isInStaggerWindow;
@@ -146,7 +147,9 @@ public class TenacitySystem
         if (shouldStagger)
         {
             TriggerStagger(playerPosition, weapon);
-            return true;
+            bool isFirstBreak = !hasPlayedTenacityBreakShake;
+            hasPlayedTenacityBreakShake = true;
+            return isFirstBreak;
         }
         
         return false;
@@ -259,6 +262,7 @@ public class TenacitySystem
         Enemy.tenacity = Enemy.maxTenacity;
         tenacityStackCount = 0;
         isInStaggerWindow = false;
+        hasPlayedTenacityBreakShake = false;
         
         pendingWeaponReset?.ResetTenacityDamage();
         pendingWeaponReset = null;

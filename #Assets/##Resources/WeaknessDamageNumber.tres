@@ -1,0 +1,11 @@
+[gd_resource type="LabelSettings" format=3 uid="uid://bnhgs46udcqgv"]
+
+[ext_resource type="FontFile" uid="uid://d2y1we0f1ak0q" path="res://#Assets/UI/Fonts/Runiga.otf" id="1_0h3cd"]
+
+[resource]
+font = ExtResource("1_0h3cd")
+font_size = 64
+font_color = Color(1.0251088, 0, 0.20794661, 1)
+outline_size = 2
+outline_color = Color(0, 0, 0, 0.5019608)
+shadow_size = 0

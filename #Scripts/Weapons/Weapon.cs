@@ -151,6 +151,10 @@ public partial class Weapon : Node2D
             rawDamage *= GetCurrentAttackDamageMultiplier();
         }
 
+        // Apply weakness exploit modifier
+        float weaknessMultiplier = GetWeaknessMultiplier(enemy);
+        rawDamage *= weaknessMultiplier;
+
         float penetrationPercent = Penetration / 100f;
         float effectiveArmor = enemy.armor * (1f - penetrationPercent);
         float damageReductionPercent = effectiveArmor / 200f;
@@ -158,6 +162,25 @@ public partial class Weapon : Node2D
         float calculatedDamage = rawDamage * damageMultiplier;
 
         return Mathf.Max(calculatedDamage, 0);
+    }
+
+    private float GetWeaknessMultiplier(Enemy enemy)
+    {
+        if (currentArc == null || enemy == null)
+            return 1f;
+
+        bool isWeaknessExploited = currentArc.AttackType switch
+        {
+            WeaponArc.WeaponAttackType.Slashing => enemy.weaknessType == Enemy.WeaknessType.Slashing,
+            WeaponArc.WeaponAttackType.Piercing => enemy.weaknessType == Enemy.WeaknessType.Piercing,
+            WeaponArc.WeaponAttackType.Smashing => enemy.weaknessType == Enemy.WeaknessType.Smashing,
+            _ => false
+        };
+
+        if (isWeaknessExploited)
+            return 1.3f; // 130% damage
+
+        return GD.Randf() * 0.1f + 0.9f; // Random 90%-100%
     }
 
     public float CalculateTenacityDamage(float baseTenacityDamage)

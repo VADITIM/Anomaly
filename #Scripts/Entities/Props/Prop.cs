@@ -35,7 +35,7 @@ public partial class Prop : Entity
 
         float newHealth = GetHealth() - weapon.Damage;
         SetHealth(newHealth);
-        SpawnDamageNumber(weapon.Damage, DamageNumberStyle.Standard);
+        DamageNumber.Spawn(this, weapon.Damage, DamageNumberStyle.Standard, this);
 
         TakeKnockback(sourcePosition, weapon.Knockback);
 

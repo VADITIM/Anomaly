@@ -5,6 +5,7 @@ public partial class HammerArc : WeaponArc
     public override void SetParentWeapon(Weapon weapon)
     {
         base.SetParentWeapon(weapon);
+        AttackType = WeaponArc.WeaponAttackType.Smashing;
         if (weapon != null)
         {
             weapon.Damage = 440f;

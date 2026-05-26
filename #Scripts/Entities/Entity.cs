@@ -164,7 +164,7 @@ public partial class Entity : CharacterBody2D
         float newHealth     = Mathf.Max(0f, currentHealth - effectiveDamage);
 
         SetHealth(newHealth);
-        SpawnDamageNumber(effectiveDamage, DamageNumberStyle.Standard);
+            DamageNumber.Spawn(this, effectiveDamage, DamageNumberStyle.Standard);
         OnDamageTaken(effectiveDamage, sourcePosition, currentHealth, newHealth);
 
         if (newHealth <= 0f)
@@ -307,9 +307,6 @@ public partial class Entity : CharacterBody2D
             }
         }
     }
-
-    protected void SpawnDamageNumber(float damageAmount, DamageNumberStyle style)
-        => DamageNumberSpawner.Spawn(this, damageAmount, style);
 
     public virtual void PlayAnimation(string animName)
     {

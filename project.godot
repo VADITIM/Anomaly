@@ -42,7 +42,7 @@ project/assembly_name="Anomaly"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/acro\'s_hitbox_g4/plugin.cfg", "res://addons/nv.node_pivot/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
+enabled=PackedStringArray("res://addons/AsepriteWizard/plugin.cfg", "res://addons/acro\'s_hitbox_g4/plugin.cfg", "res://addons/dock_slot_expander/plugin.cfg", "res://addons/nv.node_pivot/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [file_customization]
 
