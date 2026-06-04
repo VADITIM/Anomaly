@@ -278,7 +278,7 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
 {
     if (StateMachine.IsDead) return;
     
-    Enemy.ApplyKnockback(direction, force, duration);
+    Enemy.TakeKnockback(Enemy.GlobalPosition - direction.Normalized(), force, duration);
     
     if (!isStaggered)
     {

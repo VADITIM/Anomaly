@@ -60,15 +60,13 @@ public class PlayerStats
         Stats["Health"] = new Stat { Current = 100f, CurrentMax = 200f, TotalMax = 200f };
         
         Stats["Stamina"] = new Stat { Current = 300f, CurrentMax = 300f, TotalMax = 300f };
-        Stats["Stamina Regen"] = new Stat { Current = 10f, CurrentMax = 10f, TotalMax = 50f };
+        Stats["Stamina Regen"] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 50f };
         
-        Stats["Vessel"] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 100f };
+        Stats["Vessel"] = new Stat { Current = 50f, CurrentMax = 100f, TotalMax = 100f };
         
         Stats["Corruption"] = new Stat { Current = 100f, CurrentMax = 100f, TotalMax = 200f };
         
-        Stats["Lacerate Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
-        Stats["Puncture Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
-        Stats["Crush Multiplier"] = new Stat { Current = 1f, CurrentMax = 1f, TotalMax = 3f };
+        
         
         Stats["Soul"] = new Stat { Current = 0f, CurrentMax = 0f, TotalMax = 100f };
     }

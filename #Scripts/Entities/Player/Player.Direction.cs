@@ -50,4 +50,26 @@ public partial class Player
     {
         Sprite.FlipH = flipH;
     }
+
+    public Vector2 GetAttackDirection()
+    {
+        GD.Print($"GetAttackDirection called, lastAnimationDirection: {lastAnimationDirection}");
+        return GetVectorFromDirection(lastAnimationDirection);
+    }
+
+    private Vector2 GetVectorFromDirection(string direction)
+    {
+        return direction switch
+        {
+            "N" => Vector2.Up,
+            "NE" => new Vector2(1, -1).Normalized(),
+            "E" => Vector2.Right,
+            "SE" => new Vector2(1, 1).Normalized(),
+            "S" => Vector2.Down,
+            "SW" => new Vector2(-1, 1).Normalized(),
+            "W" => Vector2.Left,
+            "NW" => new Vector2(-1, -1).Normalized(),
+            _ => Vector2.Down
+        };
+    }
 }

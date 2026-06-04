@@ -65,6 +65,12 @@ public partial class StateMachine : Node
     public event Action OnRevived;
     public event Action<float> OnDamageTaken;
 
+
+    public float GetMaxStaggers() => MaxStaggers;
+    public void SetMaxStaggers(int max) { MaxStaggers = max; }
+    public void NotifyDamageTaken(float damage) { OnDamageTaken?.Invoke(damage); }
+
+
     public override void _Ready()
     {
         OwnerEntity = GetParent() as Entity;
@@ -100,27 +106,11 @@ public partial class StateMachine : Node
         PreviousState = initialState;
         StateTime = 0f;
     }
+    protected void AdvanceStateTime(float delta) { StateTime += delta; }
+    protected void ResetStateTime() { StateTime = 0f; }
 
-    protected void AdvanceStateTime(float delta)
-    {
-        StateTime += delta;
-    }
-
-    protected void ResetStateTime()
-    {
-        StateTime = 0f;
-    }
-
-    public bool IsState(State state)
-    {
-        return CurrentState == state;
-    }
-
-    public bool WasState(State state)
-    {
-        return PreviousState == state;
-    }
-
+    public bool WasState(State state) { return PreviousState == state; }
+    public bool IsState(State state) { return CurrentState == state; }
     public bool IsState(params State[] states)
     {
         foreach (State state in states)
@@ -132,6 +122,15 @@ public partial class StateMachine : Node
         return false;
     }
 
+    protected virtual bool CanTransitionTo(State newState)
+    {
+        if (CurrentState == State.Dead)
+            return newState == State.Idle;
+
+        return !IsState(newState);
+    }
+
+    protected virtual void OnTransitioned(State previousState, State newState, bool wasInLockedState) { }
     public bool TransitionTo(State newState)
     {
         if (IsState(newState))
@@ -157,14 +156,6 @@ public partial class StateMachine : Node
         return IsLockedState(CurrentState);
     }
 
-    protected virtual bool CanTransitionTo(State newState)
-    {
-        if (CurrentState == State.Dead)
-            return newState == State.Idle;
-
-        return !IsState(newState);
-    }
-
     protected virtual bool IsLockedState(State state)
     {
         return state == State.Staggered ||
@@ -173,75 +164,26 @@ public partial class StateMachine : Node
                state == State.Dead;
     }
 
-    protected virtual void OnTransitioned(State previousState, State newState, bool wasInLockedState) { }
 
-    public void RequestDeath()
+    private void UpdateMovementDirection()
     {
-        TransitionTo(State.Dead);
-        OnDied?.Invoke();
-    }
+        if (IsAttacking) return;
 
-    public void RequestRevive()
-    {
-        if (CurrentState == State.Dead)
+        Player.MovementDirection newDirection = Player.MovementDirection.None;
+
+        if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
+        if (Input.IsActionPressed(Keybinds.MoveDown)) newDirection |= Player.MovementDirection.Down;
+        if (Input.IsActionPressed(Keybinds.MoveLeft)) newDirection |= Player.MovementDirection.Left;
+        if (Input.IsActionPressed(Keybinds.MoveRight)) newDirection |= Player.MovementDirection.Right;
+
+        if (newDirection != Movement.CurrentMovementDirection)
         {
-            TransitionTo(State.Idle);
-            OnRevived?.Invoke();
+            Movement.CurrentMovementDirection = newDirection;
+            OnMovementDirectionChanged?.Invoke(Movement.CurrentMovementDirection);
         }
     }
 
-    public float GetMaxStaggers() => MaxStaggers;
 
-    public void SetMaxStaggers(int max)
-    {
-        MaxStaggers = max;
-    }
-
-    public void NotifyDamageTaken(float damage)
-    {
-        OnDamageTaken?.Invoke(damage);
-    }
-
-    public void RequestStagger(float duration)
-    {
-        if (CurrentState == State.Dead) return;
-        _staggerDuration = duration;
-        TransitionTo(State.Staggered);
-        OnStaggered?.Invoke(duration);
-    }
-
-    public void RequestKnockback(Vector2 direction, float force, float duration = 0.3f)
-    {
-        if (CurrentState == State.Dead) return;
-        _knockbackVelocity = direction.Normalized() * force;
-        _knockbackDuration = duration;
-        TransitionTo(State.Knockback);
-        OnKnockback?.Invoke(direction, force);
-    }
-
-    public void RequestAttack(float duration, bool isHeavy)
-    {
-        if (CurrentState == State.Dead) return;
-        _attackDuration = duration;
-        TransitionTo(isHeavy ? State.HeavyAttacking : State.Attacking);
-        OnAttackStarted?.Invoke(isHeavy);
-    }
-
-    public void RequestHeal(float duration)
-    {
-        if (CurrentState == State.Dead) return;
-        _healDuration = duration;
-        TransitionTo(State.Healing);
-        OnHealStarted?.Invoke(duration);
-    }
-
-    public void RequestDodge(Vector2 direction, float duration)
-    {
-        if (CurrentState == State.Dead) return;
-        _knockbackVelocity = Vector2.Zero;
-        TransitionTo(State.Dodging);
-        OnDodgeStarted?.Invoke(direction);
-    }
 
     private void ProcessPlayer(float delta)
     {
@@ -337,7 +279,7 @@ public partial class StateMachine : Node
         {
             if (CurrentState == State.Healing)
                 OnHealEnded?.Invoke();
-            TryDodge();
+            RequestDodge(Movement.GetMovementVector(), Dodge.GetDodgeDuration());
             return;
         }
 
@@ -362,13 +304,14 @@ public partial class StateMachine : Node
 
         if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
         {
-            TryHeal();
+            RequestHeal(HEAL_DURATION);
             return;
         }
 
         if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && !IsComboCoolingDown())
         {
-            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
+            bool hasStamina = ResourceManager.Instance?.HasStamina(Player.Instance.Weapon.StaminaCost) ?? (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost);
+            if (hasStamina)
             {
                 if (CurrentState != State.HeavyCharging)
                     StartHeavyCharge();
@@ -384,7 +327,8 @@ public partial class StateMachine : Node
 
         if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && !IsComboCoolingDown())
         {
-            if (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost)
+            bool hasStamina = ResourceManager.Instance?.HasStamina(Player.Instance.Weapon.StaminaCost) ?? (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost);
+            if (hasStamina)
             {
                 if (Player?.Weapon != null && Player.Weapon.CanQueueAttackFollowUp)
                 {
@@ -413,78 +357,71 @@ public partial class StateMachine : Node
         }
     }
 
-    private bool IsComboCoolingDown()
+
+    public void RequestStagger(float duration)
     {
-        return Player?.Weapon?.IsInComboCooldown ?? false;
+        if (CurrentState == State.Dead) return;
+        _staggerDuration = duration;
+        TransitionTo(State.Staggered);
+        OnStaggered?.Invoke(duration);
     }
 
-    private void ContinueComboAttack()
+    public void RequestKnockback(Vector2 direction, float force, float duration = 0.3f)
     {
-        if (Player?.Weapon == null) return;
+        if (CurrentState == State.Dead) return;
+        _knockbackVelocity = direction.Normalized() * force;
+        _knockbackDuration = duration;
+        TransitionTo(State.Knockback);
+        OnKnockback?.Invoke(direction, force);
+    }
 
-        if (!Player.Weapon.TryConsumeQueuedAttack(false, out float duration))
-            return;
-
-        Player.Instance.Stats.SetCurrent(
-            "Stamina",
-            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
-
+    public void RequestAttack(float duration, bool isHeavy)
+    {
+        if (CurrentState == State.Dead) return;
         _attackDuration = duration;
-        Player.Weapon.StartAttackSequence(false);
-        TransitionTo(IsAirborne ? State.AirAttacking : State.Attacking);
-        OnAttackStarted?.Invoke(false);
+        if (Enemy != null)
+            CurrentAttackPhase = EnemyAttackPhase.WindUp;
+        TransitionTo(isHeavy ? State.HeavyAttacking : State.Attacking);
+        OnAttackStarted?.Invoke(isHeavy);
     }
 
-    private void ExecuteAirAttack()
+    public void RequestHeal(float duration)
     {
-        if (CurrentState != State.Airborne) return;
-
-        Player.Instance.Stats.SetCurrent(
-            "Stamina",
-            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
-
-        _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
-        Player?.Weapon?.StartAttackSequence(false);
-        TransitionTo(State.AirAttacking);
-        OnAttackStarted?.Invoke(false);
+        if (CurrentState == State.Dead) return;
+        if (CurrentState != State.Idle && CurrentState != State.Moving)
+            return;
+        _healDuration = duration;
+        TransitionTo(State.Healing);
+        OnHealStarted?.Invoke(duration);
     }
 
-    private void UpdateMovementDirection()
+    public void RequestDodge(Vector2 direction, float duration)
     {
-        if (IsAttacking) return;
+        if (CurrentState == State.Dead) return;
+        if (!Dodge.TryDodge(direction))
+            return;
+        _knockbackVelocity = Vector2.Zero;
+        TransitionTo(State.Dodging);
+        OnDodgeStarted?.Invoke(Dodge.GetDodgeDirection());
+    }
 
-        Player.MovementDirection newDirection = Player.MovementDirection.None;
 
-        if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
-        if (Input.IsActionPressed(Keybinds.MoveDown)) newDirection |= Player.MovementDirection.Down;
-        if (Input.IsActionPressed(Keybinds.MoveLeft)) newDirection |= Player.MovementDirection.Left;
-        if (Input.IsActionPressed(Keybinds.MoveRight)) newDirection |= Player.MovementDirection.Right;
+    public void RequestDeath()
+    {
+        TransitionTo(State.Dead);
+        OnDied?.Invoke();
+    }
 
-        if (newDirection != Movement.CurrentMovementDirection)
+    public void RequestRevive()
+    {
+        if (CurrentState == State.Dead)
         {
-            Movement.CurrentMovementDirection = newDirection;
-            OnMovementDirectionChanged?.Invoke(Movement.CurrentMovementDirection);
+            TransitionTo(State.Idle);
+            OnRevived?.Invoke();
         }
     }
 
-    private void TryHeal()
-    {
-        if (CurrentState == State.Idle || CurrentState == State.Moving)
-        {
-            _healDuration = HEAL_DURATION;
-            TransitionTo(State.Healing);
-            OnHealStarted?.Invoke(HEAL_DURATION);
-        }
-    }
 
-    private void TryDodge()
-    {
-        if (Dodge.TryDodge(Movement.GetMovementVector()))
-        {
-            TransitionTo(State.Dodging);
-            OnDodgeStarted?.Invoke(Dodge.GetDodgeDirection());
-        }
-    }
 
     private void StartHeavyCharge()
     {
@@ -508,15 +445,73 @@ public partial class StateMachine : Node
     {
         if (CurrentState != State.Idle && CurrentState != State.Moving) return;
 
-        Player.Instance.Stats.SetCurrent(
-            "Stamina",
-            Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.TryUseStamina(Player.Instance.Weapon.StaminaCost);
+        else
+            Player.Instance.Stats.SetCurrent(
+                "Stamina",
+                Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
 
         _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
         Player?.Weapon?.StartAttackSequence(false);
         TransitionTo(State.Attacking);
         OnAttackStarted?.Invoke(false);
     }
+
+
+
+    private void ContinueComboAttack()
+    {
+        if (Player?.Weapon == null) return;
+
+        if (!Player.Weapon.TryConsumeQueuedAttack(false, out float duration))
+            return;
+
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.TryUseStamina(Player.Instance.Weapon.StaminaCost);
+        else
+            Player.Instance.Stats.SetCurrent(
+                "Stamina",
+                Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+
+        _attackDuration = duration;
+        Player.Weapon.StartAttackSequence(false);
+        TransitionTo(IsAirborne ? State.AirAttacking : State.Attacking);
+        OnAttackStarted?.Invoke(false);
+    }
+
+    private void ExecuteAirAttack()
+    {
+        if (CurrentState != State.Airborne) return;
+
+        if (ResourceManager.Instance != null)
+            ResourceManager.Instance.TryUseStamina(Player.Instance.Weapon.StaminaCost);
+        else
+            Player.Instance.Stats.SetCurrent(
+                "Stamina",
+                Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
+
+        _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+        Player?.Weapon?.StartAttackSequence(false);
+        TransitionTo(State.AirAttacking);
+        OnAttackStarted?.Invoke(false);
+    }
+
+
+    private bool IsComboCoolingDown() { return Player?.Weapon?.IsInComboCooldown ?? false; }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     private void ProcessEnemy(float delta)
     {
@@ -555,7 +550,7 @@ public partial class StateMachine : Node
                 }
                 else if (distanceToTarget <= Enemy.attackRange)
                 {
-                    TryEnemyAttack();
+                    RequestAttack(OwnerEntity.GetAttackDuration(), false);
                 }
                 else if (distanceToTarget <= Enemy.stopDistance)
                 {
@@ -574,14 +569,4 @@ public partial class StateMachine : Node
         }
     }
 
-    private void TryEnemyAttack()
-    {
-        if (CurrentState == State.Chasing || CurrentState == State.Idle)
-        {
-            _attackDuration = OwnerEntity.GetAttackDuration();
-            CurrentAttackPhase = EnemyAttackPhase.WindUp;
-            TransitionTo(State.Attacking);
-            OnAttackStarted?.Invoke(false);
-        }
-    }
 }

@@ -39,7 +39,7 @@ public abstract partial class Enemy : Entity
 
         StatsDisplay();
         InitializeTenacity();
-        InitializeBars();
+        InitializeResourceBars();
         InitializeStateMachine();
 
         UpdateAnimation();

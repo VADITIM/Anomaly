@@ -20,22 +20,25 @@ public partial class Prop : Entity
         SetMaxHealth(health);
         SetHealth(health);
 
-        InitializeBars();
+        InitializeResourceBars();
         PlayAnimation("Idle_Down");
     }
 
-    public override void TakeDamage(WeaponArc weapon, Node2D damageSource)
+    public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
         if (_isDead || !Destroyable) return;
-        if (weapon == null) return;
 
-        Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
+        if (weapon == null)
+        {
+            base.TakeDamage(damage, sourcePosition, weapon);
+            return;
+        }
 
         TriggerDamageFlash();
 
-        float newHealth = GetHealth() - weapon.Damage;
+        float newHealth = GetHealth() - damage;
         SetHealth(newHealth);
-        DamageNumber.Spawn(this, weapon.Damage, DamageNumberStyle.Standard, this);
+        DamageNumber.Spawn(this, damage, DamageNumberStyle.Standard, this);
 
         TakeKnockback(sourcePosition, weapon.Knockback);
 
@@ -51,13 +54,6 @@ public partial class Prop : Entity
                     PlayAnimation("Idle_Down");
             };
         }
-    }
-
-    public override void ApplyKnockback(Vector2 direction, float force, float duration = 0.2f)
-    {
-        float effectiveForce = force / Mathf.Max(weight, 0.1f);
-        knockbackVelocity = direction.Normalized() * effectiveForce;
-        knockbackDuration = duration;
     }
 
     private void Die()

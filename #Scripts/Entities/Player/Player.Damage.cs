@@ -7,12 +7,12 @@ public partial class Player
         return !Dodge.IsIFrameActive;
     }
 
-    public override void TakeDamage(float damage, Vector2 sourcePosition)
+    public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
         if (StateMachine != null && StateMachine.IsDead)
             return;
 
-        base.TakeDamage(damage, sourcePosition);
+        base.TakeDamage(damage, sourcePosition, weapon);
     }
 
     protected override float ApplyDamageModifiers(float damage, Vector2 sourcePosition)

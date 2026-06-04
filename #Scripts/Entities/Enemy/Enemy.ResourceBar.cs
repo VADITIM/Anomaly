@@ -11,12 +11,12 @@ public abstract partial class Enemy
     private RichTextLabel testDisplay;
 
 
-    public override void InitializeBars()
+    public override void InitializeResourceBars()
     {
         SetHealth(health);
         SetMaxHealth(health);
 
-        base.InitializeBars();
+        base.InitializeResourceBars();
         TenacityBar = InitializeEntity.FindTextureProgressBar(ResourceBarControl, "Tenacity Bar");
     }
 

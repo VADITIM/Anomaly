@@ -117,6 +117,11 @@ public partial class SegmentManager : Control
 		UpdateStaminaUI(maxStamina, stamina);
 	}
 
+	public void Refresh()
+	{
+		UpdateAll();
+	}
+
 	private void UpdateHealthUI(int maxHealth, int health)
 	{
 		if (HealthBar != null)

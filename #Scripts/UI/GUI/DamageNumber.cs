@@ -10,7 +10,7 @@ public partial class DamageNumber : Node2D
 {
 	private const string DamageNumberScenePath = "res://#Scenes/UI/GUI/Damage Number.tscn";
 	private const float FloatUpDuration = 0.35f;
-	private const float DefaultSpawnRadius = 40f;
+	private const float DefaultSpawnRadius = 10f;
 
 	private static readonly PackedScene DamageNumberScene = ResourceLoader.Load<PackedScene>(DamageNumberScenePath);
 	private static readonly LabelSettings StandardLabelSettings = GD.Load<LabelSettings>("uid://b3fckkt7fb5ia");

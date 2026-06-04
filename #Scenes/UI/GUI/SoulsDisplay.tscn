@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://dw3rw4rj3q58r"]
+[gd_scene format=3 uid="uid://dw3rw4rj3q58r"]
 
 [ext_resource type="Texture2D" uid="uid://dhk01yur47rbu" path="res://#Assets/UI/GUI/souls_background.png" id="1_q00j3"]
 [ext_resource type="FontFile" uid="uid://clad1xd41f85h" path="res://#Assets/UI/Fonts/Zodiak-Variable.ttf" id="2_gi622"]

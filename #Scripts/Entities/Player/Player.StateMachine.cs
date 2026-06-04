@@ -3,7 +3,7 @@ using Godot;
 public partial class Player
 {
 
-    public void OnActionPerformed() { _staminaRegenerationCooldown = STAMINA_REGEN_COOLDOWN; }
+    public void OnActionPerformed() { staminaRegenerationTimer = staminaRegenCooldown; }
     private void OnAttackStarted(bool isHeavy) { }
     private void OnAttackEnded() { }
     private void OnDodgeStarted(Vector2 direction) { }
@@ -25,10 +25,7 @@ public partial class Player
         set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.IsPaused = value; }
     }
 
-    protected override State GetCurrentAnimationState()
-    {
-        return StateMachine?.CurrentState ?? State.Idle;
-    }
+    protected override State GetCurrentAnimationState() { return StateMachine?.CurrentState ?? State.Idle; }
 
     protected override string GetCurrentAnimationDirection(bool useDirectionalAnimations, out bool flipH)
     {

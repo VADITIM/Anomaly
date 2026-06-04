@@ -2,6 +2,9 @@ using Godot;
 
 public partial class Entity : CharacterBody2D
 {
+    public StateMachine StateMachine { get; protected set; }
+    public AnimationPlayer AnimationPlayer { get; set; }
+
     private const string DAMAGE_FLASH_SHADER_PATH = "res://#Shaders/damageflash.gdshader";
 
     [Export] public bool  canBeKnockedBack  { get; set; } = true;
@@ -32,9 +35,6 @@ public partial class Entity : CharacterBody2D
     protected Sprite2D spriteShadow = null;
     protected Vector2 weaponNodeBasePosition = Vector2.Zero;
     protected Node2D WeaponNode = null;
-
-    public AnimationPlayer AnimationPlayer { get; set; }
-    public StateMachine StateMachine { get; protected set; }
 
     [Export] public float attackDuration { get; set; } = 1f;
 
@@ -71,6 +71,7 @@ public partial class Entity : CharacterBody2D
     protected virtual bool UsesDirectionalAnimations => false;
 
     public virtual float GetAttackDuration() => attackDuration;
+    public virtual bool IsJumping => jumpTimer > 0f;
 
     protected void TriggerDamageFlash()
     {
@@ -90,7 +91,6 @@ public partial class Entity : CharacterBody2D
     public override void _Ready()
     {
         EnsureStateMachine();
-        InitializeJump();
         EnsureDamageFlashMaterial();
     }
 
@@ -116,7 +116,6 @@ public partial class Entity : CharacterBody2D
         }
     }
 
-    public virtual bool IsJumping => jumpTimer > 0f;
 
     protected void ProcessKnockback(float delta)
     {
@@ -137,21 +136,14 @@ public partial class Entity : CharacterBody2D
         }
     }
 
-    public virtual void ApplyKnockback(Vector2 direction, float force, float duration = 0.2f)
-    {
-        float effectiveForce = force / Mathf.Max(weight, 0.1f);
-        knockbackVelocity    = direction.Normalized() * effectiveForce;
-        knockbackDuration    = duration;
-    }
-
     public virtual void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
     {
         if (!canBeKnockbacked) return;
-        Vector2 dir = (GlobalPosition - sourcePosition).Normalized();
-        ApplyKnockback(dir, force, duration);
+        Vector2 direction = (GlobalPosition - sourcePosition).Normalized();
+        ApplyKnockbackFromDirection(direction, force, duration);
     }
 
-    public virtual void TakeDamage(float damage, Vector2 sourcePosition)
+    public virtual void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
         if (damage <= 0f || !CanTakeDamage(damage, sourcePosition))
             return;
@@ -164,24 +156,15 @@ public partial class Entity : CharacterBody2D
         float newHealth     = Mathf.Max(0f, currentHealth - effectiveDamage);
 
         SetHealth(newHealth);
-            DamageNumber.Spawn(this, effectiveDamage, DamageNumberStyle.Standard);
+        DamageNumber.Spawn(this, effectiveDamage, DamageNumberStyle.Standard);
         OnDamageTaken(effectiveDamage, sourcePosition, currentHealth, newHealth);
 
         if (newHealth <= 0f)
             OnDeath(sourcePosition);
     }
 
-    public virtual void TakeDamage(WeaponArc weapon, Node2D damageSource)
-    {
-        if (weapon == null) return;
-        Vector2 sourcePosition  = damageSource?.GlobalPosition ?? GlobalPosition;
-        TakeDamage(weapon.Damage, sourcePosition);
-        TakeKnockback(sourcePosition, weapon.Knockback);
-    }
 
-    public virtual void InitializeBars() => InitializeResourceBars();
-
-    public void InitializeResourceBars()
+    public virtual void InitializeResourceBars()
     {
         (ResourceBarControl, HealthBar) = InitializeEntity.InitializeResourceBars(this);
 
@@ -369,28 +352,11 @@ public partial class Entity : CharacterBody2D
         _damageFlashMaterial.SetShaderParameter("flash_value", 0f);
     }
 
-    private void InitializeJump()
+    private void ApplyKnockbackFromDirection(Vector2 direction, float force, float duration)
     {
-        if (HasNode("Sprite"))
-        {
-            var sprite = GetNode<Sprite2D>("Sprite");
-            if (sprite != null)
-                spriteBasePosition = sprite.Position;
-        }
-
-        if (HasNode("Sprite Shadow"))
-        {
-            spriteShadow = GetNode<Sprite2D>("Sprite Shadow");
-            if (spriteShadow != null)
-                shadowBaseScale = spriteShadow.Scale;
-        }
-
-        if (HasNode("WEAPON"))
-        {
-            WeaponNode = GetNode<Node2D>("WEAPON");
-            if (WeaponNode != null)
-                weaponNodeBasePosition = WeaponNode.Position;
-        }
+        float effectiveForce = force / Mathf.Max(weight, 0.1f);
+        knockbackVelocity = direction.Normalized() * effectiveForce;
+        knockbackDuration = duration;
     }
 
     private void UpdateJump(float delta)

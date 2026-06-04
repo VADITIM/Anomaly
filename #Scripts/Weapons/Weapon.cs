@@ -43,11 +43,29 @@ public partial class Weapon : Node2D
     public int HitCount { get => hitCount; set => hitCount = value; }
     public float CurrentTenacityDamageMultiplier { get => currentTenacityDamageMultiplier; set => currentTenacityDamageMultiplier = value; }
     public float OutsideKnockbackForce { get => outsideKnockbackForce; set => outsideKnockbackForce = value; }
+    public float PlayerPushForce  { get => currentArc?.PlayerPushForce ?? 0f; set { if (currentArc != null) currentArc.PlayerPushForce = value; }  }
     public int CurrentAttackSequenceIndex => attackSequenceIndex;
 
     public bool CanQueueAttackFollowUp => comboWindowTimer > 0f;
 
     public bool IsInComboCooldown => comboCooldownTimer > 0f;
+
+
+    private StateMachine FindOwnerStateMachine()
+    {
+        Node current = GetParent();
+        while (current != null)
+        {
+            if (current is Entity entity && entity.StateMachine != null)
+                return entity.StateMachine;
+
+            current = current.GetParent();
+        }
+
+        return Player.Instance?.StateMachine;
+    }
+
+
 
     public override void _Ready()
     {
@@ -67,27 +85,6 @@ public partial class Weapon : Node2D
         SlotArc(scytheArc);
     }
 
-    public void SlotArc(WeaponArc newArc)
-    {
-        if (newArc == null)
-            return;
-
-        currentArc = newArc;
-        currentArc.SetParentWeapon(this);
-    }
-
-    public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
-    {
-        string resolvedAnim = WeaponAnimations.GetAttackAnimationName(
-            weaponAnimationPlayer, direction, isHeavy, attackSequenceIndex);
-
-
-        float duration = GetCurrentAttackSequenceDuration(isHeavy);
-        WeaponAnimations.PlayAttackAnimation(weaponAnimationPlayer, resolvedAnim, duration);
-
-        currentArc?.PrepareAttack(direction, isHeavy, attackSequenceIndex);
-    }
-
     public override void _Process(double delta)
     {
         UpdateComboTimers((float)delta);
@@ -98,27 +95,13 @@ public partial class Weapon : Node2D
         }
     }
 
-    private StateMachine FindOwnerStateMachine()
+    public void SlotArc(WeaponArc newArc)
     {
-        Node current = GetParent();
-        while (current != null)
-        {
-            if (current is Entity entity && entity.StateMachine != null)
-                return entity.StateMachine;
-
-            current = current.GetParent();
-        }
-
-        return Player.Instance?.StateMachine;
-    }
-
-    public void PlayStateAnimation(string animationName)
-    {
-        if (weaponAnimationPlayer == null)
+        if (newArc == null)
             return;
 
-        float desiredDuration = GetStateAnimationDuration(animationName);
-        WeaponAnimations.PlayStateAnimation(weaponAnimationPlayer, animationName, desiredDuration);
+        currentArc = newArc;
+        currentArc.SetParentWeapon(this);
     }
 
     public void SetLayerRelativeToPlayer(int playerZIndex, bool above)
@@ -126,226 +109,6 @@ public partial class Weapon : Node2D
         int offset = above ? 1 : -1;
         this.ZIndex = playerZIndex + offset;
     }
-
-    public void CheckWeaknessExploited(Enemy enemy)
-    {
-        enemy.outsideKnockbackForce = 1f;
-    }
-
-    public bool IsEnemyHit()
-    {
-        return weaponHitbox != null && weaponHitbox.GetOverlappingBodies().Count > 0;
-    }
-
-    public float ApplyDamage(Enemy enemy)
-    {
-        float rawDamage = Damage;
-
-        if (Player.Instance?.StateMachine?.IsHeavyAttacking ?? false)
-        {
-            float heavyMultiplier = 1f + (2f * (Player.Instance?.StateMachine?.HeavyChargeProgress ?? 0f));
-            rawDamage *= heavyMultiplier;
-        }
-        else
-        {
-            rawDamage *= GetCurrentAttackDamageMultiplier();
-        }
-
-        // Apply weakness exploit modifier
-        float weaknessMultiplier = GetWeaknessMultiplier(enemy);
-        rawDamage *= weaknessMultiplier;
-
-        float penetrationPercent = Penetration / 100f;
-        float effectiveArmor = enemy.armor * (1f - penetrationPercent);
-        float damageReductionPercent = effectiveArmor / 200f;
-        float damageMultiplier = 1f - damageReductionPercent;
-        float calculatedDamage = rawDamage * damageMultiplier;
-
-        return Mathf.Max(calculatedDamage, 0);
-    }
-
-    private float GetWeaknessMultiplier(Enemy enemy)
-    {
-        if (currentArc == null || enemy == null)
-            return 1f;
-
-        bool isWeaknessExploited = currentArc.AttackType switch
-        {
-            WeaponArc.WeaponAttackType.Slashing => enemy.weaknessType == Enemy.WeaknessType.Slashing,
-            WeaponArc.WeaponAttackType.Piercing => enemy.weaknessType == Enemy.WeaknessType.Piercing,
-            WeaponArc.WeaponAttackType.Smashing => enemy.weaknessType == Enemy.WeaknessType.Smashing,
-            _ => false
-        };
-
-        if (isWeaknessExploited)
-            return 1.3f; // 130% damage
-
-        return GD.Randf() * 0.1f + 0.9f; // Random 90%-100%
-    }
-
-    public float CalculateTenacityDamage(float baseTenacityDamage)
-    {
-        hitCount++;
-        bool isSpecialHit = (hitCount % specialHitInterval) == 0;
-
-        float tenacityDamageValue = baseTenacityDamage * currentTenacityDamageMultiplier / 10f;
-
-        if (isSpecialHit)
-            tenacityDamageValue *= 1.2f;
-
-        currentTenacityDamageMultiplier -= 0.003f;
-        currentTenacityDamageMultiplier = Mathf.Max(currentTenacityDamageMultiplier, 0.1f);
-
-        return tenacityDamageValue;
-    }
-
-    public void ResetTenacityDamage()
-    {
-        currentTenacityDamageMultiplier = 1f;
-        hitCount = 0;
-    }
-
-    public void StartAttackSequence(bool isHeavy)
-    {
-        if (isHeavy)
-        {
-            ResetAttackSequence();
-            return;
-        }
-
-        queuedAttackFollowUp = false;
-        comboWindowTimer = 0f;
-    }
-
-    public void OnAttackAnimationFinished()
-    {
-        bool isLastComboStep = attackSequenceIndex >= MaxComboSteps - 1;
-
-        if (isLastComboStep)
-        {
-            comboCooldownTimer = ComboFinisherCooldown;
-            ResetAttackSequence();
-        }
-        else
-        {
-            comboWindowTimer = ComboFollowUpWindow;
-        }
-    }
-
-    public void QueueAttackFollowUp()
-    {
-        if (comboWindowTimer > 0f)
-        {
-            queuedAttackFollowUp = true;
-        }
-    }
-
-    public bool TryConsumeQueuedAttack(bool isHeavy, out float duration)
-    {
-        duration = 0f;
-
-        if (!queuedAttackFollowUp)
-            return false;
-
-        queuedAttackFollowUp = false;
-        comboWindowTimer = 0f; 
-
-        if (isHeavy)
-        {
-            duration = currentArc?.HeavyAttackDuration ?? 1.5f;
-            return true;
-        }
-
-        attackSequenceIndex = Mathf.Min(attackSequenceIndex + 1, MaxComboSteps - 1);
-
-        int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
-        duration = currentArc != null
-            ? currentArc.GetAttackSequenceDuration(clampedIndex)
-            : attackDurations[clampedIndex];
-        return true;
-    }
-
-    public void ResetAttackSequence()
-    {
-        attackSequenceIndex = 0;
-        comboWindowTimer = 0f;
-        queuedAttackFollowUp = false;
-    }
-
-    private void UpdateComboTimers(float delta)
-    {
-        if (comboCooldownTimer > 0f)
-        {
-            comboCooldownTimer = Mathf.Max(comboCooldownTimer - delta, 0f);
-            if (comboCooldownTimer <= 0f)
-                    return;
-        }
-
-        if (comboWindowTimer > 0f)
-        {
-            comboWindowTimer = Mathf.Max(comboWindowTimer - delta, 0f);
-            if (comboWindowTimer <= 0f)
-            {
-                ResetAttackSequence();
-            }
-        }
-    }
-
-    public float GetAttackAnimationDuration(string direction, bool isHeavy)
-    {
-        if (currentArc != null)
-        {
-            if (isHeavy)
-                return currentArc.HeavyAttackDuration;
-
-            return currentArc.GetAttackSequenceDuration(attackSequenceIndex);
-        }
-
-        return GetCurrentAttackSequenceDuration(isHeavy);
-    }
-
-    public float GetNativeAnimationLength(string direction, bool isHeavy)
-    {
-        return WeaponAnimations.GetNativeAnimationLength(weaponAnimationPlayer, direction, isHeavy, attackSequenceIndex);
-    }
-
-    private float GetCurrentAttackSequenceDuration(bool isHeavy)
-    {
-        if (currentArc != null)
-        {
-            if (isHeavy)
-                return currentArc.HeavyAttackDuration;
-
-            return currentArc.GetAttackSequenceDuration(attackSequenceIndex);
-        }
-
-        if (isHeavy)
-            return 1.5f;
-
-        if (attackDurations == null || attackDurations.Length == 0)
-            return 0.37f;
-
-        int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
-        return attackDurations[clampedIndex];
-    }
-
-    private float GetStateAnimationDuration(string animationName)
-    {
-        if (!WeaponAnimations.IsAttackAnimation(animationName))
-            return 0f;
-
-        return GetCurrentAttackSequenceDuration(WeaponAnimations.IsHeavyAttack(animationName));
-    }
-
-    private float GetCurrentAttackDamageMultiplier()
-    {
-        if (attackDamageMultipliers == null || attackDamageMultipliers.Length == 0)
-            return 1f;
-
-        int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDamageMultipliers.Length - 1);
-        return attackDamageMultipliers[clampedIndex];
-    }
-
 
     private void OnHurtboxHit(Area2D area)
     {
@@ -363,7 +126,7 @@ public partial class Weapon : Node2D
         if (targetEntity is Enemy enemy)
             CheckWeaknessExploited(enemy);
 
-        targetEntity.TakeDamage(currentArc, this);
+        targetEntity.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
         currentArc?.TriggerHitAnimation();
 
     }
@@ -377,7 +140,7 @@ public partial class Weapon : Node2D
                 return;
 
             CheckWeaknessExploited(enemy);
-            enemy.TakeDamage(currentArc, this);
+            enemy.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
             currentArc?.TriggerHitAnimation();
 
         }
@@ -391,9 +154,23 @@ public partial class Weapon : Node2D
             if (player == null)
                 return;
 
-            prop.TakeDamage(currentArc, this);
+            prop.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
             currentArc?.TriggerHitAnimation();
+            ApplyPlayerPushForce(player);
 
+        }
+    }
+
+    private void ApplyPlayerPushForce(Player player)
+    {
+        if (currentArc?.PlayerPushForce <= 0f || player == null)
+            return;
+
+        Vector2 pushDirection = player.GetAttackDirection();
+        GD.Print($"Push Force Applied: {currentArc.PlayerPushForce}, Direction: {pushDirection}");
+        if (player.StateMachine != null)
+        {
+            player.StateMachine.RequestKnockback(pushDirection, currentArc.PlayerPushForce, 0.1f);
         }
     }
 }

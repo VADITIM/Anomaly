@@ -14,11 +14,12 @@ public partial class ScytheArc : WeaponArc
             Knockback = 63f;
             SpecialHitInterval = 4;
             HeavyAttackDuration = 0.5f;
+            PlayerPushForce = 70f;
             attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.5f };
             
             DamageMultiplier = 2f;
             TenacityMultiplier = 1f;
-            PenetrationMultiplier = 144f;
+            PenetrationMultiplier = 1f;
         }
     }
 }

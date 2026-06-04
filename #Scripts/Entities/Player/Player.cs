@@ -5,9 +5,8 @@ public partial class Player : Entity
 {
     public static Player Instance;
     public PlayerStats Stats { get; private set; }
-
     public ResourceManager ResourceManager { get; private set; }
-    [Export] public Weapon Weapon { get; set; }
+    public Weapon Weapon { get; set; }
     
     public Sprite2D Sprite { get; set; }
     private string lastAnimationDirection = "";

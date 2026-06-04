@@ -10,19 +10,22 @@ public enum EnemyAttackPhase
 
 public abstract partial class Enemy
 {
-    public override void TakeDamage(WeaponArc weapon, Node2D damageSource)
+    public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
-        if (IsDead || weapon == null)
+        if (IsDead)
             return;
 
-        Vector2 sourcePosition = damageSource?.GlobalPosition ?? GlobalPosition;
+        if (weapon == null)
+        {
+            base.TakeDamage(damage, sourcePosition, weapon);
+            return;
+        }
 
         TriggerDamageFlash();
         MarkCameraFocus();
 
         float calculatedDamage = weapon.ApplyDamage(this);
         
-        // Check if weakness is exploited
         bool weaknessExploit = weapon.AttackType switch
         {
             WeaponArc.WeaponAttackType.Slashing => weaknessType == WeaknessType.Slashing,
@@ -57,7 +60,7 @@ public abstract partial class Enemy
         bool staggerTriggered = TenacitySystem != null && TenacitySystem.ProcessTenacitySystem(sourcePosition, weapon);
 
         if (!staggerTriggered)
-            TakeKnockback(sourcePosition, weapon.Knockback, 0.1f, weapon);
+            TakeKnockback(sourcePosition, weapon.Knockback, 0.1f);
 
         if (staggerTriggered)
         {
@@ -70,11 +73,6 @@ public abstract partial class Enemy
     }
 
     public override void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
-    {
-        TakeKnockback(sourcePosition, force, duration, null);
-    }
-
-    private void TakeKnockback(Vector2 sourcePosition, float force, float duration, WeaponArc weapon)
     {
         if (!canBeKnockbacked)
             return;

@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://d0gcf7sylcnog"]
+[gd_scene format=3 uid="uid://d0gcf7sylcnog"]
 
 [ext_resource type="Texture2D" uid="uid://kyusuogsyad3" path="res://#Assets/UI/Icons/weapons.png" id="1_f0d42"]
 [ext_resource type="Texture2D" uid="uid://dthkn7hgwytn3" path="res://#Assets/UI/Menus/background.png" id="1_q82kj"]

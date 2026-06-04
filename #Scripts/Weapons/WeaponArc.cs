@@ -11,6 +11,7 @@ public partial class WeaponArc : Node2D
     [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
     [Export] private float heavyAttackDuration = 1.5f;
     [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
+    [Export] public float PlayerPushForce { get; set; } = 0f;
 
     private float knockback = 0f;
 
@@ -199,12 +200,6 @@ public partial class WeaponArc : Node2D
             AnimationPlayer.SpeedScale = 1f;
             AnimationPlayer.Play("idle");
         }
-    }
-
-    public void SetLayerRelativeToPlayer(int playerZIndex, bool above)
-    {
-        int offset = above ? 1 : -1;
-        this.ZIndex = playerZIndex + offset;
     }
 
     public void CheckWeaknessExploited(Enemy enemy)

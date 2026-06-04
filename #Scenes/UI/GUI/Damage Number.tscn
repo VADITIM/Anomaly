@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://xc0fbhhjqr6k"]
 
-[ext_resource type="LabelSettings" uid="uid://b3fckkt7fb5ia" path="res://#Assets/##Resources/StandardDamageNumber.tres" id="2_powjd"]
+[ext_resource type="LabelSettings" uid="uid://b3fckkt7fb5ia" path="res://#Assets/Resources/StandardDamageNumber.tres" id="2_powjd"]
 [ext_resource type="Script" uid="uid://dc4kxf6h8dglm" path="res://#Scripts/UI/GUI/DamageNumber.cs" id="2_vhuhy"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_vhuhy"]
