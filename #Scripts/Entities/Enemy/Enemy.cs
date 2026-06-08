@@ -37,6 +37,12 @@ public abstract partial class Enemy : Entity
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
 
+        var movementBehavior = new MovementBehavior
+        {
+            GetBaseSpeed = () => speed
+        };
+        AddBehavior(movementBehavior);
+
         StatsDisplay();
         InitializeTenacity();
         InitializeResourceBars();
@@ -72,6 +78,7 @@ public abstract partial class Enemy : Entity
     public override void _ExitTree()
     {
         ActiveEnemies.Remove(this);
+        base._ExitTree();
     }
 
     public override void _PhysicsProcess(double delta)

@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class ResourceManager
+public partial class ResourceManager : IEntityBehavior
 {
     public static ResourceManager Instance { get; private set; }
 
@@ -91,6 +91,22 @@ public partial class ResourceManager
     {
         _player = player;
         Instance = this;
+    }
+
+    public void OnReady(Entity owner)
+    {
+    }
+
+    public void OnProcess(double delta)
+    {
+    }
+
+    public void OnPhysicsProcess(double delta)
+    {
+    }
+
+    public void OnExitTree()
+    {
     }
 
     public void SetHealth(float value)

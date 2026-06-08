@@ -3,10 +3,14 @@ using System;
 
 public partial class Prop : Entity
 {
-    public float health { get; set; } = 90f;
+    public float startingHealth { get; set; } = 90f;
     public bool Destroyable { get; set; } = true;
     
     private bool _isDead = false;
+    private Tween _resourceBarTween;
+
+    private const float ResourceBarVisibleSeconds = 8f;
+    private const float ResourceBarFadeSeconds = 0.5f;
 
     protected override State GetCurrentAnimationState()
     {
@@ -17,10 +21,11 @@ public partial class Prop : Entity
     {
         base._Ready();
 
-        SetMaxHealth(health);
-        SetHealth(health);
+        SetMaxHealth(startingHealth);
+        SetHealth(startingHealth);
 
         InitializeResourceBars();
+        HideResourceBar();
         PlayAnimation("Idle_Down");
     }
 
@@ -39,6 +44,7 @@ public partial class Prop : Entity
         float newHealth = GetHealth() - damage;
         SetHealth(newHealth);
         DamageNumber.Spawn(this, damage, DamageNumberStyle.Standard, this);
+        ShowResourceBarForHit();
 
         TakeKnockback(sourcePosition, weapon.Knockback);
 
@@ -54,6 +60,30 @@ public partial class Prop : Entity
                     PlayAnimation("Idle_Down");
             };
         }
+    }
+
+    private void ShowResourceBarForHit()
+    {
+        if (ResourceBarControl == null)
+            return;
+
+        _resourceBarTween?.Kill();
+        ResourceBarControl.Visible = true;
+        ResourceBarControl.Modulate = new Color(ResourceBarControl.Modulate.R, ResourceBarControl.Modulate.G, ResourceBarControl.Modulate.B, 1f);
+
+        _resourceBarTween = CreateTween();
+        _resourceBarTween.TweenInterval(ResourceBarVisibleSeconds);
+        _resourceBarTween.TweenProperty(ResourceBarControl, "modulate:a", 0f, ResourceBarFadeSeconds);
+        _resourceBarTween.TweenCallback(Callable.From(HideResourceBar));
+    }
+
+    private void HideResourceBar()
+    {
+        if (ResourceBarControl == null)
+            return;
+
+        ResourceBarControl.Visible = false;
+        ResourceBarControl.Modulate = new Color(ResourceBarControl.Modulate.R, ResourceBarControl.Modulate.G, ResourceBarControl.Modulate.B, 0f);
     }
 
     private void Die()

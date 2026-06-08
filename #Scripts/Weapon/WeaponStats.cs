@@ -18,6 +18,7 @@ public class WeaponStats
         Stats["Damage"] = new Stat { Current = 12f, Max = 150f };
         Stats["Stamina Cost"] = new Stat { Current = 2f, Max = float.MaxValue };
         Stats["TenacityDamage"] = new Stat { Current = 2f, Max = 10f };
+        Stats["Stamina Restore"] = new Stat { Current = 10f, Max = 10f };
         Stats["Penetration"] = new Stat { Current = 50f, Max = 200f };
         Stats["Special Hit Interval"] = new Stat { Current = 4f, Max = float.MaxValue };
     }

@@ -1,7 +1,9 @@
 using Godot;
+using System.Collections.Generic;
 
 public partial class Entity : CharacterBody2D
 {
+    private readonly List<IEntityBehavior> behaviors = new();
     public StateMachine StateMachine { get; protected set; }
     public AnimationPlayer AnimationPlayer { get; set; }
 
@@ -62,6 +64,11 @@ public partial class Entity : CharacterBody2D
     protected virtual void  OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth)   { }
     protected virtual void  OnDeath(Vector2 sourcePosition)                                                              { }
     protected virtual void  OnKnockbackFinished()                                                                        { }
+   
+        public void NotifyKnockbackFinished()
+        {
+            OnKnockbackFinished();
+        }
 
     protected virtual float GetHealth()               => health;
     protected virtual void  SetHealth(float value)    { health = Mathf.Clamp(value, 0f, GetMaxHealth()); UpdateResourceBars(); }
@@ -92,6 +99,8 @@ public partial class Entity : CharacterBody2D
     {
         EnsureStateMachine();
         EnsureDamageFlashMaterial();
+        for (int i = 0; i < behaviors.Count; i++)
+            behaviors[i].OnReady(this);
     }
 
     public override void _PhysicsProcess(double delta)
@@ -99,12 +108,49 @@ public partial class Entity : CharacterBody2D
         ProcessKnockback((float)delta);
         UpdateJump((float)delta);
         YSortSystem.Update(this);
+        for (int i = 0; i < behaviors.Count; i++)
+            behaviors[i].OnPhysicsProcess(delta);
     }
 
     public override void _Process(double delta)
     {
         _healthBarAnimator?.Update((float)delta);
         UpdateAnimation(UsesDirectionalAnimations);
+        for (int i = 0; i < behaviors.Count; i++)
+            behaviors[i].OnProcess(delta);
+    }
+
+    public override void _ExitTree()
+    {
+        for (int i = 0; i < behaviors.Count; i++)
+            behaviors[i].OnExitTree();
+        base._ExitTree();
+    }
+
+    public void AddBehavior(IEntityBehavior behavior)
+    {
+        if (behavior == null || behaviors.Contains(behavior))
+            return;
+        behaviors.Add(behavior);
+        if (IsInsideTree())
+            behavior.OnReady(this);
+    }
+
+    public void RemoveBehavior(IEntityBehavior behavior)
+    {
+        if (behavior == null)
+            return;
+        behaviors.Remove(behavior);
+    }
+
+    public T GetBehavior<T>() where T : class, IEntityBehavior
+    {
+        for (int i = 0; i < behaviors.Count; i++)
+        {
+            if (behaviors[i] is T typed)
+                return typed;
+        }
+        return null;
     }
 
     public virtual void Jump()

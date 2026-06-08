@@ -15,7 +15,8 @@ public partial class StateDisplay : Label
         if (Player.Instance?.StateMachine != null)
         {
             var currentState = Player.Instance.StateMachine.CurrentState;
-            var moveDir = Movement.CurrentMovementDirection;
+            var movementBehavior = Player.Instance.GetBehavior<MovementBehavior>();
+            var moveDir = movementBehavior?.CurrentDirection ?? MovementBehavior.MovementDirection.None;
             
             string stateText = currentState.ToString();
             if (currentState == PlayerState.Moving)

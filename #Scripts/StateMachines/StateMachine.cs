@@ -48,11 +48,11 @@ public partial class StateMachine : Node
     public float HeavyChargeProgress { get; private set; } = 0f;
 
     public Vector2 GetKnockbackVelocity() => _knockbackVelocity;
-    public Vector2 GetDodgeDirection() => Dodge.GetDodgeDirection();
+    public Vector2 GetDodgeDirection() => GetDodgeBehavior()?.GetDodgeDirection() ?? Vector2.Zero;
     public float GetRemainingStateTime() => CurrentState == State.Attacking || CurrentState == State.HeavyAttacking || CurrentState == State.AirAttacking ? _attackDuration : 0f;
 
     public event Action<State, State> OnStateChanged;
-    public event Action<Player.MovementDirection> OnMovementDirectionChanged;
+    public event Action<MovementBehavior.MovementDirection> OnMovementDirectionChanged;
     public event Action<bool> OnAttackStarted;
     public event Action OnAttackEnded;
     public event Action<Vector2> OnDodgeStarted;
@@ -64,6 +64,13 @@ public partial class StateMachine : Node
     public event Action OnDied;
     public event Action OnRevived;
     public event Action<float> OnDamageTaken;
+
+    private MovementBehavior.MovementDirection lastMovementDirection = MovementBehavior.MovementDirection.None;
+
+    private DodgeBehavior GetDodgeBehavior()
+    {
+        return OwnerEntity?.GetBehavior<DodgeBehavior>();
+    }
 
 
     public float GetMaxStaggers() => MaxStaggers;
@@ -165,21 +172,24 @@ public partial class StateMachine : Node
     }
 
 
+    private MovementBehavior GetMovementBehavior()
+    {
+        return OwnerEntity?.GetBehavior<MovementBehavior>();
+    }
+
     private void UpdateMovementDirection()
     {
         if (IsAttacking) return;
 
-        Player.MovementDirection newDirection = Player.MovementDirection.None;
+        var movementBehavior = GetMovementBehavior();
+        if (movementBehavior == null)
+            return;
 
-        if (Input.IsActionPressed(Keybinds.MoveUp)) newDirection |= Player.MovementDirection.Up;
-        if (Input.IsActionPressed(Keybinds.MoveDown)) newDirection |= Player.MovementDirection.Down;
-        if (Input.IsActionPressed(Keybinds.MoveLeft)) newDirection |= Player.MovementDirection.Left;
-        if (Input.IsActionPressed(Keybinds.MoveRight)) newDirection |= Player.MovementDirection.Right;
-
-        if (newDirection != Movement.CurrentMovementDirection)
+        var newDirection = movementBehavior.CurrentDirection;
+        if (newDirection != lastMovementDirection)
         {
-            Movement.CurrentMovementDirection = newDirection;
-            OnMovementDirectionChanged?.Invoke(Movement.CurrentMovementDirection);
+            lastMovementDirection = newDirection;
+            OnMovementDirectionChanged?.Invoke(newDirection);
         }
     }
 
@@ -190,6 +200,9 @@ public partial class StateMachine : Node
         if (Player == null)
             return;
 
+        var movementBehavior = GetMovementBehavior();
+        var currentDirection = movementBehavior?.CurrentDirection ?? MovementBehavior.MovementDirection.None;
+
         if (Player.IsJumping)
         {
             if (!IsLockedState(CurrentState) && !IsAirborne)
@@ -197,7 +210,7 @@ public partial class StateMachine : Node
         }
         else if (IsAirborne)
         {
-            if (Movement.CurrentMovementDirection != Player.MovementDirection.None && CanMove)
+            if (currentDirection != MovementBehavior.MovementDirection.None && CanMove)
                 TransitionTo(State.Moving);
             else
                 TransitionTo(State.Idle);
@@ -225,8 +238,10 @@ public partial class StateMachine : Node
                 break;
 
             case State.Dodging:
-                Dodge.ProcessDodge(delta);
-                if (!Dodge.IsDodging())
+                var dodgeBehavior = GetDodgeBehavior();
+                if (dodgeBehavior != null)
+                    dodgeBehavior.ProcessDodge(delta);
+                if (dodgeBehavior == null || !dodgeBehavior.IsDodging)
                 {
                     OnDodgeEnded?.Invoke();
                     TransitionTo(State.Idle);
@@ -273,13 +288,17 @@ public partial class StateMachine : Node
         if (!CanAct || Player == null)
             return;
 
+        var movementBehavior = GetMovementBehavior();
+        var currentDirection = movementBehavior?.CurrentDirection ?? MovementBehavior.MovementDirection.None;
+
         UpdateMovementDirection();
 
         if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
         {
             if (CurrentState == State.Healing)
                 OnHealEnded?.Invoke();
-            RequestDodge(Movement.GetMovementVector(), Dodge.GetDodgeDuration());
+            Vector2 dodgeInput = movementBehavior?.GetMovementVector() ?? Vector2.Zero;
+            RequestDodge(dodgeInput, GetDodgeBehavior()?.GetDodgeDuration() ?? 0f);
             return;
         }
 
@@ -346,7 +365,7 @@ public partial class StateMachine : Node
             return;
         }
 
-        if (Movement.CurrentMovementDirection != Player.MovementDirection.None && CanMove)
+        if (currentDirection != MovementBehavior.MovementDirection.None && CanMove)
         {
             if (CurrentState == State.Idle)
                 TransitionTo(State.Moving);
@@ -398,11 +417,12 @@ public partial class StateMachine : Node
     public void RequestDodge(Vector2 direction, float duration)
     {
         if (CurrentState == State.Dead) return;
-        if (!Dodge.TryDodge(direction))
+        var dodgeBehavior = GetDodgeBehavior();
+        if (dodgeBehavior == null || !dodgeBehavior.TryDodge(direction))
             return;
         _knockbackVelocity = Vector2.Zero;
         TransitionTo(State.Dodging);
-        OnDodgeStarted?.Invoke(Dodge.GetDodgeDirection());
+        OnDodgeStarted?.Invoke(dodgeBehavior.GetDodgeDirection());
     }
 
 
@@ -531,8 +551,12 @@ public partial class StateMachine : Node
                 break;
         }
 
+        var movementBehavior = GetMovementBehavior();
         if (Target == null)
+        {
+            movementBehavior?.SetDirectionFromVector(Vector2.Zero);
             return;
+        }
 
         float distanceToTarget = Enemy.GlobalPosition.DistanceTo(Target.GlobalPosition);
 
@@ -541,28 +565,34 @@ public partial class StateMachine : Node
             case State.Idle:
                 if (distanceToTarget <= Enemy.chaseRange)
                     TransitionTo(State.Chasing);
+                movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 break;
 
             case State.Chasing:
                 if (distanceToTarget > Enemy.chaseRange)
                 {
                     TransitionTo(State.Idle);
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }
                 else if (distanceToTarget <= Enemy.attackRange)
                 {
                     RequestAttack(OwnerEntity.GetAttackDuration(), false);
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }
                 else if (distanceToTarget <= Enemy.stopDistance)
                 {
-                    Enemy.Velocity = Vector2.Zero;
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }
                 else
                 {
                     if (!Enemy.TenacitySystem.IsInLockedState())
                     {
                         Vector2 direction = Enemy.GlobalPosition.DirectionTo(Target.GlobalPosition);
-                        Enemy.Velocity = direction * Enemy.speed;
-                        Enemy.MoveAndSlide();
+                        movementBehavior?.SetDirectionFromVector(direction);
+                    }
+                    else
+                    {
+                        movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                     }
                 }
                 break;

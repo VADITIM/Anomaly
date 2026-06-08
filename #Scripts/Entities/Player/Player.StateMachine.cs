@@ -33,7 +33,7 @@ public partial class Player
 
         if (currentState == PlayerState.Dodging)
         {
-            Vector2 dodgeVel = Dodge.GetDodgeVelocity();
+            Vector2 dodgeVel = GetBehavior<DodgeBehavior>()?.GetDodgeVelocity() ?? Vector2.Zero;
             return GetDirectionFromVector(dodgeVel, out flipH);
         }
 
@@ -94,6 +94,24 @@ public partial class Player
         string direction = GetDirectionFromVector(toMouse, out _);
 
         Weapon.PlayAttackAnimation(direction, isHeavy);
+    }
+
+    private void ApplyWeaponPushback()
+    {
+        var knockbackBehavior = GetBehavior<KnockbackBehavior>();
+        if (knockbackBehavior == null || Weapon?.CurrentArc == null)
+            return;
+
+        float pushForce = Weapon.CurrentArc.PlayerPushForce;
+        if (pushForce <= 0f)
+            return;
+
+        Vector2 pushDirection = GetAttackDirection();
+        Vector2 movementDirection = GetBehavior<MovementBehavior>()?.GetMovementVector() ?? Vector2.Zero;
+        if (movementDirection != Vector2.Zero && movementDirection.Dot(pushDirection) < 0f)
+            pushForce *= 0.75f;
+
+        knockbackBehavior.ApplyAttackPushback(pushDirection, pushForce, DefaultKnockbackDuration);
     }
 
     public float GetCurrentAttackAnimationDuration(bool isHeavy)

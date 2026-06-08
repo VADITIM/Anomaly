@@ -119,7 +119,6 @@ public static class WeaponAnimations
         {
             "Up"    => "Top",
             "Down"  => "Bottom",
-            // Map 8-directional NWSE to 4-directional for backward compatibility
             "N"     => "Up",
             "NE"    => "Right",
             "E"     => "Right",

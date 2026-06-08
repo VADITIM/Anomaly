@@ -77,6 +77,10 @@ public abstract partial class Enemy
         if (!canBeKnockbacked)
             return;
 
+        float appliedDuration = duration > 0f
+            ? duration
+            : (TenacityBehavior?.DefaultKnockbackDuration ?? DefaultKnockbackDuration);
+
         float subtleForce = force > 0f ? force : 30f;
 
         if (IsInStaggerWindow)
@@ -84,14 +88,12 @@ public abstract partial class Enemy
             float staggeredForce = force > 0f ? force * 2.5f : 75f;
             float weaknessMultiplier = 1f;
 
-            Vector2 knockbackDirection = (GlobalPosition - sourcePosition).Normalized();
-            TenacitySystem?.RequestKnockback(knockbackDirection, staggeredForce * weaknessMultiplier, 0.2f);
+            base.TakeKnockback(sourcePosition, staggeredForce * weaknessMultiplier, appliedDuration);
             return;
         }
 
         float defaultMultiplier = 1f;
 
-        Vector2 normalDirection = (GlobalPosition - sourcePosition).Normalized();
-        TenacitySystem?.RequestKnockback(normalDirection, subtleForce * defaultMultiplier, duration);
+        base.TakeKnockback(sourcePosition, subtleForce * defaultMultiplier, appliedDuration);
     }
 }

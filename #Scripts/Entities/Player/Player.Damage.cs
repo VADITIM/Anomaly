@@ -4,7 +4,7 @@ public partial class Player
 {
         protected override bool CanTakeDamage(float damage, Vector2 sourcePosition)
     {
-        return !Dodge.IsIFrameActive;
+        return !(GetBehavior<DodgeBehavior>()?.IsIFrameActive ?? false);
     }
 
     public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
@@ -30,7 +30,7 @@ public partial class Player
             return;
 
         Vector2 knockbackDir = (GlobalPosition - sourcePosition).Normalized();
-        StateMachine.RequestKnockback(knockbackDir, 200f, 0.2f);
+        GetBehavior<KnockbackBehavior>()?.ApplyKnockbackFromDirection(knockbackDir, 200f, 0.2f);
     }
     protected override void OnDeath(Vector2 sourcePosition)
     {

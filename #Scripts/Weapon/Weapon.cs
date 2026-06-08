@@ -38,6 +38,7 @@ public partial class Weapon : Node2D
     public float Damage { get => weaponStats.GetCurrent("Damage"); set => weaponStats.SetCurrent("Damage", value); }
     public float StaminaCost { get => weaponStats.GetCurrent("Stamina Cost"); set => weaponStats.SetCurrent("Stamina Cost", value); }
     public float TenacityDamage { get => weaponStats.GetCurrent("TenacityDamage"); set => weaponStats.SetCurrent("TenacityDamage", Mathf.Clamp(value, 0f, 100f)); }
+    public float StaminaRestore { get => weaponStats.GetCurrent("Stamina Restore"); set => weaponStats.SetCurrent("Stamina Restore", Mathf.Clamp(value, 0f, 10f)); }
     public float Penetration { get => weaponStats.GetCurrent("Penetration"); set => weaponStats.SetCurrent("Penetration", Mathf.Clamp(value, 0f, 100f)); }
     public int SpecialHitInterval { get => specialHitInterval; set => specialHitInterval = value; }
     public int HitCount { get => hitCount; set => hitCount = value; }
@@ -126,7 +127,10 @@ public partial class Weapon : Node2D
         if (targetEntity is Enemy enemy)
             CheckWeaknessExploited(enemy);
 
+        bool wasStaggered = targetEntity is Enemy staggeredEnemy && staggeredEnemy.IsStaggered;
         targetEntity.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
+        if (wasStaggered)
+            ApplyStaggerHitStaminaRestore(player, currentArc.StaminaRestore);
         currentArc?.TriggerHitAnimation();
 
     }
@@ -139,8 +143,11 @@ public partial class Weapon : Node2D
             if (player == null)
                 return;
 
+            bool wasStaggered = enemy.IsStaggered;
             CheckWeaknessExploited(enemy);
             enemy.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
+            if (wasStaggered)
+                ApplyStaggerHitStaminaRestore(player, currentArc.StaminaRestore);
             currentArc?.TriggerHitAnimation();
 
         }
@@ -156,21 +163,27 @@ public partial class Weapon : Node2D
 
             prop.TakeDamage(currentArc.Damage, GlobalPosition, currentArc);
             currentArc?.TriggerHitAnimation();
-            ApplyPlayerPushForce(player);
 
         }
     }
 
-    private void ApplyPlayerPushForce(Player player)
+    private void ApplyStaggerHitStaminaRestore(Player player, float restoreAmount)
     {
-        if (currentArc?.PlayerPushForce <= 0f || player == null)
+        if (player == null || restoreAmount <= 0f)
             return;
 
-        Vector2 pushDirection = player.GetAttackDirection();
-        GD.Print($"Push Force Applied: {currentArc.PlayerPushForce}, Direction: {pushDirection}");
-        if (player.StateMachine != null)
+        if (player.ResourceManager != null)
         {
-            player.StateMachine.RequestKnockback(pushDirection, currentArc.PlayerPushForce, 0.1f);
+            float currentStamina = player.Stats?.GetCurrent("Stamina") ?? 0f;
+            player.ResourceManager.SetStamina(currentStamina + restoreAmount);
+            return;
+        }
+
+        if (player.Stats != null)
+        {
+            player.Stats.SetCurrent(
+                "Stamina",
+                Mathf.Min(player.Stats.GetCurrent("Stamina") + restoreAmount, player.Stats.GetCurrentMax("Stamina")));
         }
     }
 }

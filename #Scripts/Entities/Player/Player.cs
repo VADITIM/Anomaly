@@ -6,7 +6,12 @@ public partial class Player : Entity
     public static Player Instance;
     public PlayerStats Stats { get; private set; }
     public ResourceManager ResourceManager { get; private set; }
+    public TenacityBehavior TenacityBehavior { get; private set; }
     public Weapon Weapon { get; set; }
+
+    [Export] public float DefaultStaggerDuration { get; set; } = TenacityDefaults.DefaultStaggerDuration;
+    [Export] public float DefaultRecoveryDuration { get; set; } = TenacityDefaults.DefaultRecoveryDuration;
+    [Export] public float DefaultKnockbackDuration { get; set; } = TenacityDefaults.DefaultKnockbackDuration;
     
     public Sprite2D Sprite { get; set; }
     private string lastAnimationDirection = "";
@@ -28,6 +33,41 @@ public partial class Player : Entity
         if (Weapon.GetParent() == null)
             AddChild(Weapon);
         ResourceManager = new ResourceManager(this);
+        AddBehavior(ResourceManager);
+
+        TenacityBehavior = new TenacityBehavior
+        {
+            DefaultStaggerDuration = DefaultStaggerDuration,
+            DefaultRecoveryDuration = DefaultRecoveryDuration,
+            DefaultKnockbackDuration = DefaultKnockbackDuration,
+            GetCurrentTenacity = () => Stats?.GetCurrent("Tenacity") ?? 0f,
+            SetCurrentTenacity = value => Stats?.SetCurrent("Tenacity", value),
+            GetMaxTenacity = () => Stats?.GetCurrentMax("Tenacity") ?? 0f,
+            SetMaxTenacity = value => Stats?.SetCurrentMax("Tenacity", value)
+        };
+        AddBehavior(TenacityBehavior);
+
+        var knockbackBehavior = new KnockbackBehavior
+        {
+            CanBeKnockedBack = canBeKnockedBack,
+            Weight = weight,
+            KnockbackDecay = knockbackDecay
+        };
+        AddBehavior(knockbackBehavior);
+
+        var dodgeBehavior = new DodgeBehavior();
+        dodgeBehavior.HasStamina = () => ResourceManager?.HasStamina(dodgeBehavior.DodgeStaminaCost) ?? false;
+        dodgeBehavior.TryUseStamina = () => ResourceManager?.TryUseStamina(dodgeBehavior.DodgeStaminaCost) ?? false;
+        AddBehavior(dodgeBehavior);
+
+        var movementBehavior = new MovementBehavior
+        {
+            HealSpeedModifier = 0.2f,
+            GetBaseSpeed = () => Stats?.GetCurrentMax("Speed") ?? speed,
+            GetDodgeVelocity = () => dodgeBehavior.GetDodgeVelocity()
+        };
+        AddBehavior(movementBehavior);
+        AddBehavior(new PlayerInputBehavior());
 
         _bodySpriteBasePosition = Sprite?.Position ?? Vector2.Zero;
 
@@ -37,6 +77,7 @@ public partial class Player : Entity
         StateMachine.OnDied += OnPlayerDied;
 
         StateMachine.OnAttackStarted += (isHeavy) => PlayWeaponAttackAnimation(isHeavy);
+        StateMachine.OnAttackStarted += (isHeavy) => ApplyWeaponPushback();
         
         StateMachine.OnAttackStarted += (isHeavy) => OnActionPerformed();
         StateMachine.OnDodgeStarted += (direction) => OnActionPerformed();
@@ -49,11 +90,6 @@ public partial class Player : Entity
         base._Process(delta);
 
         cameraPriority = Input.IsPhysicalKeyPressed(Key.Alt) ? 10f : 0f;
-
-        if (Dodge.IsDodging())
-        {
-            Dodge.UseStamina();
-        }
 
         if (Weapon != null)
             Weapon.Visible = true;
@@ -70,7 +106,6 @@ public partial class Player : Entity
         }
 
         PassiveStaminaRegeneration((float)delta);
-        Player.Instance.ProcessMovement((float)delta);
     }
 
     public override void _Input(InputEvent @event)

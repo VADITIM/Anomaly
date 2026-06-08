@@ -10,12 +10,12 @@ public partial class ScytheArc : WeaponArc
         {
             weapon.Damage = 5f;
             weapon.TenacityDamage = 100f;
-            weapon.StaminaCost = 2f;
-            Knockback = 63f;
-            SpecialHitInterval = 4;
+            weapon.StaminaCost = 51f;
+            Knockback = 93f;
             HeavyAttackDuration = 0.5f;
-            PlayerPushForce = 70f;
+            PlayerPushForce = 150f;
             attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.5f };
+            SpecialHitInterval = 4;
             
             DamageMultiplier = 2f;
             TenacityMultiplier = 1f;
