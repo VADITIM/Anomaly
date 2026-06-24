@@ -121,6 +121,8 @@ public abstract partial class Enemy : Entity
 
     protected virtual void OnDeath()
     {
+        Player.Instance?.ResourceManager?.AddCorruption(2f);
+
         float currentVessel = Player.Instance.Stats.GetCurrent("Vessel");
         float maxVessel = Player.Instance.Stats.GetCurrentMax("Vessel");
         Player.Instance.Stats.SetCurrent("Vessel", Mathf.Min(currentVessel + vesselReward, maxVessel));

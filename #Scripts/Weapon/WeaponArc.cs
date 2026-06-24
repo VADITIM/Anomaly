@@ -10,6 +10,7 @@ public partial class WeaponArc : Node2D
     [Export] public AnimationPlayer AnimationPlayer;
     [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
     [Export] private float heavyAttackDuration = 1.5f;
+    [Export] private float specialCooldownDuration = 0f;
     [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
     [Export] public float PlayerPushForce { get; set; } = 0f;
     [Export] public float StaminaRestoreMultiplier { get; set; } = 1f;
@@ -32,6 +33,7 @@ public partial class WeaponArc : Node2D
     public float StaminaRestore => parentWeapon != null ? parentWeapon.StaminaRestore * StaminaRestoreMultiplier : throw new InvalidOperationException("Parent weapon not set.");
     public float Penetration { get => parentWeapon != null ? parentWeapon.Penetration * PenetrationMultiplier : throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
     public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
+    public float SpecialCooldownDuration { get => specialCooldownDuration; set => specialCooldownDuration = Mathf.Clamp(value, 0f, 10f); }
     public int SpecialHitInterval { get => parentWeapon?.SpecialHitInterval ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.SpecialHitInterval = value; } }
     public int HitCount { get => parentWeapon?.HitCount ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.HitCount = value; } }
     public float CurrentTenacityDamageMultiplier { get => parentWeapon?.CurrentTenacityDamageMultiplier ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.CurrentTenacityDamageMultiplier = value; } }
@@ -158,6 +160,11 @@ public partial class WeaponArc : Node2D
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
         return isHeavy && HeavyAttackDuration > 0f ? HeavyAttackDuration : GetAttackSequenceDuration(preparedSequenceIndex);
+    }
+
+    public float GetSpecialCooldownDuration()
+    {
+        return SpecialCooldownDuration > 0f ? SpecialCooldownDuration : HeavyAttackDuration;
     }
 
     public float GetAttackSequenceDuration(int sequenceIndex)

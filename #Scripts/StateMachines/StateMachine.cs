@@ -329,6 +329,9 @@ public partial class StateMachine : Node
 
         if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && !IsComboCoolingDown())
         {
+            if (ResourceManager.Instance != null && !ResourceManager.Instance.HasSpecialAttackReady())
+                return;
+
             bool hasStamina = ResourceManager.Instance?.HasStamina(Player.Instance.Weapon.StaminaCost) ?? (Player.Instance.Stats.GetCurrent("Stamina") >= Player.Instance.Weapon.StaminaCost);
             if (hasStamina)
             {
@@ -457,6 +460,7 @@ public partial class StateMachine : Node
         HeavyChargeProgress = 0f;
         _attackDuration = Player.GetCurrentAttackAnimationDuration(true);
         Player?.Weapon?.StartAttackSequence(true);
+        ResourceManager.Instance?.StartSpecialCooldown(Player?.Weapon?.CurrentArc?.GetSpecialCooldownDuration() ?? _attackDuration);
         TransitionTo(State.HeavyAttacking);
         OnAttackStarted?.Invoke(true);
     }

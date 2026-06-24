@@ -6,6 +6,7 @@ public partial class SegmentManager : Control
 
 	[Export] public TextureProgressBar HealthBar;
 	[Export] public TextureProgressBar HealthStar;
+	[Export] public TextureProgressBar CorruptionBar;
 	[Export] public TextureProgressBar VesselBar;
 	[Export] public TextureProgressBar StaminaBar;
 	[Export] public TextureProgressBar StaminaStar;
@@ -16,15 +17,16 @@ public partial class SegmentManager : Control
 	private float HealthStarOffsetThreshold = 50f;
 
 	private Vector2 _healthBarBaseSize;
-	private Vector2 _vesselBarBaseSize;
 	private Vector2 _healthStarBasePos;
 
-	private int lastMaxHealth = -1;
-	private int lastHealth = -1;
-	private int lastMaxVessel = -1;
-	private int lastVessel = -1;
-	private int lastMaxStamina = -1;
-	private int lastStamina = -1;
+	private float lastMaxHealth = -1f;
+	private float lastHealth = -1f;
+	private float lastCorruption = -1f;
+	private float lastVessel = -1f;
+	private float lastHealthS = -1f;
+	private float lastMaxStamina = -1f;
+	private float lastStamina = -1f;
+	private float lastStaminaS = -1f;
 
 	public override void _Ready()
 	{
@@ -43,31 +45,41 @@ public partial class SegmentManager : Control
 
 		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
 		int health = (int)Player.Stats.GetCurrent("Health");
-		int maxVessel = (int)Player.Stats.GetCurrentMax("Vessel");
-		int vessel = (int)Player.Stats.GetCurrent("Vessel");
+		float corruption = Player.Stats.GetCurrent("Corruption");
+		float vessel = Player.Stats.GetCurrent("Vessel");
+		float healthS = Player.Stats.GetCurrent("Health S");
 		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
-		int stamina = (int)Player.Stats.GetCurrent("Stamina");
+		float stamina = Player.Stats.GetCurrent("Stamina");
+		float staminaS = Player.Stats.GetCurrent("Stamina S");
 
 		if (maxHealth != lastMaxHealth || health != lastHealth)
 		{
 			lastMaxHealth = maxHealth;
 			lastHealth = health;
 			UpdateHealthUI(maxHealth, health);
-			UpdateVesselSizeForHealth(maxHealth);
 		}
 
-		if (maxVessel != lastMaxVessel || vessel != lastVessel)
+		if (!Mathf.IsEqualApprox(corruption, lastCorruption))
 		{
-			lastMaxVessel = maxVessel;
-			lastVessel = vessel;
-			UpdateVesselUI(maxVessel, vessel);
+			lastCorruption = corruption;
+			UpdateCorruptionUI(corruption);
 		}
 
-		if (maxStamina != lastMaxStamina || stamina != lastStamina)
+		if (!Mathf.IsEqualApprox(vessel, lastVessel) || !Mathf.IsEqualApprox(healthS, lastHealthS))
+		{
+			lastVessel = vessel;
+			lastHealthS = healthS;
+			UpdateVesselUI(vessel);
+			UpdateHealthSUI(healthS);
+		}
+
+		if (maxStamina != lastMaxStamina || !Mathf.IsEqualApprox(stamina, lastStamina) || !Mathf.IsEqualApprox(staminaS, lastStaminaS))
 		{
 			lastMaxStamina = maxStamina;
 			lastStamina = stamina;
 			UpdateStaminaUI(maxStamina, stamina);
+			lastStaminaS = staminaS;
+			UpdateStaminaSUI(staminaS);
 		}
 	}
 
@@ -77,6 +89,7 @@ public partial class SegmentManager : Control
 
 		HealthBar ??= root.FindChild("Health Bar", true, false) as TextureProgressBar;
 		HealthStar ??= root.FindChild("Health Star", true, false) as TextureProgressBar;
+		CorruptionBar ??= root.FindChild("Corruption Bar", true, false) as TextureProgressBar;
 		VesselBar ??= root.FindChild("Vessel Bar", true, false) as TextureProgressBar;
 		StaminaBar ??= root.FindChild("Stamina Bar", true, false) as TextureProgressBar;
 		StaminaStar ??= root.FindChild("Stamina Star", true, false) as TextureProgressBar;
@@ -86,8 +99,6 @@ public partial class SegmentManager : Control
 	{
 		if (HealthBar != null)
 			_healthBarBaseSize = HealthBar.Size;
-		if (VesselBar != null)
-			_vesselBarBaseSize = VesselBar.Size;
 		if (HealthStar != null)
 			_healthStarBasePos = HealthStar.Position;
 	}
@@ -99,22 +110,34 @@ public partial class SegmentManager : Control
 
 		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
 		int health = (int)Player.Stats.GetCurrent("Health");
-		int maxVessel = (int)Player.Stats.GetCurrentMax("Vessel");
-		int vessel = (int)Player.Stats.GetCurrent("Vessel");
+		float corruption = Player.Stats.GetCurrent("Corruption");
+		float vessel = Player.Stats.GetCurrent("Vessel");
+		float healthS = Player.Stats.GetCurrent("Health S");
 		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
-		int stamina = (int)Player.Stats.GetCurrent("Stamina");
+		float stamina = Player.Stats.GetCurrent("Stamina");
+		float staminaS = Player.Stats.GetCurrent("Stamina S");
 
 		lastMaxHealth = maxHealth;
 		lastHealth = health;
-		lastMaxVessel = maxVessel;
 		lastVessel = vessel;
+		lastCorruption = corruption;
+		lastHealthS = healthS;
 		lastMaxStamina = maxStamina;
 		lastStamina = stamina;
+		lastStaminaS = staminaS;
 
 		UpdateHealthUI(maxHealth, health);
-		UpdateVesselSizeForHealth(maxHealth);
-		UpdateVesselUI(maxVessel, vessel);
+		UpdateCorruptionUI(corruption);
+		UpdateVesselUI(vessel);
+		UpdateHealthSUI(healthS);
 		UpdateStaminaUI(maxStamina, stamina);
+		UpdateStaminaSUI(staminaS);
+
+		if (VesselBar != null)
+		{
+			VesselBar.Visible = true;
+			VesselBar.ZIndex = 10;
+		}
 	}
 
 	public void Refresh()
@@ -134,22 +157,40 @@ public partial class SegmentManager : Control
 		if (HealthStar != null)
 		{
 			HealthStar.MaxValue = HealthBarMaxValue;
-			HealthStar.Value = MapHealthToUiValue(health);
+			HealthStar.Value = Player.Stats.GetCurrent("Health S");
 			float extraOffset = Mathf.Max(0f, GetHealthBarWidthFromMax(maxHealth) - HealthStarOffsetThreshold);
 			HealthStar.Position = _healthStarBasePos + new Vector2(extraOffset, 0f);
 		}
 	}
 
-	private void UpdateVesselUI(int maxVessel, int vessel)
+	private void UpdateCorruptionUI(float corruption)
+	{
+		if (CorruptionBar == null)
+			return;
+
+		CorruptionBar.MaxValue = 100f;
+		CorruptionBar.Value = Mathf.Clamp(corruption, 0f, 100f);
+	}
+
+	private void UpdateVesselUI(float vessel)
 	{
 		if (VesselBar == null)
 			return;
 
-		VesselBar.MaxValue = maxVessel;
-		VesselBar.Value = vessel;
+		VesselBar.MaxValue = 100f;
+		VesselBar.Value = Mathf.Clamp(vessel, 0f, 100f);
 	}
 
-	private void UpdateStaminaUI(int maxStamina, int stamina)
+	private void UpdateHealthSUI(float healthS)
+	{
+		if (HealthStar == null)
+			return;
+
+		HealthStar.MaxValue = 100f;
+		HealthStar.Value = Mathf.Clamp(healthS, 0f, 100f);
+	}
+
+	private void UpdateStaminaUI(float maxStamina, float stamina)
 	{
 		if (StaminaBar != null)
 		{
@@ -157,23 +198,15 @@ public partial class SegmentManager : Control
 			StaminaBar.Value = GetStaminaBarWidthFromValue(stamina);
 			StaminaBar.Size = new Vector2(GetStaminaBarWidthFromMax(maxStamina), StaminaBar.Size.Y);
 		}
-
-		if (StaminaStar != null)
-		{
-			StaminaStar.MaxValue = maxStamina;
-			StaminaStar.Value = stamina;
-		}
 	}
 
-	private void UpdateVesselSizeForHealth(int maxHealth)
+	private void UpdateStaminaSUI(float staminaS)
 	{
-		if (VesselBar == null || HealthBar == null)
+		if (StaminaStar == null)
 			return;
 
-		float healthWidth = GetHealthBarWidthFromMax(maxHealth);
-		float healthDelta = healthWidth - _healthBarBaseSize.X;
-		float vesselWidth = _vesselBarBaseSize.X + healthDelta;
-		VesselBar.Size = new Vector2(Mathf.Max(0f, vesselWidth), VesselBar.Size.Y);
+		StaminaStar.MaxValue = 100f;
+		StaminaStar.Value = Mathf.Clamp(staminaS, 0f, 100f);
 	}
 
 	private float GetHealthBarWidthFromMax(int maxHealth)
@@ -185,13 +218,13 @@ public partial class SegmentManager : Control
 		return Mathf.Max(0f, width);
 	}
 
-	private float GetStaminaBarWidthFromValue(int stamina)
+	private float GetStaminaBarWidthFromValue(float stamina)
 	{
 		float width = Mathf.Max(0f, stamina * 0.5f);
 		return width;
 	}
 
-	private float GetStaminaBarWidthFromMax(int maxStamina)
+	private float GetStaminaBarWidthFromMax(float maxStamina)
 	{
 		float width = Mathf.Max(0f, maxStamina * 0.5f);
 		return width;

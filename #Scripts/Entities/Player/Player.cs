@@ -81,6 +81,8 @@ public partial class Player : Entity
         
         StateMachine.OnAttackStarted += (isHeavy) => OnActionPerformed();
         StateMachine.OnDodgeStarted += (direction) => OnActionPerformed();
+        StateMachine.OnHealStarted += (duration) => ResourceManager?.StartHealing(duration);
+        StateMachine.OnHealEnded += () => ResourceManager?.EndHealing();
 
         SaveSystem.ApplyLoadedData();
     }

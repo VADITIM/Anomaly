@@ -47,6 +47,7 @@ public abstract partial class Enemy
             weaknessExploit ? DamageNumberStyle.Weakness : DamageNumberStyle.Standard,
             this
         );
+        Player.Instance?.ResourceManager?.AddVesselCharge(calculatedDamage, Player.Instance?.Stats?.GetCurrentMax("Health") ?? 1f);
         StateMachine?.NotifyDamageTaken(calculatedDamage);
 
         if (GetHealth() <= 0)

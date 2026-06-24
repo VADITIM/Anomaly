@@ -13,6 +13,7 @@ public partial class HammerArc : WeaponArc
             Knockback = 15f;
             SpecialHitInterval = 5;
             HeavyAttackDuration = 0.8f;
+            SpecialCooldownDuration = 0.8f;
             
             DamageMultiplier = 1f;
             TenacityMultiplier = 1f;

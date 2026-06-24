@@ -14,6 +14,7 @@ public partial class SpearArc : WeaponArc
             Knockback = 6f;
             SpecialHitInterval = 4;
             HeavyAttackDuration = 0.5f;
+            SpecialCooldownDuration = 0.5f;
             attackDurations = new float[4] { 1.2f, 0.2f, 0.2f, 0.5f };
             
             DamageMultiplier = 1f;

@@ -4,6 +4,7 @@ using System;
 public partial class ResourcesUI : Control
 {
     [Export] public SegmentManager SegmentManager;
+    private bool _subscribed;
 
     public override void _Ready()
     {
@@ -16,11 +17,22 @@ public partial class ResourcesUI : Control
     private void DeferredSubscribe()
     {
         if (ResourceManager.Instance == null)
+        {
+            CallDeferred(nameof(DeferredSubscribe));
+            return;
+        }
+
+        if (_subscribed)
             return;
 
         ResourceManager.Instance.OnHealthChanged += OnHealthChangedHandler;
         ResourceManager.Instance.OnStaminaChanged += OnStaminaChangedHandler;
         ResourceManager.Instance.OnXpChanged += OnXpChangedHandler;
+        ResourceManager.Instance.OnCorruptionChanged += OnResourceChangedHandler;
+        ResourceManager.Instance.OnVesselChanged += OnResourceChangedHandler;
+        ResourceManager.Instance.OnHealthSChanged += OnResourceChangedHandler;
+        ResourceManager.Instance.OnStaminaSChanged += OnResourceChangedHandler;
+        _subscribed = true;
 
         // initial sync
         SegmentManager?.Refresh();
@@ -41,13 +53,23 @@ public partial class ResourcesUI : Control
         SegmentManager?.Refresh();
     }
 
+    private void OnResourceChangedHandler(float current, float max)
+    {
+        SegmentManager?.Refresh();
+    }
+
     public override void _ExitTree()
     {
-        if (ResourceManager.Instance == null)
+        if (ResourceManager.Instance == null || !_subscribed)
             return;
 
         ResourceManager.Instance.OnHealthChanged -= OnHealthChangedHandler;
         ResourceManager.Instance.OnStaminaChanged -= OnStaminaChangedHandler;
         ResourceManager.Instance.OnXpChanged -= OnXpChangedHandler;
+        ResourceManager.Instance.OnCorruptionChanged -= OnResourceChangedHandler;
+        ResourceManager.Instance.OnVesselChanged -= OnResourceChangedHandler;
+        ResourceManager.Instance.OnHealthSChanged -= OnResourceChangedHandler;
+        ResourceManager.Instance.OnStaminaSChanged -= OnResourceChangedHandler;
+        _subscribed = false;
     }
 }

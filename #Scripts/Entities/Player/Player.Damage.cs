@@ -25,6 +25,7 @@ public partial class Player
     protected override void OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth)
     {
         _lastDamageDirection = GetDirectionFromVector(sourcePosition - GlobalPosition, out _);
+        ResourceManager?.ResetConsecutiveHits();
 
         if (newHealth <= 0f)
             return;
