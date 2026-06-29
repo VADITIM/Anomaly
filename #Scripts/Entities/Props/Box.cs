@@ -5,7 +5,7 @@ public partial class Box : Prop
 {
     public Box()
     {
-        health = 100f;
-        weight = 1f;
+        Health = 100f;
+        Weight = 1f;
     }
 }

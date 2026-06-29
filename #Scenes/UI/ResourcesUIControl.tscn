@@ -30,7 +30,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
-script = ExtResource("1_h0kwx")
 
 [node name="Segment Manager" type="Control" parent="." unique_id=1799294788 node_paths=PackedStringArray("HealthBar", "HealthStar", "CorruptionBar", "VesselBar", "StaminaBar", "StaminaStar")]
 layout_mode = 1

@@ -212,7 +212,7 @@ public partial class WeaponArc : Node2D
 
     public void CheckWeaknessExploited(Enemy enemy)
     {
-        enemy.outsideKnockbackForce = 1f;
+        enemy.OutsideKnockbackForce = 1f;
     }
 
     public bool IsEnemyHit()

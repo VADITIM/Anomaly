@@ -9,9 +9,9 @@ public class TenacitySystem
         Enemy = enemy;
         Parent = parent;
         StateMachine = stateMachine;
-        MaxStaggers = enemy.maxStaggers;
+        MaxStaggers = enemy.MaxStaggers;
     }
-    
+
     private Enemy Enemy;
     private Node Parent;
     private StateMachine StateMachine;
@@ -23,8 +23,6 @@ public class TenacitySystem
     public event Action<float> OnRecoveryStarted;
     public event Action OnRecoveryEnded;
 
-    private Vector2 knockbackVelocity = Vector2.Zero;
-    private float knockbackDecay = 2000f;
     private float knockbackDuration = 0f;
     private bool isKnockbackActive = false;
 
@@ -53,15 +51,14 @@ public class TenacitySystem
     public bool IsKnockbackActive => isKnockbackActive;
 
     private const float STACK_RESET_TIME = 1.5f;
-    private const float STAGGER_IMMOBILITY_DURATION = 1.2f;  
-    private const float STAGGER_WINDOW_DURATION = 2.0f;      
+    private const float STAGGER_IMMOBILITY_DURATION = 1.2f;
+    private const float STAGGER_WINDOW_DURATION = 2.0f;
     private const float RECOVERY_DURATION = 2.5f;
 
-    public float GetRemainingStaggerTime() => isStaggered ? staggerDuration : 0f;
+    public float GetRemainingStaggerTime()  => isStaggered ? staggerDuration : 0f;
     public float GetRemainingKnockbackTime() => isKnockbackActive ? knockbackDuration : 0f;
     public float GetRemainingRecoveryTime() => isRecovering ? recoveryDuration : 0f;
     public bool IsInLockedState() { return isStaggered || isKnockbackActive || StateMachine.IsDead; }
-
 
     public void Process(float delta)
     {
@@ -73,10 +70,9 @@ public class TenacitySystem
     private void ProcessStagger(float delta)
     {
         if (!isStaggered) return;
-        
+
         staggerDuration -= delta;
-        ProcessKnockbackPhysics(delta);
-        
+
         if (staggerDuration <= 0)
         {
             isStaggered = false;
@@ -88,13 +84,13 @@ public class TenacitySystem
     private void ProcessKnockback(float delta)
     {
         if (!isKnockbackActive) return;
-        
+
         knockbackDuration -= delta;
-        ProcessKnockbackPhysics(delta);
-        
+
         if (knockbackDuration <= 0)
         {
             isKnockbackActive = false;
+            Enemy.GetBehavior<KnockbackBehavior>()?.StopKnockback();
             StateMachine.TransitionTo(State.Idle);
             OnKnockbackEnded?.Invoke();
         }
@@ -103,7 +99,7 @@ public class TenacitySystem
     private void ProcessRecovery(float delta)
     {
         if (!isRecovering) return;
-        
+
         recoveryDuration -= delta;
         if (recoveryDuration <= 0)
         {
@@ -116,7 +112,7 @@ public class TenacitySystem
     public bool ProcessTenacitySystem(Vector2 playerPosition, WeaponArc weapon)
     {
         if (isRecovering) return false;
-        
+
         pendingWeaponReset = weapon;
         float tenacityDamage;
         if (Combat.IsHeavyAttacking())
@@ -128,9 +124,9 @@ public class TenacitySystem
             tenacityDamage = weapon.CalculateTenacityDamage(weapon.TenacityDamage);
         }
 
-        Enemy.tenacity -= tenacityDamage;
-        Enemy.tenacity = Mathf.Max(Enemy.tenacity, 0f);
-        
+        Enemy.Tenacity -= tenacityDamage;
+        Enemy.Tenacity = Mathf.Max(Enemy.Tenacity, 0f);
+
         if (tenacityStackCount < MAX_TENACITY_STACKS)
         {
             tenacityStackCount++;
@@ -141,9 +137,9 @@ public class TenacitySystem
             TriggerRecovery();
             return false;
         }
-        
-        bool shouldStagger = Enemy.tenacity <= 0f && CanBeStaggered();
-        
+
+        bool shouldStagger = Enemy.Tenacity <= 0f && CanBeStaggered();
+
         if (shouldStagger)
         {
             TriggerStagger(playerPosition, weapon);
@@ -151,10 +147,9 @@ public class TenacitySystem
             hasPlayedTenacityBreakShake = true;
             return isFirstBreak;
         }
-        
+
         return false;
     }
-
 
     public bool CanBeStaggered()
     {
@@ -166,40 +161,40 @@ public class TenacitySystem
     public bool RequestStagger(float duration = -1f)
     {
         if (!CanBeStaggered()) return false;
-        
+
         staggerDuration = duration > 0 ? duration : Enemy.DefaultStaggerDuration;
         CurrentStaggerCount++;
         isStaggered = true;
-        
+
         StateMachine.TransitionTo(State.Staggered);
         OnStaggerStarted?.Invoke(staggerDuration);
-        
+
         return true;
     }
 
     private void TriggerStagger(Vector2 playerPosition, WeaponArc weapon)
     {
         bool isFirstStagger = !isInStaggerWindow;
-        
+
         if (!cuePlayed && Enemy.TenacityCooldownCue != null)
         {
             Enemy.TenacityCooldownCue.Play("tenacity broken");
             Enemy.TenacityCooldownCue.Visible = true;
             cuePlayed = true;
         }
-        
+
         bool staggerApplied = RequestStagger(STAGGER_IMMOBILITY_DURATION);
-        
+
         if (staggerApplied)
         {
             bool isSpecialHit = (weapon.HitCount % weapon.SpecialHitInterval) == 0;
             ApplyStaggerKnockback(playerPosition, weapon, isSpecialHit);
-            
+
             if (isFirstStagger)
             {
                 StartStaggerWindow();
             }
-            
+
             if (CurrentStaggerCount >= MaxStaggers)
             {
                 ClearStaggerWindowTimer();
@@ -212,13 +207,13 @@ public class TenacitySystem
     {
         isInStaggerWindow = true;
         ClearStaggerWindowTimer();
-        
+
         staggerWindowTimer = new Timer();
         staggerWindowTimer.WaitTime = STAGGER_WINDOW_DURATION;
         staggerWindowTimer.OneShot = true;
         Parent.AddChild(staggerWindowTimer);
         staggerWindowTimer.Start();
-        
+
         staggerWindowTimer.Timeout += OnStaggerWindowExpired;
     }
 
@@ -228,45 +223,44 @@ public class TenacitySystem
         TriggerRecovery();
     }
 
-
     public void RequestRecovery(float duration = -1f)
     {
         if (StateMachine.IsDead) return;
         if (isRecovering) return;
-        
+
         recoveryDuration = duration > 0 ? duration : Enemy.DefaultRecoveryDuration;
         isRecovering = true;
-        
+
         if (isStaggered)
         {
             isStaggered = false;
             StateMachine.TransitionTo(State.Idle);
         }
-        
+
         OnRecoveryStarted?.Invoke(recoveryDuration);
     }
 
     private void TriggerRecovery()
     {
         if (isRecovering) return;
-        
+
         isInStaggerWindow = false;
         ClearStackResetTimer();
         ClearStaggerWindowTimer();
-        
+
         RequestRecovery(RECOVERY_DURATION);
     }
 
     private void OnRecoveryComplete()
     {
-        Enemy.tenacity = Enemy.maxTenacity;
+        Enemy.Tenacity = Enemy.MaxTenacity;
         tenacityStackCount = 0;
         isInStaggerWindow = false;
         hasPlayedTenacityBreakShake = false;
-        
+
         pendingWeaponReset?.ResetTenacityDamage();
         pendingWeaponReset = null;
-        
+
         if (cuePlayed && Enemy.TenacityCooldownCue != null)
         {
             Enemy.TenacityCooldownCue.Play("tenacity recovered");
@@ -274,66 +268,58 @@ public class TenacitySystem
         }
     }
 
-public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
-{
-    if (StateMachine.IsDead) return;
-    
-    Enemy.TakeKnockback(Enemy.GlobalPosition - direction.Normalized(), force, duration);
-    
-    if (!isStaggered)
+    public void RequestKnockback(Vector2 direction, float force, float duration = -1f)
     {
-        isKnockbackActive = true;
-        StateMachine.TransitionTo(State.Knockback);
+        if (StateMachine.IsDead) return;
+
+        float appliedDuration = duration > 0 ? duration : Enemy.DefaultKnockbackDuration;
+        Enemy.GetBehavior<KnockbackBehavior>()?.ApplyKnockbackFromDirection(direction, force, appliedDuration);
+
+        if (!isStaggered)
+        {
+            knockbackDuration = appliedDuration;
+            isKnockbackActive = true;
+            StateMachine.TransitionTo(State.Knockback);
+        }
+        OnKnockbackStarted?.Invoke(direction, force);
     }
-    OnKnockbackStarted?.Invoke(direction, force);
-}
 
     private void ApplyStaggerKnockback(Vector2 playerPosition, WeaponArc weaponArc, bool isSpecialHit)
     {
         float baseForce = weaponArc.Knockback / 4;
-        
+
         if (isSpecialHit)
         {
             baseForce *= 1.3f;
         }
-        
-        float tenacityDifference = Enemy.maxTenacity - 5f;
+
+        float tenacityDifference = Enemy.MaxTenacity - 5f;
         float tenacityDistanceMultiplier = 1f + (tenacityDifference * -0.1f);
         tenacityDistanceMultiplier = Mathf.Clamp(tenacityDistanceMultiplier, 0.25f, 1.25f);
 
-        float maxTenacityReduction = 1f - (Enemy.maxTenacity / 100f);
+        float maxTenacityReduction = 1f - (Enemy.MaxTenacity / 100f);
         maxTenacityReduction = Mathf.Clamp(maxTenacityReduction, 0.3f, 1f);
 
         float weaknessMultiplier = 1f;
-        
+
         float effectiveKnockback = baseForce * tenacityDistanceMultiplier * maxTenacityReduction * weaknessMultiplier * 10f;
         Vector2 knockbackDirection = (Enemy.GlobalPosition - playerPosition).Normalized();
-        
-        RequestKnockback(knockbackDirection, effectiveKnockback);
-    }
 
-    public void ProcessKnockbackPhysics(float delta)
-    {
-        if (knockbackVelocity.Length() > 0 && Enemy != null)
-        {
-            Enemy.Velocity = knockbackVelocity;
-            Enemy.MoveAndSlide();
-            knockbackVelocity = knockbackVelocity.MoveToward(Vector2.Zero, knockbackDecay * delta);
-        }
+        RequestKnockback(knockbackDirection, effectiveKnockback);
     }
 
     private void RestartStackResetTimer()
     {
         if (isInStaggerWindow) return;
-        
+
         ClearStackResetTimer();
-        
+
         stackResetTimer = new Timer();
         stackResetTimer.WaitTime = STACK_RESET_TIME;
         stackResetTimer.OneShot = true;
         Parent.AddChild(stackResetTimer);
         stackResetTimer.Start();
-        
+
         stackResetTimer.Timeout += OnStackResetTimeout;
     }
 
@@ -341,10 +327,10 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
     {
         if (tenacityStackCount < MAX_TENACITY_STACKS && !isRecovering && !isInStaggerWindow)
         {
-            Enemy.tenacity = Enemy.maxTenacity;
+            Enemy.Tenacity = Enemy.MaxTenacity;
             tenacityStackCount = 0;
         }
-        
+
         ClearStackResetTimer();
     }
 
@@ -367,7 +353,7 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
             staggerWindowTimer = null;
         }
     }
-    
+
     private bool IsInstanceValid(GodotObject obj)
     {
         return GodotObject.IsInstanceValid(obj);
@@ -377,7 +363,7 @@ public void RequestKnockback(Vector2 direction, float force, float duration = -1
     {
         ClearStackResetTimer();
         ClearStaggerWindowTimer();
-        
+
         if (StateMachine != null)
         {
             OnRecoveryEnded -= OnRecoveryComplete;

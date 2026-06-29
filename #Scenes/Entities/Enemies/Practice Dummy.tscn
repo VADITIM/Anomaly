@@ -176,10 +176,10 @@ animations = [{
 collision_layer = 8
 collision_mask = 61
 script = ExtResource("1_u8rv5")
-outsideKnockbackForce = 0.0
-speed = 0.0
-tenacity = 1.0
-maxTenacity = 1.0
+OutsideKnockbackForce = 0.0
+Speed = 0.0
+Tenacity = 1.0
+MaxTenacity = 1.0
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1370027202]
 shape = SubResource("RectangleShape2D_7wtq7")

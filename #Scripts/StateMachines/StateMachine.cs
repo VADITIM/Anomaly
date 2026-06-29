@@ -20,13 +20,13 @@ public partial class StateMachine : Node
     public EnemyAttackPhase CurrentAttackPhase { get; private set; } = EnemyAttackPhase.None;
     public int MaxStaggers { get; set; } = 3;
 
-    private float _staggerDuration = 0f;
-    private float _knockbackDuration = 0f;
-    private float _attackDuration = 0f;
-    private float _heavyChargeDuration = 1f;
-    private float _healDuration = 0f;
+    private float staggerDuration = 0f;
+    private float knockbackDuration = 0f;
+    private float attackDuration = 0f;
+    private float heavyChargeDuration = 1f;
+    private float healDuration = 0f;
     private const float HEAL_DURATION = 1.5f;
-    private Vector2 _knockbackVelocity = Vector2.Zero;
+    private Vector2 knockbackVelocity = Vector2.Zero;
 
     public bool CanPerformAction => CanAct && !IsInLockedState();
 
@@ -44,12 +44,12 @@ public partial class StateMachine : Node
     public bool IsKnockedBack => IsState(State.Knockback);
     public bool IsDead => IsState(State.Dead);
 
-    public float HealProgress => CurrentState == State.Healing ? 1f - (_healDuration / HEAL_DURATION) : 0f;
+    public float HealProgress => CurrentState == State.Healing ? 1f - (healDuration / HEAL_DURATION) : 0f;
     public float HeavyChargeProgress { get; private set; } = 0f;
 
-    public Vector2 GetKnockbackVelocity() => _knockbackVelocity;
+    public Vector2 GetKnockbackVelocity() => knockbackVelocity;
     public Vector2 GetDodgeDirection() => GetDodgeBehavior()?.GetDodgeDirection() ?? Vector2.Zero;
-    public float GetRemainingStateTime() => CurrentState == State.Attacking || CurrentState == State.HeavyAttacking || CurrentState == State.AirAttacking ? _attackDuration : 0f;
+    public float GetRemainingStateTime() => CurrentState == State.Attacking || CurrentState == State.HeavyAttacking || CurrentState == State.AirAttacking ? attackDuration : 0f;
 
     public event Action<State, State> OnStateChanged;
     public event Action<MovementBehavior.MovementDirection> OnMovementDirectionChanged;
@@ -219,20 +219,20 @@ public partial class StateMachine : Node
         switch (CurrentState)
         {
             case State.Staggered:
-                _staggerDuration -= delta;
-                if (_staggerDuration <= 0)
+                staggerDuration -= delta;
+                if (staggerDuration <= 0)
                 {
-                    _knockbackVelocity = Vector2.Zero;
+                    knockbackVelocity = Vector2.Zero;
                     TransitionTo(State.Idle);
                 }
                 break;
 
             case State.Knockback:
-                _knockbackDuration -= delta;
-                _knockbackVelocity = _knockbackVelocity.MoveToward(Vector2.Zero, 800f * delta);
-                if (_knockbackDuration <= 0)
+                knockbackDuration -= delta;
+                knockbackVelocity = knockbackVelocity.MoveToward(Vector2.Zero, 800f * delta);
+                if (knockbackDuration <= 0)
                 {
-                    _knockbackVelocity = Vector2.Zero;
+                    knockbackVelocity = Vector2.Zero;
                     TransitionTo(State.Idle);
                 }
                 break;
@@ -251,8 +251,8 @@ public partial class StateMachine : Node
             case State.Attacking:
             case State.HeavyAttacking:
             case State.AirAttacking:
-                _attackDuration -= delta;
-                if (_attackDuration <= 0)
+                attackDuration -= delta;
+                if (attackDuration <= 0)
                 {
                     Player?.Weapon?.OnAttackAnimationFinished();
                     OnAttackEnded?.Invoke();
@@ -264,15 +264,15 @@ public partial class StateMachine : Node
                 break;
 
             case State.HeavyCharging:
-                HeavyChargeProgress += delta / _heavyChargeDuration;
+                HeavyChargeProgress += delta / heavyChargeDuration;
                 HeavyChargeProgress = Mathf.Clamp(HeavyChargeProgress, 0f, 1f);
                 if (HeavyChargeProgress >= 1f)
                     ExecuteHeavyAttack();
                 break;
 
             case State.Healing:
-                _healDuration -= delta;
-                if (_healDuration <= 0)
+                healDuration -= delta;
+                if (healDuration <= 0)
                 {
                     OnHealEnded?.Invoke();
                     TransitionTo(State.Idle);
@@ -383,7 +383,7 @@ public partial class StateMachine : Node
     public void RequestStagger(float duration)
     {
         if (CurrentState == State.Dead) return;
-        _staggerDuration = duration;
+        staggerDuration = duration;
         TransitionTo(State.Staggered);
         OnStaggered?.Invoke(duration);
     }
@@ -391,8 +391,8 @@ public partial class StateMachine : Node
     public void RequestKnockback(Vector2 direction, float force, float duration = 0.3f)
     {
         if (CurrentState == State.Dead) return;
-        _knockbackVelocity = direction.Normalized() * force;
-        _knockbackDuration = duration;
+        knockbackVelocity = direction.Normalized() * force;
+        knockbackDuration = duration;
         TransitionTo(State.Knockback);
         OnKnockback?.Invoke(direction, force);
     }
@@ -400,7 +400,7 @@ public partial class StateMachine : Node
     public void RequestAttack(float duration, bool isHeavy)
     {
         if (CurrentState == State.Dead) return;
-        _attackDuration = duration;
+        attackDuration = duration;
         if (Enemy != null)
             CurrentAttackPhase = EnemyAttackPhase.WindUp;
         TransitionTo(isHeavy ? State.HeavyAttacking : State.Attacking);
@@ -412,7 +412,7 @@ public partial class StateMachine : Node
         if (CurrentState == State.Dead) return;
         if (CurrentState != State.Idle && CurrentState != State.Moving)
             return;
-        _healDuration = duration;
+        healDuration = duration;
         TransitionTo(State.Healing);
         OnHealStarted?.Invoke(duration);
     }
@@ -423,7 +423,7 @@ public partial class StateMachine : Node
         var dodgeBehavior = GetDodgeBehavior();
         if (dodgeBehavior == null || !dodgeBehavior.TryDodge(direction))
             return;
-        _knockbackVelocity = Vector2.Zero;
+        knockbackVelocity = Vector2.Zero;
         TransitionTo(State.Dodging);
         OnDodgeStarted?.Invoke(dodgeBehavior.GetDodgeDirection());
     }
@@ -458,9 +458,9 @@ public partial class StateMachine : Node
     private void ExecuteHeavyAttack()
     {
         HeavyChargeProgress = 0f;
-        _attackDuration = Player.GetCurrentAttackAnimationDuration(true);
+        attackDuration = Player.GetCurrentAttackAnimationDuration(true);
         Player?.Weapon?.StartAttackSequence(true);
-        ResourceManager.Instance?.StartSpecialCooldown(Player?.Weapon?.CurrentArc?.GetSpecialCooldownDuration() ?? _attackDuration);
+        ResourceManager.Instance?.StartSpecialCooldown(Player?.Weapon?.CurrentArc?.GetSpecialCooldownDuration() ?? attackDuration);
         TransitionTo(State.HeavyAttacking);
         OnAttackStarted?.Invoke(true);
     }
@@ -476,7 +476,7 @@ public partial class StateMachine : Node
                 "Stamina",
                 Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
 
-        _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+        attackDuration = Player.GetCurrentAttackAnimationDuration(false);
         Player?.Weapon?.StartAttackSequence(false);
         TransitionTo(State.Attacking);
         OnAttackStarted?.Invoke(false);
@@ -498,7 +498,7 @@ public partial class StateMachine : Node
                 "Stamina",
                 Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
 
-        _attackDuration = duration;
+        attackDuration = duration;
         Player.Weapon.StartAttackSequence(false);
         TransitionTo(IsAirborne ? State.AirAttacking : State.Attacking);
         OnAttackStarted?.Invoke(false);
@@ -515,7 +515,7 @@ public partial class StateMachine : Node
                 "Stamina",
                 Mathf.Max(Player.Instance.Stats.GetCurrent("Stamina") - Player.Instance.Weapon.StaminaCost, 0f));
 
-        _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
+        attackDuration = Player.GetCurrentAttackAnimationDuration(false);
         Player?.Weapon?.StartAttackSequence(false);
         TransitionTo(State.AirAttacking);
         OnAttackStarted?.Invoke(false);
@@ -545,8 +545,8 @@ public partial class StateMachine : Node
         switch (CurrentState)
         {
             case State.Attacking:
-                _attackDuration -= delta;
-                if (_attackDuration <= 0)
+                attackDuration -= delta;
+                if (attackDuration <= 0)
                 {
                     CurrentAttackPhase = EnemyAttackPhase.None;
                     OnAttackEnded?.Invoke();
@@ -567,23 +567,23 @@ public partial class StateMachine : Node
         switch (CurrentState)
         {
             case State.Idle:
-                if (distanceToTarget <= Enemy.chaseRange)
+                if (distanceToTarget <= Enemy.ChaseRange)
                     TransitionTo(State.Chasing);
                 movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 break;
 
             case State.Chasing:
-                if (distanceToTarget > Enemy.chaseRange)
+                if (distanceToTarget > Enemy.ChaseRange)
                 {
                     TransitionTo(State.Idle);
                     movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }
-                else if (distanceToTarget <= Enemy.attackRange)
+                else if (distanceToTarget <= Enemy.AttackRange)
                 {
                     RequestAttack(OwnerEntity.GetAttackDuration(), false);
                     movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }
-                else if (distanceToTarget <= Enemy.stopDistance)
+                else if (distanceToTarget <= Enemy.StopDistance)
                 {
                     movementBehavior?.SetDirectionFromVector(Vector2.Zero);
                 }

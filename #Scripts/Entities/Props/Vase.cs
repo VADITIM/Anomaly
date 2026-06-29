@@ -5,7 +5,7 @@ public partial class Vase : Prop
 {
     public Vase()
     {
-        health = 30f;
-        weight = .2f;
+        Health = 30f;
+        Weight = .2f;
     }
 }

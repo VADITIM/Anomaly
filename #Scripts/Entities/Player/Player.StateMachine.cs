@@ -2,24 +2,23 @@ using Godot;
 
 public partial class Player
 {
-
     public void OnActionPerformed() { staminaRegenerationTimer = staminaRegenCooldown; }
     private void OnAttackStarted(bool isHeavy) { }
     private void OnAttackEnded() { }
     private void OnDodgeStarted(Vector2 direction) { }
     private void OnPlayerDied() { }
-    
-    public static bool canMove
+
+    public static bool CanMove
     {
         get => Player.Instance?.StateMachine?.CanMove ?? true;
         set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanMove = value; }
     }
-    public static bool canAttack
+    public static bool CanAttack
     {
         get => Player.Instance?.StateMachine?.CanAttack ?? true;
         set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanAttack = value; }
     }
-    public static bool isPaused
+    public static bool IsPaused
     {
         get => Player.Instance?.StateMachine?.IsPaused ?? false;
         set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.IsPaused = value; }
@@ -40,7 +39,7 @@ public partial class Player
         if (currentState == PlayerState.Staggered || currentState == PlayerState.Knockback || currentState == PlayerState.Dead)
         {
             flipH = false;
-            return _lastDamageDirection;
+            return lastDamageDirection;
         }
 
         if (StateMachine != null && StateMachine.IsAirborne)
@@ -51,7 +50,7 @@ public partial class Player
 
         if (currentState == PlayerState.Attacking || currentState == PlayerState.HeavyAttacking)
         {
-            flipH = _lastFlipH;
+            flipH = lastFlipH;
             return lastAnimationDirection;
         }
 
@@ -81,12 +80,6 @@ public partial class Player
         Weapon.SetLayerRelativeToPlayer(playerZ, weaponAbove);
     }
 
-
-
-
-
-
-    
     private void PlayWeaponAttackAnimation(bool isHeavy)
     {
         Vector2 mousePos = GetGlobalMousePosition();
@@ -130,6 +123,4 @@ public partial class Player
     {
         return GetCurrentAttackAnimationDuration(false);
     }
-
-
 }

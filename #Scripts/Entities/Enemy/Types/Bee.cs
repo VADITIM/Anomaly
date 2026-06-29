@@ -5,16 +5,16 @@ public partial class Bee : Enemy
 {
     public Bee()
     {
-        armor = 30;
-        health = 150f;
-        speed = 150f;
-        damage = 15f;
-        attackRange = 10f;
-        cameraPriority = 1.25f;
-        tenacity = 3f; maxTenacity = 3f;
-        maxStaggers = 5;
-        attackDuration = 1.2f;
-        damageType = DamageType.Corrupted;
-        weaknessType = WeaknessType.Slashing;
+        Armor        = 30;
+        Health       = 150f;
+        Speed        = 150f;
+        Damage       = 15f;
+        AttackRange  = 10f;
+        CameraPriority = 1.25f;
+        Tenacity = 3f; MaxTenacity = 3f;
+        MaxStaggers  = 5;
+        AttackDuration = 1.2f;
+        this.DamageType   = EnemyDamageType.Corrupted;
+        this.WeaknessType = EnemyWeaknessType.Slashing;
     }
 }

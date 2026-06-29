@@ -5,7 +5,7 @@ public partial class Weapon
     
     public void CheckWeaknessExploited(Enemy enemy)
     {
-        enemy.outsideKnockbackForce = 1f;
+        enemy.OutsideKnockbackForce = 1f;
     }
 
     private float GetWeaknessMultiplier(Enemy enemy)
@@ -15,9 +15,9 @@ public partial class Weapon
 
         bool isWeaknessExploited = currentArc.AttackType switch
         {
-            WeaponArc.WeaponAttackType.Slashing => enemy.weaknessType == Enemy.WeaknessType.Slashing,
-            WeaponArc.WeaponAttackType.Piercing => enemy.weaknessType == Enemy.WeaknessType.Piercing,
-            WeaponArc.WeaponAttackType.Smashing => enemy.weaknessType == Enemy.WeaknessType.Smashing,
+            WeaponArc.WeaponAttackType.Slashing => enemy.WeaknessType == EnemyWeaknessType.Slashing,
+            WeaponArc.WeaponAttackType.Piercing => enemy.WeaknessType == EnemyWeaknessType.Piercing,
+            WeaponArc.WeaponAttackType.Smashing => enemy.WeaknessType == EnemyWeaknessType.Smashing,
             _ => false
         };
 
@@ -47,7 +47,7 @@ public partial class Weapon
         rawDamage *= weaknessMultiplier;
 
         float penetrationPercent = Penetration / 100f;
-        float effectiveArmor = enemy.armor * (1f - penetrationPercent);
+        float effectiveArmor = enemy.Armor * (1f - penetrationPercent);
         float damageReductionPercent = effectiveArmor / 200f;
         float damageMultiplier = 1f - damageReductionPercent;
         float calculatedDamage = rawDamage * damageMultiplier;

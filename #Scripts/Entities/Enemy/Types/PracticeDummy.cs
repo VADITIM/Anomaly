@@ -5,16 +5,16 @@ public partial class PracticeDummy : Enemy
 {
     public PracticeDummy()
     {
-        canBeKnockedBack = false;
-        armor = 0f;
-        health = 1000f;
-        maxHealth = 1000f;
-        speed = 0f;
-        damage = 0f;
-        cameraPriority = 0.85f;
-        tenacity = 6f; maxTenacity = 6f;
-        maxStaggers = 5;
-        damageType = DamageType.Corrupted;
-        weaknessType = WeaknessType.Slashing;
+        CanBeKnockedBack = false;
+        Armor            = 0f;
+        Health           = 1000f;
+        MaxHealth        = 1000f;
+        Speed            = 0f;
+        Damage           = 0f;
+        CameraPriority   = 0.85f;
+        Tenacity = 6f; MaxTenacity = 6f;
+        MaxStaggers      = 5;
+        this.DamageType   = EnemyDamageType.Corrupted;
+        this.WeaknessType = EnemyWeaknessType.Slashing;
     }
 }

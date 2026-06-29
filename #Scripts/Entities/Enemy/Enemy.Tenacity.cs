@@ -5,38 +5,40 @@ public abstract partial class Enemy
     public TenacitySystem TenacitySystem;
     public TenacityBehavior TenacityBehavior { get; private set; }
 
-    [Export] public float DefaultStaggerDuration { get; set; } = TenacityDefaults.DefaultStaggerDuration;
+    public AnimatedSprite2D TenacityCooldownCue { get; private set; }
+    private RichTextLabel testDisplay;
+
+    [Export] public float DefaultStaggerDuration  { get; set; } = TenacityDefaults.DefaultStaggerDuration;
     [Export] public float DefaultRecoveryDuration { get; set; } = TenacityDefaults.DefaultRecoveryDuration;
     [Export] public float DefaultKnockbackDuration { get; set; } = TenacityDefaults.DefaultKnockbackDuration;
 
     private void InitializeTenacity()
     {
-        InitializeEntity.InitializeNodes(this);
         TenacityCooldownCue = GetNodeOrNull<AnimatedSprite2D>("Tenacity Broken Animation");
         if (TenacityCooldownCue != null)
             TenacityCooldownCue.Visible = false;
 
         TenacityBehavior = new TenacityBehavior
         {
-            DefaultStaggerDuration = DefaultStaggerDuration,
+            DefaultStaggerDuration  = DefaultStaggerDuration,
             DefaultRecoveryDuration = DefaultRecoveryDuration,
             DefaultKnockbackDuration = DefaultKnockbackDuration,
-            GetCurrentTenacity = () => tenacity,
-            SetCurrentTenacity = value => tenacity = value,
-            GetMaxTenacity = () => maxTenacity,
-            SetMaxTenacity = value => maxTenacity = value
+            GetCurrentTenacity = () => Tenacity,
+            SetCurrentTenacity = value => Tenacity = value,
+            GetMaxTenacity     = () => MaxTenacity,
+            SetMaxTenacity     = value => MaxTenacity = value
         };
         AddBehavior(TenacityBehavior);
 
         var knockbackBehavior = new KnockbackBehavior
         {
-            CanBeKnockedBack = canBeKnockbacked,
-            Weight = weight,
-            KnockbackDecay = knockbackDecay
+            CanBeKnockedBack = CanBeKnockedBack,
+            Weight           = Weight,
+            KnockbackDecay   = KnockbackDecay
         };
         AddBehavior(knockbackBehavior);
 
-        maxTenacity = tenacity;
+        MaxTenacity = Tenacity;
     }
 
     private void StatsDisplay()
@@ -48,5 +50,4 @@ public abstract partial class Enemy
         if (testDisplay != null)
             testDisplay.BbcodeEnabled = true;
     }
-
 }

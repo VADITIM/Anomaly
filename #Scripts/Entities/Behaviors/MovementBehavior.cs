@@ -82,8 +82,6 @@ public class MovementBehavior : IEntityBehavior
                 break;
 
             case State.Knockback:
-                owner.Velocity = stateMachine.GetKnockbackVelocity();
-                owner.MoveAndSlide();
                 break;
 
             default:
@@ -135,7 +133,7 @@ public class MovementBehavior : IEntityBehavior
         if (GetBaseSpeed != null)
             return GetBaseSpeed();
 
-        float baseSpeed = owner?.speed ?? 0f;
+        float baseSpeed = owner?.Speed ?? 0f;
         if (owner is Player player && player.Stats != null)
             baseSpeed = player.Stats.GetCurrentMax("Speed");
         return baseSpeed;

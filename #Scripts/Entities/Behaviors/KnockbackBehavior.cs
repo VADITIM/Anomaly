@@ -68,6 +68,8 @@ public class KnockbackBehavior : IEntityBehavior
         ApplyKnockbackFromDirection(direction, force, duration);
     }
 
+    public bool IsKnockbackActive => knockbackVelocity.Length() > 0.1f || knockbackDuration > 0f;
+
     public void StopKnockback()
     {
         knockbackVelocity = Vector2.Zero;

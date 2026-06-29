@@ -3,9 +3,9 @@ using Godot;
 public enum EnemyAttackPhase
 {
     None,
-    WindUp,        
-    Active,        
-    Recovery       
+    WindUp,
+    Active,
+    Recovery
 }
 
 public abstract partial class Enemy
@@ -21,16 +21,16 @@ public abstract partial class Enemy
             return;
         }
 
-        TriggerDamageFlash();
+        GetBehavior<CommonDamageFlash>()?.Flash();
         MarkCameraFocus();
 
         float calculatedDamage = weapon.ApplyDamage(this);
-        
+
         bool weaknessExploit = weapon.AttackType switch
         {
-            WeaponArc.WeaponAttackType.Slashing => weaknessType == WeaknessType.Slashing,
-            WeaponArc.WeaponAttackType.Piercing => weaknessType == WeaknessType.Piercing,
-            WeaponArc.WeaponAttackType.Smashing => weaknessType == WeaknessType.Smashing,
+            WeaponArc.WeaponAttackType.Slashing => this.WeaknessType == EnemyWeaknessType.Slashing,
+            WeaponArc.WeaponAttackType.Piercing => this.WeaknessType == EnemyWeaknessType.Piercing,
+            WeaponArc.WeaponAttackType.Smashing => this.WeaknessType == EnemyWeaknessType.Smashing,
             _ => false
         };
 
@@ -69,13 +69,11 @@ public abstract partial class Enemy
             if (TenacityCooldownCue != null)
                 TenacityCooldownCue.Visible = true;
         }
-
-        UpdateResourceBars();
     }
 
     public override void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
     {
-        if (!canBeKnockbacked)
+        if (!CanBeKnockedBack)
             return;
 
         float appliedDuration = duration > 0f
