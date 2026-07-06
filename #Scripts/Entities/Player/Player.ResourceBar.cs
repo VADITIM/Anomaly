@@ -5,23 +5,26 @@ public partial class Player
     private float staminaRegenerationTimer = 0f;
     public float staminaRegenCooldown = 1.2f;
 
-    protected override float GetHealth() => ResourceManager.Instance?.Health ?? Stats?.GetCurrent("Health") ?? base.GetHealth();
-    protected override float GetMaxHealth() => ResourceManager.Instance?.MaxHealth ?? Stats?.GetCurrentMax("Health") ?? base.GetMaxHealth();
+    // ResourceManager is created in _Ready; base-class calls before that fall back to Stats.
+    protected override float GetHealth() => ResourceManager?.Health ?? Stats?.GetCurrent(StatType.Health) ?? base.GetHealth();
+    protected override float GetMaxHealth() => ResourceManager?.MaxHealth ?? Stats?.GetCurrentMax(StatType.Health) ?? base.GetMaxHealth();
+
     protected override void SetHealth(float value)
     {
-        if (ResourceManager.Instance != null)
-            ResourceManager.Instance.SetHealth(value);
+        if (ResourceManager != null)
+            ResourceManager.SetHealth(value);
         else if (Stats != null)
-            Stats.SetCurrent("Health", value);
+            Stats.SetCurrent(StatType.Health, value);
         else
             base.SetHealth(value);
     }
+
     protected override void SetMaxHealth(float value)
     {
-        if (ResourceManager.Instance != null)
-            ResourceManager.Instance.SetMaxHealth(value);
+        if (ResourceManager != null)
+            ResourceManager.SetMaxHealth(value);
         else if (Stats != null)
-            Stats.SetCurrentMax("Health", value);
+            Stats.SetCurrentMax(StatType.Health, value);
         else
             base.SetMaxHealth(value);
     }
@@ -32,18 +35,11 @@ public partial class Player
 
         if (staminaRegenerationTimer > 0) return;
 
-        float currentStamina = ResourceManager.Instance?.Stamina ?? Stats.GetCurrent("Stamina");
-        float maxStamina = ResourceManager.Instance?.MaxStamina ?? Stats.GetCurrentMax("Stamina");
-        float regenRate = ResourceManager.Instance?.StaminaRegenRate ?? Stats.GetCurrentMax("Stamina Regen");
+        float currentStamina = ResourceManager.Stamina;
+        float maxStamina = ResourceManager.MaxStamina;
+        float regenRate = ResourceManager.StaminaRegenRate;
 
         if (currentStamina < maxStamina)
-        {
-            float newStamina = Mathf.Min(currentStamina + regenRate * delta, maxStamina);
-            if (ResourceManager.Instance != null)
-                ResourceManager.Instance.SetStamina(newStamina);
-            else
-                Stats.SetCurrent("Stamina", newStamina);
-        }
+            ResourceManager.SetStamina(Mathf.Min(currentStamina + regenRate * delta, maxStamina));
     }
-
 }

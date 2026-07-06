@@ -21,7 +21,6 @@ public class TenacitySystem
     public event Action<float> OnStaggerStarted;
     public event Action OnStaggerEnded;
     public event Action<float> OnRecoveryStarted;
-    public event Action OnRecoveryEnded;
 
     private float knockbackDuration = 0f;
     private bool isKnockbackActive = false;
@@ -363,10 +362,5 @@ public class TenacitySystem
     {
         ClearStackResetTimer();
         ClearStaggerWindowTimer();
-
-        if (StateMachine != null)
-        {
-            OnRecoveryEnded -= OnRecoveryComplete;
-        }
     }
 }

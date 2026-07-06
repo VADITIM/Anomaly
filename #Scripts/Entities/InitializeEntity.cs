@@ -7,6 +7,15 @@ public static class InitializeEntity
         entity.AnimationPlayer = entity.GetNodeOrNull<AnimationPlayer>("Animation Player")
                               ?? entity.GetNodeOrNull<AnimationPlayer>("AnimationPlayer")
                               ?? entity.GetNodeOrNull<AnimationPlayer>("Animator");
+
+        if (entity.AnimationPlayer == null)
+            GD.PushWarning($"{entity.Name}: no AnimationPlayer child found — entity will not animate.");
+
+        entity.Sprite = entity.GetNodeOrNull<Sprite2D>("Sprite")
+                     ?? entity.GetNodeOrNull<Sprite2D>("Body");
+
+        if (entity.Sprite == null)
+            GD.PushWarning($"{entity.Name}: no body Sprite2D child found (expected 'Sprite' or 'Body') — facing will not render.");
     }
 
     public static (Control, TextureProgressBar) InitializeResourceBars(Entity entity)

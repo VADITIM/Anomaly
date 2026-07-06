@@ -1,9 +1,9 @@
 using Godot;
-using System;
 
 public partial class ResourcesUI : Control
 {
     [Export] public SegmentManager SegmentManager;
+    private ResourceManager _resourceManager;
     private bool _subscribed;
 
     public override void _Ready()
@@ -16,7 +16,10 @@ public partial class ResourcesUI : Control
 
     private void DeferredSubscribe()
     {
-        if (ResourceManager.Instance == null)
+        var player = GetTree().Root.FindChild("Player", true, false) as Player;
+        _resourceManager = player?.ResourceManager;
+
+        if (_resourceManager == null)
         {
             CallDeferred(nameof(DeferredSubscribe));
             return;
@@ -25,31 +28,14 @@ public partial class ResourcesUI : Control
         if (_subscribed)
             return;
 
-        ResourceManager.Instance.OnHealthChanged += OnHealthChangedHandler;
-        ResourceManager.Instance.OnStaminaChanged += OnStaminaChangedHandler;
-        ResourceManager.Instance.OnXpChanged += OnXpChangedHandler;
-        ResourceManager.Instance.OnCorruptionChanged += OnResourceChangedHandler;
-        ResourceManager.Instance.OnVesselChanged += OnResourceChangedHandler;
-        ResourceManager.Instance.OnHealthSChanged += OnResourceChangedHandler;
-        ResourceManager.Instance.OnStaminaSChanged += OnResourceChangedHandler;
+        _resourceManager.OnHealthChanged += OnResourceChangedHandler;
+        _resourceManager.OnStaminaChanged += OnResourceChangedHandler;
+        _resourceManager.OnCorruptionChanged += OnResourceChangedHandler;
+        _resourceManager.OnVesselChanged += OnResourceChangedHandler;
+        _resourceManager.OnHealthSChanged += OnResourceChangedHandler;
+        _resourceManager.OnStaminaSChanged += OnResourceChangedHandler;
         _subscribed = true;
 
-        // initial sync
-        SegmentManager?.Refresh();
-    }
-
-    private void OnHealthChangedHandler(float current, float max)
-    {
-        SegmentManager?.Refresh();
-    }
-
-    private void OnStaminaChangedHandler(float current, float max)
-    {
-        SegmentManager?.Refresh();
-    }
-
-    private void OnXpChangedHandler(float current, float max)
-    {
         SegmentManager?.Refresh();
     }
 
@@ -60,16 +46,16 @@ public partial class ResourcesUI : Control
 
     public override void _ExitTree()
     {
-        if (ResourceManager.Instance == null || !_subscribed)
+        if (_resourceManager == null || !_subscribed)
             return;
 
-        ResourceManager.Instance.OnHealthChanged -= OnHealthChangedHandler;
-        ResourceManager.Instance.OnStaminaChanged -= OnStaminaChangedHandler;
-        ResourceManager.Instance.OnXpChanged -= OnXpChangedHandler;
-        ResourceManager.Instance.OnCorruptionChanged -= OnResourceChangedHandler;
-        ResourceManager.Instance.OnVesselChanged -= OnResourceChangedHandler;
-        ResourceManager.Instance.OnHealthSChanged -= OnResourceChangedHandler;
-        ResourceManager.Instance.OnStaminaSChanged -= OnResourceChangedHandler;
+        _resourceManager.OnHealthChanged -= OnResourceChangedHandler;
+        _resourceManager.OnStaminaChanged -= OnResourceChangedHandler;
+        _resourceManager.OnCorruptionChanged -= OnResourceChangedHandler;
+        _resourceManager.OnVesselChanged -= OnResourceChangedHandler;
+        _resourceManager.OnHealthSChanged -= OnResourceChangedHandler;
+        _resourceManager.OnStaminaSChanged -= OnResourceChangedHandler;
         _subscribed = false;
+        _resourceManager = null;
     }
 }

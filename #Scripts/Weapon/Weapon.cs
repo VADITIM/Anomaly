@@ -35,11 +35,11 @@ public partial class Weapon : Node2D
     public void UnslotArc() { currentArc = null; }
     public WeaponArc GetCurrentArc() { return currentArc; }
 
-    public float Damage { get => weaponStats.GetCurrent("Damage"); set => weaponStats.SetCurrent("Damage", value); }
-    public float StaminaCost { get => weaponStats.GetCurrent("Stamina Cost"); set => weaponStats.SetCurrent("Stamina Cost", value); }
-    public float TenacityDamage { get => weaponStats.GetCurrent("TenacityDamage"); set => weaponStats.SetCurrent("TenacityDamage", Mathf.Clamp(value, 0f, 100f)); }
-    public float StaminaRestore { get => weaponStats.GetCurrent("Stamina Restore"); set => weaponStats.SetCurrent("Stamina Restore", Mathf.Clamp(value, 0f, 10f)); }
-    public float Penetration { get => weaponStats.GetCurrent("Penetration"); set => weaponStats.SetCurrent("Penetration", Mathf.Clamp(value, 0f, 100f)); }
+    public float Damage { get => weaponStats.GetCurrent(WeaponStatType.Damage); set => weaponStats.SetCurrent(WeaponStatType.Damage, value); }
+    public float StaminaCost { get => weaponStats.GetCurrent(WeaponStatType.StaminaCost); set => weaponStats.SetCurrent(WeaponStatType.StaminaCost, value); }
+    public float TenacityDamage { get => weaponStats.GetCurrent(WeaponStatType.TenacityDamage); set => weaponStats.SetCurrent(WeaponStatType.TenacityDamage, Mathf.Clamp(value, 0f, 100f)); }
+    public float StaminaRestore { get => weaponStats.GetCurrent(WeaponStatType.StaminaRestore); set => weaponStats.SetCurrent(WeaponStatType.StaminaRestore, Mathf.Clamp(value, 0f, 10f)); }
+    public float Penetration { get => weaponStats.GetCurrent(WeaponStatType.Penetration); set => weaponStats.SetCurrent(WeaponStatType.Penetration, Mathf.Clamp(value, 0f, 100f)); }
     public int SpecialHitInterval { get => specialHitInterval; set => specialHitInterval = value; }
     public int HitCount { get => hitCount; set => hitCount = value; }
     public float CurrentTenacityDamageMultiplier { get => currentTenacityDamageMultiplier; set => currentTenacityDamageMultiplier = value; }
@@ -172,18 +172,6 @@ public partial class Weapon : Node2D
         if (player == null || restoreAmount <= 0f)
             return;
 
-        if (player.ResourceManager != null)
-        {
-            float currentStamina = player.Stats?.GetCurrent("Stamina") ?? 0f;
-            player.ResourceManager.SetStamina(currentStamina + restoreAmount);
-            return;
-        }
-
-        if (player.Stats != null)
-        {
-            player.Stats.SetCurrent(
-                "Stamina",
-                Mathf.Min(player.Stats.GetCurrent("Stamina") + restoreAmount, player.Stats.GetCurrentMax("Stamina")));
-        }
+        player.ResourceManager.SetStamina(player.ResourceManager.Stamina + restoreAmount);
     }
 }

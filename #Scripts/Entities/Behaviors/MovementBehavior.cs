@@ -135,7 +135,7 @@ public class MovementBehavior : IEntityBehavior
 
         float baseSpeed = owner?.Speed ?? 0f;
         if (owner is Player player && player.Stats != null)
-            baseSpeed = player.Stats.GetCurrentMax("Speed");
+            baseSpeed = player.Stats.GetCurrentMax(StatType.Speed);
         return baseSpeed;
     }
 }

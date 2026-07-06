@@ -5,7 +5,10 @@ public partial class Player : Entity
 {
     public static Player Instance;
     public new PlayerStats Stats { get; private set; }
+    public new PlayerStateMachine StateMachine => (PlayerStateMachine)base.StateMachine;
     public ResourceManager ResourceManager { get; private set; }
+
+    protected override StateMachine CreateStateMachine() => new PlayerStateMachine();
     public TenacityBehavior TenacityBehavior { get; private set; }
     public Weapon Weapon { get; set; }
 
@@ -13,7 +16,6 @@ public partial class Player : Entity
     [Export] public float DefaultRecoveryDuration { get; set; } = TenacityDefaults.DefaultRecoveryDuration;
     [Export] public float DefaultKnockbackDuration { get; set; } = TenacityDefaults.DefaultKnockbackDuration;
 
-    public Sprite2D Sprite { get; set; }
     private string lastAnimationDirection = "";
     private string lastDamageDirection = "S";
     private bool lastFlipH = false;
@@ -27,10 +29,13 @@ public partial class Player : Entity
         base._Ready();
         Instance = this;
         Stats = new PlayerStats();
-        Sprite = GetNode<Sprite2D>("Sprite");
-        Weapon = GetNodeOrNull<Weapon>("WEAPON") ?? new Weapon();
-        if (Weapon.GetParent() == null)
+        Weapon = GetNodeOrNull<Weapon>("WEAPON");
+        if (Weapon == null)
+        {
+            GD.PushError("Player: child node 'WEAPON' not found — creating an empty Weapon. Check Player.tscn.");
+            Weapon = new Weapon();
             AddChild(Weapon);
+        }
         ResourceManager = new ResourceManager(this);
         AddBehavior(ResourceManager);
 
@@ -39,10 +44,10 @@ public partial class Player : Entity
             DefaultStaggerDuration  = DefaultStaggerDuration,
             DefaultRecoveryDuration = DefaultRecoveryDuration,
             DefaultKnockbackDuration = DefaultKnockbackDuration,
-            GetCurrentTenacity = () => Stats?.GetCurrent("Tenacity") ?? 0f,
-            SetCurrentTenacity = value => Stats?.SetCurrent("Tenacity", value),
-            GetMaxTenacity     = () => Stats?.GetCurrentMax("Tenacity") ?? 0f,
-            SetMaxTenacity     = value => Stats?.SetCurrentMax("Tenacity", value)
+            GetCurrentTenacity = () => Stats?.GetCurrent(StatType.Tenacity) ?? 0f,
+            SetCurrentTenacity = value => Stats?.SetCurrent(StatType.Tenacity, value),
+            GetMaxTenacity     = () => Stats?.GetCurrentMax(StatType.Tenacity) ?? 0f,
+            SetMaxTenacity     = value => Stats?.SetCurrentMax(StatType.Tenacity, value)
         };
         AddBehavior(TenacityBehavior);
 
@@ -62,7 +67,7 @@ public partial class Player : Entity
         var movementBehavior = new MovementBehavior
         {
             HealSpeedModifier = 0.2f,
-            GetBaseSpeed      = () => Stats?.GetCurrentMax("Speed") ?? Speed,
+            GetBaseSpeed      = () => Stats?.GetCurrentMax(StatType.Speed) ?? Speed,
             GetDodgeVelocity  = () => dodgeBehavior.GetDodgeVelocity()
         };
         AddBehavior(movementBehavior);

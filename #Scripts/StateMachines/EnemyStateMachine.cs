@@ -1,0 +1,86 @@
+using Godot;
+
+public partial class EnemyStateMachine : StateMachine
+{
+    public Node2D Target { get; set; }
+    public EnemyAttackPhase CurrentAttackPhase { get; private set; } = EnemyAttackPhase.None;
+
+    private Enemy Enemy => OwnerEntity as Enemy;
+
+    public override void _Ready()
+    {
+        base._Ready();
+        Target = GetTree().Root.FindChild("Player", true, false) as Node2D;
+    }
+
+    protected override void OnAttackRequested(bool isHeavy)
+    {
+        CurrentAttackPhase = EnemyAttackPhase.WindUp;
+    }
+
+    protected override void ProcessPhysicsState(float delta)
+    {
+        if (Enemy == null)
+            return;
+
+        switch (CurrentState)
+        {
+            case State.Attacking:
+                _attackDuration -= delta;
+                if (_attackDuration <= 0)
+                {
+                    CurrentAttackPhase = EnemyAttackPhase.None;
+                    RaiseAttackEnded();
+                    TransitionTo(State.Idle);
+                }
+                break;
+        }
+
+        var movementBehavior = GetMovementBehavior();
+        if (Target == null)
+        {
+            movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+            return;
+        }
+
+        float distanceToTarget = Enemy.GlobalPosition.DistanceTo(Target.GlobalPosition);
+
+        switch (CurrentState)
+        {
+            case State.Idle:
+                if (distanceToTarget <= Enemy.ChaseRange)
+                    TransitionTo(State.Chasing);
+                movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+                break;
+
+            case State.Chasing:
+                if (distanceToTarget > Enemy.ChaseRange)
+                {
+                    TransitionTo(State.Idle);
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+                }
+                else if (distanceToTarget <= Enemy.AttackRange)
+                {
+                    RequestAttack(OwnerEntity.GetAttackDuration(), false);
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+                }
+                else if (distanceToTarget <= Enemy.StopDistance)
+                {
+                    movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+                }
+                else
+                {
+                    if (!Enemy.TenacitySystem.IsInLockedState())
+                    {
+                        Vector2 direction = Enemy.GlobalPosition.DirectionTo(Target.GlobalPosition);
+                        movementBehavior?.SetDirectionFromVector(direction);
+                    }
+                    else
+                    {
+                        movementBehavior?.SetDirectionFromVector(Vector2.Zero);
+                    }
+                }
+                break;
+        }
+    }
+}

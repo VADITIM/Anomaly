@@ -17,7 +17,7 @@ public partial class Player
 
     protected override float ApplyDamageModifiers(float damage, Vector2 sourcePosition)
     {
-        float armor = Stats?.GetCurrentMax("Armor") ?? 0f;
+        float armor = Stats?.GetCurrentMax(StatType.Armor) ?? 0f;
         return damage * (1f - armor / 100f);
     }
 

@@ -6,6 +6,7 @@ public partial class Entity : CharacterBody2D
     private readonly List<IEntityBehavior> behaviors = new();
     public StateMachine StateMachine { get; protected set; }
     public AnimationPlayer AnimationPlayer { get; set; }
+    public Sprite2D Sprite { get; set; }
 
     [Export] public EntityStats Stats;
 
@@ -30,8 +31,8 @@ public partial class Entity : CharacterBody2D
     [Export] public float AttackDuration { get; set; } = 1f;
 
     [ExportGroup("Health")]
-    [Export] public float MaxHealth { get; set; } = 99999f;
-    [Export] public float Health    { get; set; }
+    [Export] public float MaxHealth { get; set; } = 100f;
+    [Export] public float Health    { get; set; } = 100f;
 
     private State lastAnimationState = (State)(-1);
     private string lastAnimationDirection = "";
@@ -201,7 +202,11 @@ public partial class Entity : CharacterBody2D
         return true;
     }
 
-    protected virtual void ApplyFacing(bool flipH) { }
+    protected virtual void ApplyFacing(bool flipH)
+    {
+        if (Sprite != null)
+            Sprite.FlipH = flipH;
+    }
 
     protected virtual void OnAnimationPlayed(string animationName, State state, string direction, bool flipH) { }
 
@@ -281,10 +286,13 @@ public partial class Entity : CharacterBody2D
         return Mathf.Max(0.1f, (float)animation.Length);
     }
 
+    // NOTE: An assigned EntityStats resource is the stat authority — it overrides any
+    // scene-set exported values below. Leave Stats unassigned to tune per-instance exports.
     private void ApplyEntityStats()
     {
         if (Stats == null) return;
         MaxHealth      = Stats.MaxHealth;
+        Health         = Stats.MaxHealth;
         Weight         = Stats.Weight;
         CanBeKnockedBack = Stats.UseKnockback;
         Tenacity       = Stats.Tenacity;
@@ -302,13 +310,15 @@ public partial class Entity : CharacterBody2D
         ZAxis.Initialize(this);
     }
 
+    protected virtual StateMachine CreateStateMachine() => new StateMachine();
+
     private void EnsureStateMachine()
     {
         StateMachine = GetNodeOrNull<StateMachine>("StateMachine");
 
         if (StateMachine == null)
         {
-            StateMachine = new StateMachine();
+            StateMachine = CreateStateMachine();
             StateMachine.Name = "StateMachine";
             AddChild(StateMachine);
         }

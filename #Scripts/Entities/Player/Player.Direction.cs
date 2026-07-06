@@ -30,11 +30,6 @@ public partial class Player
         return GetDirectionFromAngle(angle, out flipH);
     }
 
-    protected override void ApplyFacing(bool flipH)
-    {
-        Sprite.FlipH = flipH;
-    }
-
     public Vector2 GetAttackDirection()
     {
         return GetVectorFromDirection(lastAnimationDirection);

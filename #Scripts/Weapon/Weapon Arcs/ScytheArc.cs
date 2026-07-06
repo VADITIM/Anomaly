@@ -15,7 +15,7 @@ public partial class ScytheArc : WeaponArc
             HeavyAttackDuration = 0.5f;
             SpecialCooldownDuration = 0.5f;
             PlayerPushForce = 150f;
-            attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.5f };
+            AttackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.5f };
             SpecialHitInterval = 4;
             
             DamageMultiplier = 2f;

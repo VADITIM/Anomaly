@@ -11,7 +11,10 @@ public abstract partial class Enemy : Entity
     private static bool ShowDebugLabels = false;
 
     public Player Player { get; private set; }
+    public new EnemyStateMachine StateMachine => (EnemyStateMachine)base.StateMachine;
     private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
+
+    protected override StateMachine CreateStateMachine() => new EnemyStateMachine();
 
     [Export] public float VesselReward { get; set; } = 10f;
     [Export] public float SoulReward   { get; set; } = 50f;
@@ -127,13 +130,13 @@ public abstract partial class Enemy : Entity
     {
         Player.Instance?.ResourceManager?.AddCorruption(2f);
 
-        float currentVessel = Player.Instance.Stats.GetCurrent("Vessel");
-        float maxVessel = Player.Instance.Stats.GetCurrentMax("Vessel");
-        Player.Instance.Stats.SetCurrent("Vessel", Mathf.Min(currentVessel + VesselReward, maxVessel));
+        float currentVessel = Player.Instance.Stats.GetCurrent(StatType.Vessel);
+        float maxVessel = Player.Instance.Stats.GetCurrentMax(StatType.Vessel);
+        Player.Instance.Stats.SetCurrent(StatType.Vessel, Mathf.Min(currentVessel + VesselReward, maxVessel));
 
-        float currentSoul = Player.Instance.Stats.GetCurrent("Soul");
-        float maxSoul = Player.Instance.Stats.GetCurrentMax("Soul");
-        Player.Instance.Stats.SetCurrent("Soul", Mathf.Min(currentSoul + SoulReward, maxSoul));
+        float currentSoul = Player.Instance.Stats.GetCurrent(StatType.Soul);
+        float maxSoul = Player.Instance.Stats.GetCurrentMax(StatType.Soul);
+        Player.Instance.Stats.SetCurrent(StatType.Soul, Mathf.Min(currentSoul + SoulReward, maxSoul));
     }
 
     private void DisplayStats()

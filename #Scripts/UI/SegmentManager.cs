@@ -43,14 +43,14 @@ public partial class SegmentManager : Control
 		if (Player?.Stats == null)
 			return;
 
-		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
-		int health = (int)Player.Stats.GetCurrent("Health");
-		float corruption = Player.Stats.GetCurrent("Corruption");
-		float vessel = Player.Stats.GetCurrent("Vessel");
-		float healthS = Player.Stats.GetCurrent("Health S");
-		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
-		float stamina = Player.Stats.GetCurrent("Stamina");
-		float staminaS = Player.Stats.GetCurrent("Stamina S");
+		int maxHealth = (int)Player.Stats.GetCurrentMax(StatType.Health);
+		int health = (int)Player.Stats.GetCurrent(StatType.Health);
+		float corruption = Player.Stats.GetCurrent(StatType.Corruption);
+		float vessel = Player.Stats.GetCurrent(StatType.Vessel);
+		float healthS = Player.Stats.GetCurrent(StatType.HealthS);
+		int maxStamina = (int)Player.Stats.GetCurrentMax(StatType.Stamina);
+		float stamina = Player.Stats.GetCurrent(StatType.Stamina);
+		float staminaS = Player.Stats.GetCurrent(StatType.StaminaS);
 
 		if (maxHealth != lastMaxHealth || health != lastHealth)
 		{
@@ -108,14 +108,14 @@ public partial class SegmentManager : Control
 		if (Player?.Stats == null)
 			return;
 
-		int maxHealth = (int)Player.Stats.GetCurrentMax("Health");
-		int health = (int)Player.Stats.GetCurrent("Health");
-		float corruption = Player.Stats.GetCurrent("Corruption");
-		float vessel = Player.Stats.GetCurrent("Vessel");
-		float healthS = Player.Stats.GetCurrent("Health S");
-		int maxStamina = (int)Player.Stats.GetCurrentMax("Stamina");
-		float stamina = Player.Stats.GetCurrent("Stamina");
-		float staminaS = Player.Stats.GetCurrent("Stamina S");
+		int maxHealth = (int)Player.Stats.GetCurrentMax(StatType.Health);
+		int health = (int)Player.Stats.GetCurrent(StatType.Health);
+		float corruption = Player.Stats.GetCurrent(StatType.Corruption);
+		float vessel = Player.Stats.GetCurrent(StatType.Vessel);
+		float healthS = Player.Stats.GetCurrent(StatType.HealthS);
+		int maxStamina = (int)Player.Stats.GetCurrentMax(StatType.Stamina);
+		float stamina = Player.Stats.GetCurrent(StatType.Stamina);
+		float staminaS = Player.Stats.GetCurrent(StatType.StaminaS);
 
 		lastMaxHealth = maxHealth;
 		lastHealth = health;
@@ -157,7 +157,7 @@ public partial class SegmentManager : Control
 		if (HealthStar != null)
 		{
 			HealthStar.MaxValue = HealthBarMaxValue;
-			HealthStar.Value = Player.Stats.GetCurrent("Health S");
+			HealthStar.Value = Player.Stats.GetCurrent(StatType.HealthS);
 			float extraOffset = Mathf.Max(0f, GetHealthBarWidthFromMax(maxHealth) - HealthStarOffsetThreshold);
 			HealthStar.Position = _healthStarBasePos + new Vector2(extraOffset, 0f);
 		}

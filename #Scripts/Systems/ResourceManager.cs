@@ -1,11 +1,9 @@
 using Godot;
 using System;
 
-public partial class ResourceManager : IEntityBehavior
+public class ResourceManager : IEntityBehavior
 {
-    public static ResourceManager Instance { get; private set; }
-
-    private Player _player;
+    private readonly Player _player;
     private float _specialCooldownTimer = 0f;
     private float _specialCooldownDuration = 0f;
     private float _healthSFillTimer = 0f;
@@ -14,120 +12,74 @@ public partial class ResourceManager : IEntityBehavior
     private int _consecutiveHitCount = 0;
     private float _healConsumptionTimer = 0f;
     private bool _isHealing = false;
-    private float _healStartHealth = 0f;
+    private float _healStartHealthS = 0f;
+    private float _healStartVessel = 0f;
+    private float _healLastProgress = 0f;
 
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnStaminaChanged;
-    public event Action<float, float> OnXpChanged;
-    public event Action<int> OnLevelUp;
     public event Action<float, float> OnCorruptionChanged;
     public event Action<float, float> OnVesselChanged;
     public event Action<float, float> OnHealthSChanged;
     public event Action<float, float> OnStaminaSChanged;
 
+    public ResourceManager(Player player)
+    {
+        _player = player;
+    }
+
     public float Health
     {
-        get => _player?.Stats.GetCurrent("Health") ?? 0;
-        set
-        {
-            float oldValue = _player.Stats.GetCurrent("Health");
-            _player.Stats.SetCurrent("Health", value);
-            if (oldValue != value)
-                OnHealthChanged?.Invoke(_player.Stats.GetCurrent("Health"), _player.Stats.GetCurrentMax("Health"));
-        }
+        get => _player.Stats.GetCurrent(StatType.Health);
+        set => SetHealth(value);
     }
 
     public float MaxHealth
     {
-        get => _player?.Stats.GetCurrentMax("Health") ?? 0;
-        set
-        {
-            _player.Stats.SetCurrentMax("Health", value);
-            OnHealthChanged?.Invoke(_player.Stats.GetCurrent("Health"), _player.Stats.GetCurrentMax("Health"));
-        }
+        get => _player.Stats.GetCurrentMax(StatType.Health);
+        set => SetMaxHealth(value);
     }
 
     public float Stamina
     {
-        get => _player?.Stats.GetCurrent("Stamina") ?? 0;
-        set
-        {
-            float oldValue = _player.Stats.GetCurrent("Stamina");
-            _player.Stats.SetCurrent("Stamina", value);
-            if (oldValue != value)
-                OnStaminaChanged?.Invoke(_player.Stats.GetCurrent("Stamina"), _player.Stats.GetCurrentMax("Stamina"));
-        }
+        get => _player.Stats.GetCurrent(StatType.Stamina);
+        set => SetStamina(value);
     }
 
     public float MaxStamina
     {
-        get => _player?.Stats.GetCurrentMax("Stamina") ?? 0;
-        set
-        {
-            _player.Stats.SetCurrentMax("Stamina", value);
-            OnStaminaChanged?.Invoke(_player.Stats.GetCurrent("Stamina"), _player.Stats.GetCurrentMax("Stamina"));
-        }
+        get => _player.Stats.GetCurrentMax(StatType.Stamina);
+        set => SetMaxStamina(value);
     }
 
     public float StaminaRegenRate
     {
-        get => _player?.Stats.GetCurrentMax("Stamina Regen") ?? 0;
-        set
-        {
-            _player.Stats.SetCurrentMax("Stamina Regen", value);
-        }
-    }
-
-    public float Xp
-    {
-        get => _player?.Stats.GetCurrent("Vessel") ?? 0;
-        set
-        {
-            float oldValue = _player.Stats.GetCurrent("Vessel");
-            _player.Stats.SetCurrent("Vessel", value);
-            if (oldValue != value)
-                OnXpChanged?.Invoke(_player.Stats.GetCurrent("Vessel"), _player.Stats.GetCurrentMax("Vessel"));
-        }
+        get => _player.Stats.GetCurrentMax(StatType.StaminaRegen);
+        set => _player.Stats.SetCurrentMax(StatType.StaminaRegen, value);
     }
 
     public float Corruption
     {
-        get => _player?.Stats.GetCurrent("Corruption") ?? 0f;
-        set => SetResourceValue("Corruption", value, OnCorruptionChanged);
+        get => _player.Stats.GetCurrent(StatType.Corruption);
+        set => SetResourceValue(StatType.Corruption, value, OnCorruptionChanged);
     }
 
     public float Vessel
     {
-        get => _player?.Stats.GetCurrent("Vessel") ?? 0f;
-        set => SetResourceValue("Vessel", value, OnVesselChanged);
+        get => _player.Stats.GetCurrent(StatType.Vessel);
+        set => SetResourceValue(StatType.Vessel, value, OnVesselChanged);
     }
 
     public float HealthS
     {
-        get => _player?.Stats.GetCurrent("Health S") ?? 0f;
-        set => SetResourceValue("Health S", value, OnHealthSChanged);
+        get => _player.Stats.GetCurrent(StatType.HealthS);
+        set => SetResourceValue(StatType.HealthS, value, OnHealthSChanged);
     }
 
     public float StaminaS
     {
-        get => _player?.Stats.GetCurrent("Stamina S") ?? 0f;
-        set => SetResourceValue("Stamina S", value, OnStaminaSChanged);
-    }
-
-    public float MaxXp
-    {
-        get => _player?.Stats.GetCurrentMax("Vessel") ?? 0;
-        set
-        {
-            _player.Stats.SetCurrentMax("Vessel", value);
-            OnXpChanged?.Invoke(_player.Stats.GetCurrent("Vessel"), _player.Stats.GetCurrentMax("Vessel"));
-        }
-    }
-
-    public ResourceManager(Player player)
-    {
-        _player = player;
-        Instance = this;
+        get => _player.Stats.GetCurrent(StatType.StaminaS);
+        set => SetResourceValue(StatType.StaminaS, value, OnStaminaSChanged);
     }
 
     public void OnReady(Entity owner)
@@ -150,11 +102,11 @@ public partial class ResourceManager : IEntityBehavior
 
     public void SetHealth(float value)
     {
-        float oldHealth = _player.Stats.GetCurrent("Health");
-        _player.Stats.SetCurrent("Health", Mathf.Clamp(value, 0, _player.Stats.GetCurrentMax("Health")));
+        float oldHealth = _player.Stats.GetCurrent(StatType.Health);
+        _player.Stats.SetCurrent(StatType.Health, Mathf.Clamp(value, 0, _player.Stats.GetCurrentMax(StatType.Health)));
 
-        if (_player.Stats.GetCurrent("Health") != oldHealth)
-            OnHealthChanged?.Invoke(_player.Stats.GetCurrent("Health"), _player.Stats.GetCurrentMax("Health"));
+        if (_player.Stats.GetCurrent(StatType.Health) != oldHealth)
+            OnHealthChanged?.Invoke(_player.Stats.GetCurrent(StatType.Health), _player.Stats.GetCurrentMax(StatType.Health));
     }
 
     public void TakeDamage(float damage) { SetHealth(Health - damage); }
@@ -162,50 +114,42 @@ public partial class ResourceManager : IEntityBehavior
 
     public void SetMaxHealth(float value)
     {
-        _player.Stats.SetCurrentMax("Health", Mathf.Clamp(value, 1, _player.Stats.GetTotalMax("Health")));
-        OnHealthChanged?.Invoke(_player.Stats.GetCurrent("Health"), _player.Stats.GetCurrentMax("Health"));
+        _player.Stats.SetCurrentMax(StatType.Health, Mathf.Clamp(value, 1, _player.Stats.GetTotalMax(StatType.Health)));
+        OnHealthChanged?.Invoke(_player.Stats.GetCurrent(StatType.Health), _player.Stats.GetCurrentMax(StatType.Health));
     }
 
-    public bool IsDead() => _player != null && _player.Stats.GetCurrent("Health") <= 0;
+    public bool IsDead() => _player.Stats.GetCurrent(StatType.Health) <= 0;
 
     public void SetStamina(float value)
     {
-        float oldStamina = _player.Stats.GetCurrent("Stamina");
-        _player.Stats.SetCurrent("Stamina", Mathf.Clamp(value, 0, _player.Stats.GetCurrentMax("Stamina")));
-        if (_player.Stats.GetCurrent("Stamina") != oldStamina)
-            OnStaminaChanged?.Invoke(_player.Stats.GetCurrent("Stamina"), _player.Stats.GetCurrentMax("Stamina"));
+        float oldStamina = _player.Stats.GetCurrent(StatType.Stamina);
+        _player.Stats.SetCurrent(StatType.Stamina, Mathf.Clamp(value, 0, _player.Stats.GetCurrentMax(StatType.Stamina)));
+        if (_player.Stats.GetCurrent(StatType.Stamina) != oldStamina)
+            OnStaminaChanged?.Invoke(_player.Stats.GetCurrent(StatType.Stamina), _player.Stats.GetCurrentMax(StatType.Stamina));
     }
 
     public bool TryUseStamina(float cost)
     {
-        if (_player.Stats.GetCurrent("Stamina") >= cost)
+        if (_player.Stats.GetCurrent(StatType.Stamina) >= cost)
         {
-            SetStamina(_player.Stats.GetCurrent("Stamina") - cost);
+            SetStamina(_player.Stats.GetCurrent(StatType.Stamina) - cost);
             _player.OnActionPerformed();
             return true;
         }
         return false;
     }
 
-    public bool HasStamina(float cost) { return _player != null && _player.Stats.GetCurrent("Stamina") >= cost; }
+    public bool HasStamina(float cost) { return _player.Stats.GetCurrent(StatType.Stamina) >= cost; }
 
     public void SetMaxStamina(float value)
     {
-        _player.Stats.SetCurrentMax("Stamina", Mathf.Clamp(value, 1, _player.Stats.GetTotalMax("Stamina")));
-        OnStaminaChanged?.Invoke(_player.Stats.GetCurrent("Stamina"), _player.Stats.GetCurrentMax("Stamina"));
-    }
-
-    public void AddXp(float amount)
-    {
-        float currentXp = _player.Stats.GetCurrent("Vessel");
-        _player.Stats.SetCurrent("Vessel", currentXp + amount);
-
-        OnXpChanged?.Invoke(_player.Stats.GetCurrent("Vessel"), _player.Stats.GetCurrentMax("Vessel"));
+        _player.Stats.SetCurrentMax(StatType.Stamina, Mathf.Clamp(value, 1, _player.Stats.GetTotalMax(StatType.Stamina)));
+        OnStaminaChanged?.Invoke(_player.Stats.GetCurrent(StatType.Stamina), _player.Stats.GetCurrentMax(StatType.Stamina));
     }
 
     public void AddCorruption(float amount)
     {
-        AddResourceProgress("Corruption", amount, OnCorruptionChanged);
+        AddResourceProgress(StatType.Corruption, amount, OnCorruptionChanged);
     }
 
     public void AddVesselCharge(float damageDealt, float playerMaxHealth)
@@ -213,25 +157,25 @@ public partial class ResourceManager : IEntityBehavior
         if (damageDealt <= 0f)
             return;
 
-        // Don't add vessel while Health S is filling
+        // Vessel pauses while Health S is filling so the two meters read as one exchange.
         if (_healthSFillTimer > 0f)
             return;
 
         _consecutiveHitCount++;
         float consecutiveMultiplier = _consecutiveHitCount * 1.3f;
         float vesselGain = 1f * consecutiveMultiplier;
-        float currentVessel = _player.Stats.GetCurrent("Vessel");
+        float currentVessel = _player.Stats.GetCurrent(StatType.Vessel);
 
         float newVessel = Mathf.Min(100f, currentVessel + vesselGain);
-        _player.Stats.SetCurrent("Vessel", newVessel);
+        _player.Stats.SetCurrent(StatType.Vessel, newVessel);
 
         if (!Mathf.IsEqualApprox(currentVessel, newVessel))
-            OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax("Vessel"));
+            OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax(StatType.Vessel));
 
         if (newVessel >= 100f)
         {
-            _player.Stats.SetCurrent("Vessel", 0f);
-            OnVesselChanged?.Invoke(0f, _player.Stats.GetCurrentMax("Vessel"));
+            _player.Stats.SetCurrent(StatType.Vessel, 0f);
+            OnVesselChanged?.Invoke(0f, _player.Stats.GetCurrentMax(StatType.Vessel));
             StartHealthSFill();
         }
     }
@@ -245,7 +189,9 @@ public partial class ResourceManager : IEntityBehavior
     {
         _isHealing = true;
         _healConsumptionTimer = HealConsumptionDuration;
-        _healStartHealth = _player.Stats.GetCurrent("Health");
+        _healStartHealthS = _player.Stats.GetCurrent(StatType.HealthS);
+        _healStartVessel = _player.Stats.GetCurrent(StatType.Vessel);
+        _healLastProgress = 0f;
     }
 
     public void EndHealing()
@@ -259,36 +205,35 @@ public partial class ResourceManager : IEntityBehavior
         if (!_isHealing || _healConsumptionTimer <= 0f)
             return;
 
-        _healConsumptionTimer -= delta;
-
-        float healthSCurrent = _player.Stats.GetCurrent("Health S");
-        float vesselCurrent = _player.Stats.GetCurrent("Vessel");
-
-        if (healthSCurrent <= 0f || vesselCurrent <= 0f)
+        if (_healStartHealthS <= 0f || _healStartVessel <= 0f)
         {
             _healConsumptionTimer = 0f;
             return;
         }
 
-        float consumptionProgress = 1f - (_healConsumptionTimer / HealConsumptionDuration);
-        consumptionProgress = Mathf.Clamp(consumptionProgress, 0f, 1f);
+        _healConsumptionTimer -= delta;
 
-        float newHealthS = Mathf.Lerp(_player.Stats.GetCurrent("Health S"), 0f, consumptionProgress);
-        float newVessel = Mathf.Lerp(_player.Stats.GetCurrent("Vessel"), 0f, consumptionProgress);
+        float progress = Mathf.Clamp(1f - (_healConsumptionTimer / HealConsumptionDuration), 0f, 1f);
 
-        _player.Stats.SetCurrent("Health S", newHealthS);
-        _player.Stats.SetCurrent("Vessel", newVessel);
+        float newHealthS = Mathf.Lerp(_healStartHealthS, 0f, progress);
+        float newVessel = Mathf.Lerp(_healStartVessel, 0f, progress);
 
-        OnHealthSChanged?.Invoke(newHealthS, _player.Stats.GetCurrentMax("Health S"));
-        OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax("Vessel"));
+        _player.Stats.SetCurrent(StatType.HealthS, newHealthS);
+        _player.Stats.SetCurrent(StatType.Vessel, newVessel);
 
-        float healAmount = healthSCurrent * (consumptionProgress / HealConsumptionDuration) * delta;
-        float currentHealth = _player.Stats.GetCurrent("Health");
-        float newHealth = Mathf.Min(currentHealth + healAmount, _player.Stats.GetCurrentMax("Health"));
-        _player.Stats.SetCurrent("Health", newHealth);
+        OnHealthSChanged?.Invoke(newHealthS, _player.Stats.GetCurrentMax(StatType.HealthS));
+        OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax(StatType.Vessel));
+
+        // Total heal over the full consumption equals the Health S that was drained, frame-rate independent.
+        float healAmount = _healStartHealthS * (progress - _healLastProgress);
+        _healLastProgress = progress;
+
+        float currentHealth = _player.Stats.GetCurrent(StatType.Health);
+        float newHealth = Mathf.Min(currentHealth + healAmount, _player.Stats.GetCurrentMax(StatType.Health));
+        _player.Stats.SetCurrent(StatType.Health, newHealth);
 
         if (!Mathf.IsEqualApprox(currentHealth, newHealth))
-            OnHealthChanged?.Invoke(newHealth, _player.Stats.GetCurrentMax("Health"));
+            OnHealthChanged?.Invoke(newHealth, _player.Stats.GetCurrentMax(StatType.Health));
     }
 
     public bool HasSpecialAttackReady()
@@ -312,40 +257,26 @@ public partial class ResourceManager : IEntityBehavior
         SyncSpecialCooldownBar();
     }
 
-    public void SetMaxXp(float value)
+    private void SetResourceValue(StatType type, float value, Action<float, float> changedEvent)
     {
-        _player.Stats.SetCurrentMax("Vessel", Mathf.Clamp(value, 1, _player.Stats.GetTotalMax("Vessel")));
+        float oldValue = _player.Stats.GetCurrent(type);
+        _player.Stats.SetCurrent(type, value);
+        if (!Mathf.IsEqualApprox(oldValue, _player.Stats.GetCurrent(type)))
+            changedEvent?.Invoke(_player.Stats.GetCurrent(type), _player.Stats.GetCurrentMax(type));
     }
 
-    public void SetXp(float value)
+    private float AddResourceProgress(StatType type, float amount, Action<float, float> changedEvent)
     {
-        _player.Stats.SetCurrent("Vessel", Mathf.Clamp(value, 0, _player.Stats.GetCurrentMax("Vessel")));
-        OnXpChanged?.Invoke(_player.Stats.GetCurrent("Vessel"), _player.Stats.GetCurrentMax("Vessel"));
-    }
-
-    private void SetResourceValue(string statName, float value, Action<float, float> changedEvent)
-    {
-        if (_player?.Stats == null)
-            return;
-
-        float oldValue = _player.Stats.GetCurrent(statName);
-        _player.Stats.SetCurrent(statName, value);
-        if (!Mathf.IsEqualApprox(oldValue, _player.Stats.GetCurrent(statName)))
-            changedEvent?.Invoke(_player.Stats.GetCurrent(statName), _player.Stats.GetCurrentMax(statName));
-    }
-
-    private float AddResourceProgress(string statName, float amount, Action<float, float> changedEvent)
-    {
-        if (_player?.Stats == null || amount <= 0f)
+        if (amount <= 0f)
             return 0f;
 
-        float current = _player.Stats.GetCurrent(statName);
-        float max = Mathf.Max(0f, _player.Stats.GetCurrentMax(statName));
+        float current = _player.Stats.GetCurrent(type);
+        float max = Mathf.Max(0f, _player.Stats.GetCurrentMax(type));
         float newValue = current + amount;
         float overflow = Mathf.Max(0f, newValue - max);
-        _player.Stats.SetCurrent(statName, newValue);
+        _player.Stats.SetCurrent(type, newValue);
 
-        float appliedValue = _player.Stats.GetCurrent(statName);
+        float appliedValue = _player.Stats.GetCurrent(type);
         if (!Mathf.IsEqualApprox(current, appliedValue))
             changedEvent?.Invoke(appliedValue, max);
 
@@ -358,29 +289,26 @@ public partial class ResourceManager : IEntityBehavior
             return;
 
         _healthSFillTimer = HealthSFillDuration;
-        _player.Stats.SetCurrent("Health S", 0f);
-        OnHealthSChanged?.Invoke(0f, _player.Stats.GetCurrentMax("Health S"));
+        _player.Stats.SetCurrent(StatType.HealthS, 0f);
+        OnHealthSChanged?.Invoke(0f, _player.Stats.GetCurrentMax(StatType.HealthS));
     }
 
     private void UpdateSpecialCooldown(float delta)
     {
-        if (_player?.Stats == null)
-            return;
-
         if (_healthSFillTimer > 0f)
         {
             _healthSFillTimer = Mathf.Max(0f, _healthSFillTimer - delta);
 
             float healthSProgress = 1f - (_healthSFillTimer / HealthSFillDuration);
             float healthSValue = Mathf.Clamp(healthSProgress * 100f, 0f, 100f);
-            _player.Stats.SetCurrent("Health S", healthSValue);
-            OnHealthSChanged?.Invoke(healthSValue, _player.Stats.GetCurrentMax("Health S"));
+            _player.Stats.SetCurrent(StatType.HealthS, healthSValue);
+            OnHealthSChanged?.Invoke(healthSValue, _player.Stats.GetCurrentMax(StatType.HealthS));
 
             if (_healthSFillTimer <= 0f)
             {
                 _healthSFillTimer = 0f;
-                _player.Stats.SetCurrent("Health S", 100f);
-                OnHealthSChanged?.Invoke(100f, _player.Stats.GetCurrentMax("Health S"));
+                _player.Stats.SetCurrent(StatType.HealthS, 100f);
+                OnHealthSChanged?.Invoke(100f, _player.Stats.GetCurrentMax(StatType.HealthS));
             }
         }
 
@@ -391,14 +319,14 @@ public partial class ResourceManager : IEntityBehavior
             return;
         }
 
-        if (!Mathf.IsEqualApprox(_player.Stats.GetCurrent("Stamina S"), 100f))
+        if (!Mathf.IsEqualApprox(_player.Stats.GetCurrent(StatType.StaminaS), 100f))
             SyncSpecialCooldownBar();
     }
 
     private void SyncSpecialCooldownBar()
     {
         float progress = GetSpecialAttackProgress();
-        _player.Stats.SetCurrent("Stamina S", progress);
-        OnStaminaSChanged?.Invoke(_player.Stats.GetCurrent("Stamina S"), _player.Stats.GetCurrentMax("Stamina S"));
+        _player.Stats.SetCurrent(StatType.StaminaS, progress);
+        OnStaminaSChanged?.Invoke(_player.Stats.GetCurrent(StatType.StaminaS), _player.Stats.GetCurrentMax(StatType.StaminaS));
     }
 }

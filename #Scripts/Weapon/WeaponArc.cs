@@ -5,39 +5,43 @@ public partial class WeaponArc : Node2D
 {
     public enum WeaponAttackType { Slashing, Piercing, Smashing }
 
-    [Export] public Area2D Hitbox;
-    [Export] public Sprite2D Sprite;
-    [Export] public AnimationPlayer AnimationPlayer;
-    [Export] public float[] attackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
-    [Export] private float heavyAttackDuration = 1.5f;
-    [Export] private float specialCooldownDuration = 0f;
+    public Area2D Hitbox { get; private set; }
+    public Sprite2D Sprite { get; private set; }
+    public AnimationPlayer AnimationPlayer { get; private set; }
+
+    [Export] public float[] AttackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
+    [Export] private float _heavyAttackDuration = 1.5f;
+    [Export] private float _specialCooldownDuration = 0f;
     [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
     [Export] public float PlayerPushForce { get; set; } = 0f;
     [Export] public float StaminaRestoreMultiplier { get; set; } = 1f;
 
-    private float knockback = 0f;
-
     public float DamageMultiplier { get; set; } = 1f;
     public float TenacityMultiplier { get; set; } = 1f;
     public float PenetrationMultiplier { get; set; } = 1f;
-    private Timer attackAnimationStopTimer;
-    private string preparedDirection = "Down";
-    private bool preparedHeavyAttack = false;
-    private int preparedSequenceIndex = 0;
-    private Weapon parentWeapon;
 
-    public float Damage => parentWeapon != null ? parentWeapon.Damage * DamageMultiplier : throw new InvalidOperationException("Parent weapon not set.");
-    public float Knockback { get => knockback; set => knockback = value; }
-    public float StaminaCost => parentWeapon != null ? parentWeapon.StaminaCost : throw new InvalidOperationException("Parent weapon not set.");
-    public float TenacityDamage { get => parentWeapon != null ? parentWeapon.TenacityDamage * TenacityMultiplier : throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.TenacityDamage = value; } }
-    public float StaminaRestore => parentWeapon != null ? parentWeapon.StaminaRestore * StaminaRestoreMultiplier : throw new InvalidOperationException("Parent weapon not set.");
-    public float Penetration { get => parentWeapon != null ? parentWeapon.Penetration * PenetrationMultiplier : throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.Penetration = value; } }
-    public float HeavyAttackDuration { get => heavyAttackDuration; set => heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
-    public float SpecialCooldownDuration { get => specialCooldownDuration; set => specialCooldownDuration = Mathf.Clamp(value, 0f, 10f); }
-    public int SpecialHitInterval { get => parentWeapon?.SpecialHitInterval ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.SpecialHitInterval = value; } }
-    public int HitCount { get => parentWeapon?.HitCount ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.HitCount = value; } }
-    public float CurrentTenacityDamageMultiplier { get => parentWeapon?.CurrentTenacityDamageMultiplier ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.CurrentTenacityDamageMultiplier = value; } }
-    public float OutsideKnockbackForce { get => parentWeapon?.OutsideKnockbackForce ?? throw new InvalidOperationException("Parent weapon not set."); set { if (parentWeapon != null) parentWeapon.OutsideKnockbackForce = value; } }
+    private float _knockback = 0f;
+    private Timer _attackAnimationStopTimer;
+    private string _preparedDirection = "Down";
+    private bool _preparedHeavyAttack = false;
+    private int _preparedSequenceIndex = 0;
+    private Weapon _parentWeapon;
+
+    private Weapon ParentWeapon => _parentWeapon
+        ?? throw new InvalidOperationException($"{Name}: parent Weapon not set. Call SetParentWeapon() when slotting the Arc.");
+
+    public float Damage => ParentWeapon.Damage * DamageMultiplier;
+    public float Knockback { get => _knockback; set => _knockback = value; }
+    public float StaminaCost => ParentWeapon.StaminaCost;
+    public float TenacityDamage { get => ParentWeapon.TenacityDamage * TenacityMultiplier; set => ParentWeapon.TenacityDamage = value; }
+    public float StaminaRestore => ParentWeapon.StaminaRestore * StaminaRestoreMultiplier;
+    public float Penetration { get => ParentWeapon.Penetration * PenetrationMultiplier; set => ParentWeapon.Penetration = value; }
+    public float HeavyAttackDuration { get => _heavyAttackDuration; set => _heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
+    public float SpecialCooldownDuration { get => _specialCooldownDuration; set => _specialCooldownDuration = Mathf.Clamp(value, 0f, 10f); }
+    public int SpecialHitInterval { get => ParentWeapon.SpecialHitInterval; set => ParentWeapon.SpecialHitInterval = value; }
+    public int HitCount { get => ParentWeapon.HitCount; set => ParentWeapon.HitCount = value; }
+    public float CurrentTenacityDamageMultiplier { get => ParentWeapon.CurrentTenacityDamageMultiplier; set => ParentWeapon.CurrentTenacityDamageMultiplier = value; }
+    public float OutsideKnockbackForce { get => ParentWeapon.OutsideKnockbackForce; set => ParentWeapon.OutsideKnockbackForce = value; }
 
     public static Timer QuickTimer(Node parent, float time)
     {
@@ -52,17 +56,19 @@ public partial class WeaponArc : Node2D
 
     public virtual void SetParentWeapon(Weapon weapon)
     {
-        parentWeapon = weapon;
+        _parentWeapon = weapon;
     }
 
     public override void _Ready()
     {
         Sprite = GetNodeOrNull<Sprite2D>("Sprite2D");
         AnimationPlayer = GetNodeOrNull<AnimationPlayer>("AnimationPlayer");
-        if (HasNode("Area2D"))
-            Hitbox = GetNode<Area2D>("Area2D");
-        else if (HasNode("Hitbox"))
-            Hitbox = GetNode<Area2D>("Hitbox");
+        Hitbox = GetNodeOrNull<Area2D>("Hitbox Area")
+              ?? GetNodeOrNull<Area2D>("Hitbox")
+              ?? GetNodeOrNull<Area2D>("Area2D");
+
+        if (Hitbox == null)
+            GD.PushError($"{Name}: no hitbox node found (expected a child Area2D named 'Hitbox Area'). Arc hits will not register.");
     }
 
     public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
@@ -72,9 +78,9 @@ public partial class WeaponArc : Node2D
 
     public void PrepareAttack(string direction = "Down", bool isHeavy = false, int sequenceIndex = 0)
     {
-        preparedDirection = direction;
-        preparedHeavyAttack = isHeavy;
-        preparedSequenceIndex = Mathf.Clamp(sequenceIndex, 0, 3);
+        _preparedDirection = direction;
+        _preparedHeavyAttack = isHeavy;
+        _preparedSequenceIndex = Mathf.Clamp(sequenceIndex, 0, 3);
 
         if (AnimationPlayer == null)
             return;
@@ -89,17 +95,17 @@ public partial class WeaponArc : Node2D
         if (AnimationPlayer == null)
             return;
 
-        int sequenceNumber = Mathf.Clamp(preparedSequenceIndex + 1, 1, 4);
+        int sequenceNumber = Mathf.Clamp(_preparedSequenceIndex + 1, 1, 4);
 
-        string animationToPlay = WeaponAnimations.GetAttackAnimationName(AnimationPlayer, preparedDirection, preparedHeavyAttack, preparedSequenceIndex);
+        string animationToPlay = WeaponAnimations.GetAttackAnimationName(AnimationPlayer, _preparedDirection, _preparedHeavyAttack, _preparedSequenceIndex);
 
         if (string.IsNullOrEmpty(animationToPlay))
         {
             string[] animationNames = new[] {
-                $"Attack_{preparedDirection}_{sequenceNumber}",
-                $"attack_{preparedDirection}_{sequenceNumber}",
-                $"Attack_{preparedDirection}", 
-                $"Sword_Attack_{preparedDirection}", 
+                $"Attack_{_preparedDirection}_{sequenceNumber}",
+                $"attack_{_preparedDirection}_{sequenceNumber}",
+                $"Attack_{_preparedDirection}",
+                $"Sword_Attack_{_preparedDirection}",
                 "Effect"
             };
 
@@ -120,7 +126,7 @@ public partial class WeaponArc : Node2D
 
         AnimationPlayer.Stop();
 
-        float desiredDuration = GetAttackAnimationDuration(preparedDirection, preparedHeavyAttack);
+        float desiredDuration = GetAttackAnimationDuration(_preparedDirection, _preparedHeavyAttack);
 
         float nativeLength = GetAnimationDuration(animationToPlay);
         float playbackSpeed = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
@@ -129,11 +135,11 @@ public partial class WeaponArc : Node2D
         AnimationPlayer.Seek(0);
         AnimationPlayer.Play(animationToPlay);
 
-        attackAnimationStopTimer?.QueueFree();
+        _attackAnimationStopTimer?.QueueFree();
         if (desiredDuration > 0f)
         {
-            attackAnimationStopTimer = QuickTimer(this, desiredDuration);
-            attackAnimationStopTimer.Timeout += () =>
+            _attackAnimationStopTimer = QuickTimer(this, desiredDuration);
+            _attackAnimationStopTimer.Timeout += () =>
             {
                 if (IsInstanceValid(AnimationPlayer))
                 {
@@ -159,7 +165,7 @@ public partial class WeaponArc : Node2D
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        return isHeavy && HeavyAttackDuration > 0f ? HeavyAttackDuration : GetAttackSequenceDuration(preparedSequenceIndex);
+        return isHeavy && HeavyAttackDuration > 0f ? HeavyAttackDuration : GetAttackSequenceDuration(_preparedSequenceIndex);
     }
 
     public float GetSpecialCooldownDuration()
@@ -169,11 +175,11 @@ public partial class WeaponArc : Node2D
 
     public float GetAttackSequenceDuration(int sequenceIndex)
     {
-        if (attackDurations == null || attackDurations.Length == 0)
+        if (AttackDurations == null || AttackDurations.Length == 0)
             return 0.37f;
 
-        int clampedIndex = Mathf.Clamp(sequenceIndex, 0, attackDurations.Length - 1);
-        return attackDurations[clampedIndex];
+        int clampedIndex = Mathf.Clamp(sequenceIndex, 0, AttackDurations.Length - 1);
+        return AttackDurations[clampedIndex];
     }
 
     public void PlayStateAnimation(string animationName)
@@ -224,17 +230,16 @@ public partial class WeaponArc : Node2D
 
     public float ApplyDamage(Enemy enemy)
     {
-        return parentWeapon != null ? parentWeapon.ApplyDamage(enemy) : 0f;
+        return _parentWeapon != null ? _parentWeapon.ApplyDamage(enemy) : 0f;
     }
-    
+
     public float CalculateTenacityDamage(float baseTenacityDamage)
     {
-        return parentWeapon != null ? parentWeapon.CalculateTenacityDamage(baseTenacityDamage) : 0f;
+        return _parentWeapon != null ? _parentWeapon.CalculateTenacityDamage(baseTenacityDamage) : 0f;
     }
-    
+
     public void ResetTenacityDamage()
     {
-        parentWeapon?.ResetTenacityDamage();
+        _parentWeapon?.ResetTenacityDamage();
     }
 }
-
