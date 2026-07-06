@@ -20,22 +20,22 @@ For every value the feature introduces, classify it (per `code-anomaly` §5):
 - **Resource (`.tres`)** — designer-authored, shared/reusable, standalone identity (Arc data, stat baselines, focus profiles). Resources never hold mutable runtime state.
 - **Exported primitive** — single instance-scoped tunable, PascalCase property.
 - **Runtime field** — per-instance mutating state; lives on the entity/behavior, `_camelCase` private.
-- **Saved data** — must go through the save layer; see the P5 pitfall before extending `SaveSystem`.
+- **Saved data** — goes through `SaveManager` (`#Scripts/Save/`): add a field to the owning domain Resource and bump its `Version`, or add a new domain + `SaveManager` property. Never write ad-hoc save files or load `user://` Resources directly.
 
 Write the classification down before writing code. Misclassification here is the most expensive mistake in this codebase.
 
 ## Phase 3 — As-Built Check
 
 1. Read `docs/architecture.md` → "Integration Points for New Features" for the system you're touching.
-2. Read `docs/pitfalls.md` and identify which open pitfalls your feature touches. For each: follow its **Containment** rule. New code must not deepen an open pitfall (no new magic stat strings, no new `.Instance` singletons, no new branches in `StateMachine.ProcessPlayerInput`/`ProcessEnemy`, no new exported node references, no JSON save extensions).
-3. If the feature *requires* fixing part of a pitfall (e.g. first new saved field forces the SaveManager migration), say so up front and get the user's go-ahead for the larger scope.
+2. Read `docs/pitfalls.md` and identify which open pitfalls your feature touches. For each: follow its **Containment** rule. New code must not deepen an open pitfall (no new magic stat strings, no new `.Instance` singletons, no new branches in the shared `StateMachine` base — new entity categories get their own subclass via `CreateStateMachine()` — no new exported node references, no save writes that bypass `SaveManager`).
+3. If the feature *requires* fixing part of a pitfall (e.g. the next Weapon Arc forces the P6 `SoulWeaponArc` Resource migration), say so up front and get the user's go-ahead for the larger scope.
 
 ## Phase 4 — Implementation
 
 Order of work:
 
-1. **Data first**: Resource classes / `.tres` assets / EntityStats entries.
-2. **Logic second**: entity subclass, behavior (`IEntityBehavior` via `AddBehavior()`), or system class. Follow `code-anomaly` for naming (.NET conventions), node access (Owner → Root → log-and-create), and signal rules.
+1. **Data first**: Resource classes / `.tres` assets / EntityStats entries / save-domain fields.
+2. **Logic second**: entity subclass, behavior (`IEntityBehavior` via `AddBehavior()`), or system class. Follow `code-anomaly` for naming (.NET conventions), node access (Owner → Root → log-and-create), and signal rules. Balance/probability math goes in an engine-free static class (see `DifficultyScalingSystem`) so it can be unit-tested.
 3. **Scene wiring third**: describe required `.tscn` changes for the user to make in the Godot editor (scenes are editor-owned; only edit `.tscn` text when explicitly asked). List exact node names and types — string lookups must match.
 4. **UI last**, if the feature has a meter/display.
 
@@ -43,7 +43,7 @@ Keep each step compiling: `dotnet build Anomaly.sln` after every unit of work, n
 
 ## Phase 5 — Verification & Documentation
 
-1. Build passes with zero new warnings.
+1. Build passes with zero new warnings; `dotnet test` passes (`Tests/Anomaly.Tests`). New pure-math logic gets tests there.
 2. Walk the feature's runtime path aloud: what happens on `_Ready`, on the triggering input/event, on death/scene-reload (P4: does anything hold a stale reference after `ReloadCurrentScene`?).
 3. Update the docs the feature invalidated:
    - `docs/architecture.md` — if the as-built shape changed.

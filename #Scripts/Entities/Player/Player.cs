@@ -88,7 +88,7 @@ public partial class Player : Entity
         StateMachine.OnHealStarted   += (duration) => ResourceManager?.StartHealing(duration);
         StateMachine.OnHealEnded     += () => ResourceManager?.EndHealing();
 
-        SaveSystem.ApplyLoadedData();
+        SaveManager.ApplyTo(this);
     }
 
     public override void _Process(double delta)
@@ -131,11 +131,11 @@ public partial class Player : Entity
             }
             else if (keyEvent.Keycode == Key.F3)
             {
-                SaveSystem.SaveGame();
+                SaveManager.Save(this, SavePoint.None);
             }
             else if (keyEvent.Keycode == Key.F4)
             {
-                SaveSystem.LoadGame();
+                SaveManager.ReloadFromDisk();
             }
         }
     }

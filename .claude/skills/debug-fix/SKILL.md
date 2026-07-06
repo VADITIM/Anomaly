@@ -6,8 +6,8 @@ disable-model-invocation: true
 allowed-tools:
   - Bash(git *)
   - Bash(gh *)
-  - Bash(npm run test *)
-  - Bash(npm run build)
+  - Bash(dotnet build *)
+  - Bash(dotnet test *)
   - Read
   - Glob
   - Grep
@@ -85,10 +85,10 @@ In `--fast` mode specifically:
 ## Step 6: Verify
 
 **Default**:
-- Write a test that reproduces the bug and now passes.
-- Run related tests for regressions.
-- Run lint and typecheck.
-- Temporarily revert your fix and confirm the new test fails (proves the test catches the bug).
+- If the bug is in pure math (stats, difficulty tables, balance calculations), write a test in `Tests/Anomaly.Tests` that reproduces it and now passes. Engine-coupled bugs (nodes, scenes, signals) are verified in the Godot editor instead — describe the manual check.
+- Run `dotnet test` for regressions.
+- Run `dotnet build Anomaly.sln` — zero new warnings.
+- If you wrote a test: temporarily revert your fix and confirm it fails (proves the test catches the bug).
 
 **--fast**:
 - Run only tests directly relevant to the changed code, not the full suite.

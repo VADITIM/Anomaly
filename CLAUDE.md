@@ -5,11 +5,13 @@
 ## Commands
 
 - Build: `dotnet build Anomaly.sln`
+- Test: `dotnet test Tests/Anomaly.Tests.csproj` (pure-math coverage only)
 - Run: through the Godot editor (no CLI run)
 
 ## Layout
 
-- `#Scripts/` — all C# (Camera, Entities, Behaviors, StateMachines, Systems, UI, Weapon)
+- `#Scripts/` — all C# (Camera, Entities, Behaviors, StateMachines, Systems, Save, UI, Weapon)
+- `Tests/` — xunit project for engine-free math (difficulty tables, stat math)
 - `#Scenes/`, `#Assets/`, `#Shaders/` — Godot scenes, art, GDShader
 
 ## Docs & Skills (authority order)
@@ -26,4 +28,4 @@
 - Never hand-edit Godot-managed files: `.godot/`, `*.import` (hook-enforced).
 - Touch `.tscn`/`.tres` only when explicitly asked — they are editor-owned.
 - Never `[Export]` a node reference — config primitives and Resources only.
-- Never deepen an open pitfall: no new magic stat strings, `.Instance` singletons, StateMachine branches, or JSON save extensions.
+- Never deepen an open pitfall: no new magic stat strings, `.Instance` singletons, StateMachine branches, or save writes that bypass `SaveManager`.

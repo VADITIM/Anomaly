@@ -26,6 +26,9 @@ public abstract partial class Enemy : Entity
     [Export] public float AttackRange   { get; set; } = 50f;
     [Export] public float StopDistance  { get; set; } = 20f;
 
+    // Sampled once per lifetime from the world DifficultyLevel — runtime state, never saved.
+    public int EnemyLevel { get; private set; } = 1;
+
     private float hitTimer = 0f;
     private const float HIT_WINDOW = 1.5f;
 
@@ -38,6 +41,12 @@ public abstract partial class Enemy : Entity
     public void InitializeEnemy()
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
+
+        SaveManager.EnsureLoaded();
+        EnemyLevel = DifficultyScalingSystem.SampleEnemyLevel(SaveManager.Difficulty.DifficultyLevel);
+        float statMultiplier = DifficultyScalingSystem.GetStatMultiplier(EnemyLevel);
+        Health *= statMultiplier;
+        Damage *= statMultiplier;
 
         var movementBehavior = new MovementBehavior
         {

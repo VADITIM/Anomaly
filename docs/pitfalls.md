@@ -4,16 +4,10 @@
 
 ## P4 — Player.Instance singleton and stale-instance risk (narrowed)
 
-`ResourceManager.Instance` was removed (2026-07-05); `Player.Instance` (bare public static field) remains, used by UI, SaveSystem, Enemy rewards, and Weapon hit handlers. Scene reload on load re-runs `Player._Ready` which reassigns it, but any scene without a Player leaves a freed reference behind.
+`ResourceManager.Instance` was removed (2026-07-05); `SaveManager` takes the Player as a parameter instead of using the singleton (2026-07-07). `Player.Instance` (bare public static field) remains, used by UI, Enemy rewards, and Weapon hit handlers. Scene reload on load re-runs `Player._Ready` which reassigns it, but any scene without a Player leaves a freed reference behind.
 
 - **Breaks later**: multi-scene flow (menus, Corrupted Void) can hit freed-instance access.
 - **Containment**: never add a new `.Instance`; new consumers resolve the player once at `_Ready` (see `ResourcesUI` for the pattern). Long-term: an autoload service for genuinely global systems.
-
-## P5 — Save system below design spec (narrowed)
-
-Now versioned (`{version, domains}` envelope), reload-on-save side effect removed, legacy saves still load. Still JSON with 2 domains (Player, Weapon) instead of the designed 5 Resource domains (`ProgressionData`, `DifficultyData`, `WorldData` missing) and no save-point/trigger model.
-
-- **Containment**: add new persistent data as a new named domain in the envelope — never new flat keys. The `.res`/`ResourceSaver` migration from design.md §3.11 is still the target.
 
 ## P6 — Weapon Arcs are Node subclasses, not Resources (narrowed)
 
@@ -27,11 +21,11 @@ The silent `?? new Weapon()` fallback now fails loudly; missing `AnimationPlayer
 
 - **Containment**: standardize scene node and animation names, then delete fallback candidates. New lookups fail loudly instead of adding another candidate string.
 
-## P9 — No test or verification harness
+## P9 — Test harness covers pure math only (narrowed)
 
-No test project; core math (tenacity knockback curve, vessel scaling, heal totals) is only verifiable by playing.
+`Tests/Anomaly.Tests` (xunit, in the solution) covers `DifficultyScalingSystem`, `PlayerStats`, and `WeaponStats` math. Tenacity knockback curve, vessel consecutive-hit scaling, and heal totals remain playtest-only — their math lives inside engine-coupled classes (`TenacitySystem`, `ResourceManager`).
 
-- **Containment**: pure-math systems are plain C# — an xunit project can cover them without touching Godot. Worth doing before the balance pass design.md promises.
+- **Containment**: new balance math goes in engine-free static classes (see `DifficultyScalingSystem`) with tests. When touching `TenacitySystem`/`ResourceManager`, extract the pure calculations so they become testable.
 
 ## P10 — Input polling lives in PlayerStateMachine, not PlayerInputBehavior
 
@@ -40,6 +34,8 @@ Movement input goes through `PlayerInputBehavior`, but action input (attack, dod
 - **Containment**: new actions poll in one place only. Target: `PlayerInputBehavior` emits intents, `PlayerStateMachine` consumes them.
 
 ## Resolved
+
+- **P5 — Save system below design spec** (2026-07-07): replaced `SaveSystem` JSON with `#Scripts/Save/` — static `SaveManager` owning 5 versioned domain Resources (`PlayerSaveData`, `WeaponSaveData`, `ProgressionData`, `DifficultyData`, `WorldData`) written together as `.res` via `ResourceSaver`, with the `SavePoint` trigger model. Legacy JSON saves import once. Player/Weapon domains still persist live stat blocks (not upgrade counts) until design.md §3.10 base values are defined.
 
 - **P1 — StateMachine god class** (2026-07-05): split into `StateMachine` (transition core, events, shared timers), `PlayerStateMachine` (input, heal, combos, heavy charge), `EnemyStateMachine` (chase AI, attack phases). `Entity.CreateStateMachine()` factory; `Player.StateMachine`/`Enemy.StateMachine` re-typed via shadowing. No scene changes needed. Remaining input-path issue tracked as P10.
 - **P2 — String-keyed stats** (2026-07-05): `StatType` and `WeaponStatType` enums throughout; strings only at the save boundary (`ToString()` + legacy-key maps, old saves still load). `Xp`/`Vessel` alias removed.
