@@ -8,18 +8,19 @@ public partial class Entity : CharacterBody2D
     public AnimationPlayer AnimationPlayer { get; set; }
     public Sprite2D Sprite { get; set; }
 
-    [Export] public EntityStats Stats;
+    // Named after its type to leave the plain "Stats" name to subclass runtime
+    // stat containers (Player.Stats is a PlayerStats).
+    [Export] public EntityStats EntityStats { get; set; }
 
     [Export] public bool  CanBeKnockedBack     { get; set; } = true;
     [Export] public float Weight               { get; set; } = 1f;
     [Export] public float KnockbackDecay       { get; set; } = 2000f;
-    [Export] public float OutsideKnockbackForce { get; set; } = 1f;
     [Export] public float Speed                { get; set; } = 100f;
     [Export] public float Damage               { get; set; } = 10f;
     [Export] public float Armor                { get; set; } = 0f;
     [Export] public float Tenacity             { get; set; } = 5f;
     [Export] public float MaxTenacity          { get; set; } = 10f;
-    [Export] public int   MaxStaggers          { get; set; } = 0;
+    [Export] public int   MaxStaggers          { get; set; } = 3;
     [Export] public float CameraPriority       { get; set; } = 0f;
 
     [Export] public float JumpImpulse         { get; set; } = 300f;
@@ -287,16 +288,16 @@ public partial class Entity : CharacterBody2D
     }
 
     // NOTE: An assigned EntityStats resource is the stat authority — it overrides any
-    // scene-set exported values below. Leave Stats unassigned to tune per-instance exports.
+    // scene-set exported values below. Leave it unassigned to tune per-instance exports.
     private void ApplyEntityStats()
     {
-        if (Stats == null) return;
-        MaxHealth      = Stats.MaxHealth;
-        Health         = Stats.MaxHealth;
-        Weight         = Stats.Weight;
-        CanBeKnockedBack = Stats.UseKnockback;
-        Tenacity       = Stats.Tenacity;
-        MaxTenacity    = Stats.Tenacity;
+        if (EntityStats == null) return;
+        MaxHealth      = EntityStats.MaxHealth;
+        Health         = EntityStats.MaxHealth;
+        Weight         = EntityStats.Weight;
+        CanBeKnockedBack = EntityStats.UseKnockback;
+        Tenacity       = EntityStats.Tenacity;
+        MaxTenacity    = EntityStats.Tenacity;
     }
 
     private void InitializeZAxis()

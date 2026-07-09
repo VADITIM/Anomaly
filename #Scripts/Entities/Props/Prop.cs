@@ -3,31 +3,25 @@ using System;
 
 public partial class Prop : Entity
 {
-    public float startingHealth { get; set; } = 90f;
+    public float StartingHealth { get; set; } = 90f;
     public bool Destroyable { get; set; } = true;
 
-    private bool isDead = false;
+    private bool _isDead = false;
 
     protected override State GetCurrentAnimationState()
     {
-        return isDead ? State.Dead : State.Idle;
+        return _isDead ? State.Dead : State.Idle;
     }
 
     public override void _Ready()
     {
         base._Ready();
 
-        AddBehavior(new KnockbackBehavior
-        {
-            CanBeKnockedBack = CanBeKnockedBack,
-            Weight           = Weight,
-            KnockbackDecay   = KnockbackDecay
-        });
-
+        AddBehavior(new KnockbackBehavior());
         AddBehavior(new CommonDamageFlash());
 
-        SetMaxHealth(startingHealth);
-        SetHealth(startingHealth);
+        SetMaxHealth(StartingHealth);
+        SetHealth(StartingHealth);
 
         AddBehavior(new PropResourceBarBehavior());
         PlayAnimation("Idle_Down");
@@ -35,7 +29,7 @@ public partial class Prop : Entity
 
     public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
-        if (isDead || !Destroyable) return;
+        if (_isDead || !Destroyable) return;
 
         if (weapon == null)
         {
@@ -60,7 +54,7 @@ public partial class Prop : Entity
         {
             SceneTreeTimer timer = GetTree().CreateTimer(0.2f);
             timer.Timeout += () => {
-                if (!isDead && !(GetBehavior<KnockbackBehavior>()?.IsKnockbackActive ?? false))
+                if (!_isDead && !(GetBehavior<KnockbackBehavior>()?.IsKnockbackActive ?? false))
                     PlayAnimation("Idle_Down");
             };
         }
@@ -68,8 +62,8 @@ public partial class Prop : Entity
 
     private void Die()
     {
-        if (isDead) return;
-        isDead = true;
+        if (_isDead) return;
+        _isDead = true;
 
         CollisionLayer = 0;
         CollisionMask = 0;

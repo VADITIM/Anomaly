@@ -68,27 +68,12 @@ public class PlayerStatsTests
     }
 
     [Fact]
-    public void StaminaRegeneration_WaitsForCooldown_ThenRegenerates()
+    public void FreshStats_SpawnAtFullHealth_WithUpgradeHeadroom()
     {
         var stats = new PlayerStats();
-        stats.SetCurrent(StatType.Stamina, 100f);
-        stats.NotifyActionPerformed();
 
-        stats.ProcessStaminaRegeneration(0.5f);
-        Assert.Equal(100f, stats.GetCurrent(StatType.Stamina));
-
-        stats.ProcessStaminaRegeneration(0.5f);
-        Assert.Equal(125f, stats.GetCurrent(StatType.Stamina));
-    }
-
-    [Fact]
-    public void StaminaRegeneration_NeverExceedsCurrentMax()
-    {
-        var stats = new PlayerStats();
-        stats.SetCurrent(StatType.Stamina, 299f);
-        stats.NotifyActionPerformed();
-
-        stats.ProcessStaminaRegeneration(10f);
-        Assert.Equal(300f, stats.GetCurrent(StatType.Stamina));
+        Assert.Equal(stats.GetCurrentMax(StatType.Health), stats.GetCurrent(StatType.Health));
+        Assert.Equal(100f, stats.GetCurrentMax(StatType.Health));
+        Assert.Equal(200f, stats.GetTotalMax(StatType.Health));
     }
 }

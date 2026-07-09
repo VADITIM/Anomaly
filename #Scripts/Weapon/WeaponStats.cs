@@ -21,11 +21,13 @@ public class WeaponStats
         ["Special Hit Interval"] = WeaponStatType.SpecialHitInterval
     };
 
+    // Defaults are the Scythe baseline — Arc flavor applies through WeaponArc
+    // multipliers at point of use and is never written back here (design.md §3.10).
     public WeaponStats()
     {
-        _stats[WeaponStatType.Damage] = new Stat { Current = 12f, Max = 150f };
-        _stats[WeaponStatType.StaminaCost] = new Stat { Current = 2f, Max = float.MaxValue };
-        _stats[WeaponStatType.TenacityDamage] = new Stat { Current = 2f, Max = 10f };
+        _stats[WeaponStatType.Damage] = new Stat { Current = 5f, Max = 150f };
+        _stats[WeaponStatType.StaminaCost] = new Stat { Current = 51f, Max = float.MaxValue };
+        _stats[WeaponStatType.TenacityDamage] = new Stat { Current = 10f, Max = 10f };
         _stats[WeaponStatType.StaminaRestore] = new Stat { Current = 10f, Max = 10f };
         _stats[WeaponStatType.Penetration] = new Stat { Current = 50f, Max = 200f };
         _stats[WeaponStatType.SpecialHitInterval] = new Stat { Current = 4f, Max = float.MaxValue };

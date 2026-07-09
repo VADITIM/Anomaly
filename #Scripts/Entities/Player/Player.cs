@@ -4,16 +4,13 @@ using System;
 public partial class Player : Entity
 {
     public static Player Instance;
-    public new PlayerStats Stats { get; private set; }
+    public PlayerStats Stats { get; private set; }
     public new PlayerStateMachine StateMachine => (PlayerStateMachine)base.StateMachine;
     public ResourceManager ResourceManager { get; private set; }
 
     protected override StateMachine CreateStateMachine() => new PlayerStateMachine();
-    public TenacityBehavior TenacityBehavior { get; private set; }
     public Weapon Weapon { get; set; }
 
-    [Export] public float DefaultStaggerDuration  { get; set; } = TenacityDefaults.DefaultStaggerDuration;
-    [Export] public float DefaultRecoveryDuration { get; set; } = TenacityDefaults.DefaultRecoveryDuration;
     [Export] public float DefaultKnockbackDuration { get; set; } = TenacityDefaults.DefaultKnockbackDuration;
 
     private string lastAnimationDirection = "";
@@ -38,26 +35,7 @@ public partial class Player : Entity
         }
         ResourceManager = new ResourceManager(this);
         AddBehavior(ResourceManager);
-
-        TenacityBehavior = new TenacityBehavior
-        {
-            DefaultStaggerDuration  = DefaultStaggerDuration,
-            DefaultRecoveryDuration = DefaultRecoveryDuration,
-            DefaultKnockbackDuration = DefaultKnockbackDuration,
-            GetCurrentTenacity = () => Stats?.GetCurrent(StatType.Tenacity) ?? 0f,
-            SetCurrentTenacity = value => Stats?.SetCurrent(StatType.Tenacity, value),
-            GetMaxTenacity     = () => Stats?.GetCurrentMax(StatType.Tenacity) ?? 0f,
-            SetMaxTenacity     = value => Stats?.SetCurrentMax(StatType.Tenacity, value)
-        };
-        AddBehavior(TenacityBehavior);
-
-        var knockbackBehavior = new KnockbackBehavior
-        {
-            CanBeKnockedBack = CanBeKnockedBack,
-            Weight           = Weight,
-            KnockbackDecay   = KnockbackDecay
-        };
-        AddBehavior(knockbackBehavior);
+        AddBehavior(new KnockbackBehavior());
 
         var dodgeBehavior = new DodgeBehavior();
         dodgeBehavior.HasStamina    = () => ResourceManager?.HasStamina(dodgeBehavior.DodgeStaminaCost) ?? false;
@@ -75,17 +53,14 @@ public partial class Player : Entity
 
         bodySpriteBasePosition = Sprite?.Position ?? Vector2.Zero;
 
-        StateMachine.OnAttackStarted += OnAttackStarted;
-        StateMachine.OnAttackEnded   += OnAttackEnded;
-        StateMachine.OnDodgeStarted  += OnDodgeStarted;
-        StateMachine.OnDied          += OnPlayerDied;
+        StateMachine.OnDied += OnPlayerDied;
 
         StateMachine.OnAttackStarted += (isHeavy) => PlayWeaponAttackAnimation(isHeavy);
         StateMachine.OnAttackStarted += (isHeavy) => ApplyWeaponPushback();
 
         StateMachine.OnAttackStarted += (isHeavy) => OnActionPerformed();
         StateMachine.OnDodgeStarted  += (direction) => OnActionPerformed();
-        StateMachine.OnHealStarted   += (duration) => ResourceManager?.StartHealing(duration);
+        StateMachine.OnHealStarted   += (duration) => ResourceManager?.StartHealing();
         StateMachine.OnHealEnded     += () => ResourceManager?.EndHealing();
 
         SaveManager.ApplyTo(this);
@@ -96,9 +71,6 @@ public partial class Player : Entity
         base._Process(delta);
 
         CameraPriority = Input.IsPhysicalKeyPressed(Key.Alt) ? 10f : 0f;
-
-        if (Weapon != null)
-            Weapon.Visible = true;
     }
 
     public override void _PhysicsProcess(double delta)
@@ -106,7 +78,7 @@ public partial class Player : Entity
         base._PhysicsProcess(delta);
         if (StateMachine.IsDead) return;
 
-        if (Input.IsActionJustPressed(Keybinds.Jump) && CanMove)
+        if (Input.IsActionJustPressed(Keybinds.Jump) && StateMachine.CanMove)
         {
             Jump();
         }

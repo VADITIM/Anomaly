@@ -10,6 +10,13 @@ public enum EnemyAttackPhase
 
 public abstract partial class Enemy
 {
+    // Non-weapon damage (base.TakeDamage) resolves death through this hook so the
+    // state machine and reward flow fire the same way as weapon kills.
+    protected override void OnDeath(Vector2 sourcePosition)
+    {
+        StateMachine?.RequestDeath();
+    }
+
     public override void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
     {
         if (IsDead)
@@ -24,15 +31,11 @@ public abstract partial class Enemy
         GetBehavior<CommonDamageFlash>()?.Flash();
         MarkCameraFocus();
 
+        // The passed damage is the arc's raw value; the weapon owns the full
+        // resolution (combo/heavy, weakness, penetration vs. armor).
         float calculatedDamage = weapon.ApplyDamage(this);
 
-        bool weaknessExploit = weapon.AttackType switch
-        {
-            WeaponArc.WeaponAttackType.Slashing => this.WeaknessType == EnemyWeaknessType.Slashing,
-            WeaponArc.WeaponAttackType.Piercing => this.WeaknessType == EnemyWeaknessType.Piercing,
-            WeaponArc.WeaponAttackType.Smashing => this.WeaknessType == EnemyWeaknessType.Smashing,
-            _ => false
-        };
+        bool weaknessExploit = IsWeakTo(weapon.AttackType);
 
         Camera camera = GetViewport().GetCamera2D() as Camera;
         if (weaknessExploit)
@@ -47,7 +50,7 @@ public abstract partial class Enemy
             weaknessExploit ? DamageNumberStyle.Weakness : DamageNumberStyle.Standard,
             this
         );
-        Player.Instance?.ResourceManager?.AddVesselCharge(calculatedDamage, Player.Instance?.Stats?.GetCurrentMax(StatType.Health) ?? 1f);
+        Player?.ResourceManager?.AddVesselCharge(calculatedDamage, Player?.Stats?.GetCurrentMax(StatType.Health) ?? 1f);
         StateMachine?.NotifyDamageTaken(calculatedDamage);
 
         if (GetHealth() <= 0)
@@ -56,7 +59,7 @@ public abstract partial class Enemy
             return;
         }
 
-        hitTimer = HIT_WINDOW;
+        _hitTimer = HitWindow;
 
         bool staggerTriggered = TenacitySystem != null && TenacitySystem.ProcessTenacitySystem(sourcePosition, weapon);
 
@@ -76,23 +79,17 @@ public abstract partial class Enemy
         if (!CanBeKnockedBack)
             return;
 
-        float appliedDuration = duration > 0f
-            ? duration
-            : (TenacityBehavior?.DefaultKnockbackDuration ?? DefaultKnockbackDuration);
+        float appliedDuration = duration > 0f ? duration : DefaultKnockbackDuration;
 
         float subtleForce = force > 0f ? force : 30f;
 
         if (IsInStaggerWindow)
         {
             float staggeredForce = force > 0f ? force * 2.5f : 75f;
-            float weaknessMultiplier = 1f;
-
-            base.TakeKnockback(sourcePosition, staggeredForce * weaknessMultiplier, appliedDuration);
+            base.TakeKnockback(sourcePosition, staggeredForce, appliedDuration);
             return;
         }
 
-        float defaultMultiplier = 1f;
-
-        base.TakeKnockback(sourcePosition, subtleForce * defaultMultiplier, appliedDuration);
+        base.TakeKnockback(sourcePosition, subtleForce, appliedDuration);
     }
 }

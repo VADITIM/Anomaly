@@ -13,8 +13,6 @@ public class PlayerStats
     }
 
     private readonly Dictionary<StatType, Stat> _stats = new();
-    private float _staminaRegenTimer = 0f;
-    private const float StaminaRegenCooldown = 0.9f;
 
     // Legacy save files used display-style keys before StatType existed.
     private static readonly Dictionary<string, StatType> LegacyKeyMap = new()
@@ -30,7 +28,7 @@ public class PlayerStats
         _stats[StatType.Armor] = new Stat { Current = 20f, CurrentMax = 20f, TotalMax = 100f };
         _stats[StatType.Tenacity] = new Stat { Current = 5f, CurrentMax = 5f, TotalMax = 20f };
 
-        _stats[StatType.Health] = new Stat { Current = 100f, CurrentMax = 200f, TotalMax = 200f };
+        _stats[StatType.Health] = new Stat { Current = 100f, CurrentMax = 100f, TotalMax = 200f };
 
         _stats[StatType.Stamina] = new Stat { Current = 300f, CurrentMax = 300f, TotalMax = 300f };
         _stats[StatType.StaminaRegen] = new Stat { Current = 50f, CurrentMax = 50f, TotalMax = 50f };
@@ -75,29 +73,6 @@ public class PlayerStats
             if (statDict.TryGetValue("CurrentMax", out var currMax)) s.CurrentMax = (float)currMax;
             if (statDict.TryGetValue("TotalMax", out var totMax)) s.TotalMax = (float)totMax;
             if (statDict.TryGetValue("UpgradeLevels", out var upLvl)) s.UpgradeLevels = (int)upLvl;
-        }
-    }
-
-    public void NotifyActionPerformed()
-    {
-        _staminaRegenTimer = StaminaRegenCooldown;
-    }
-
-    public void ProcessStaminaRegeneration(float delta)
-    {
-        _staminaRegenTimer -= delta;
-
-        if (_staminaRegenTimer > 0f)
-            return;
-
-        float currentStamina = GetCurrent(StatType.Stamina);
-        float maxStamina = GetCurrentMax(StatType.Stamina);
-        float regenRate = GetCurrentMax(StatType.StaminaRegen);
-
-        if (currentStamina < maxStamina)
-        {
-            float newStamina = Mathf.Min(currentStamina + regenRate * delta, maxStamina);
-            SetCurrent(StatType.Stamina, newStamina);
         }
     }
 

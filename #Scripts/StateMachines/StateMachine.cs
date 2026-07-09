@@ -14,8 +14,6 @@ public partial class StateMachine : Node
     public bool CanAttack { get; set; } = true;
     public bool IsPaused { get; set; } = false;
 
-    public int MaxStaggers { get; set; } = 3;
-
     protected float _staggerDuration = 0f;
     protected float _knockbackDuration = 0f;
     protected float _attackDuration = 0f;
@@ -56,8 +54,6 @@ public partial class StateMachine : Node
     public Vector2 GetKnockbackVelocity() => _knockbackVelocity;
     public float GetRemainingStateTime() => IsAttacking ? _attackDuration : 0f;
 
-    public float GetMaxStaggers() => MaxStaggers;
-    public void SetMaxStaggers(int max) { MaxStaggers = max; }
     public void NotifyDamageTaken(float damage) { OnDamageTaken?.Invoke(damage); }
 
     public override void _Ready()

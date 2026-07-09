@@ -4,14 +4,14 @@
 
 ## P4 — Player.Instance singleton and stale-instance risk (narrowed)
 
-`ResourceManager.Instance` was removed (2026-07-05); `SaveManager` takes the Player as a parameter instead of using the singleton (2026-07-07). `Player.Instance` (bare public static field) remains, used by UI, Enemy rewards, and Weapon hit handlers. Scene reload on load re-runs `Player._Ready` which reassigns it, but any scene without a Player leaves a freed reference behind.
+`ResourceManager.Instance` was removed (2026-07-05); `SaveManager` takes the Player as a parameter (2026-07-07); `Weapon` resolves its owning entity from the tree, Enemy rewards use the Enemy's own resolved `Player` field, and the static `Player.CanMove/CanAttack/IsPaused` wrappers were deleted (2026-07-09). `Player.Instance` (bare public static field) remains, used by UI and the static `Combat` helpers. Scene reload on load re-runs `Player._Ready` which reassigns it, but any scene without a Player leaves a freed reference behind.
 
 - **Breaks later**: multi-scene flow (menus, Corrupted Void) can hit freed-instance access.
 - **Containment**: never add a new `.Instance`; new consumers resolve the player once at `_Ready` (see `ResourcesUI` for the pattern). Long-term: an autoload service for genuinely global systems.
 
 ## P6 — Weapon Arcs are Node subclasses, not Resources (narrowed)
 
-The exported-node-reference violation and the eight throwing properties were fixed (2026-07-05). Arcs remain `WeaponArc` Node subclasses + scenes rather than the designed `SoulWeaponArc` Resources, so each new Arc still costs a class + scene, and the efficiency model (90–100%/130%) has no data home.
+The exported-node-reference violation and the eight throwing properties were fixed (2026-07-05). Arcs no longer write into persistent `WeaponStats` — flavor lives in per-arc multipliers, and the efficiency model (90–100% baseline / 130% matched) is live in `Weapon.GetWeaknessMultiplier` (2026-07-09). Arcs remain `WeaponArc` Node subclasses + scenes rather than the designed `SoulWeaponArc` Resources, so each new Arc still costs a class + scene and the multiplier values are code, not data.
 
 - **Containment**: when adding the next Arc, move shared data (durations, type, multipliers) into a `SoulWeaponArc` Resource per design.md §3.5 and keep only presentation in the scene.
 

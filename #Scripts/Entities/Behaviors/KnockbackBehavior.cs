@@ -2,17 +2,13 @@ using Godot;
 
 public class KnockbackBehavior : IEntityBehavior
 {
-    public bool CanBeKnockedBack { get; set; } = true;
-    public float Weight { get; set; } = 1f;
-    public float KnockbackDecay { get; set; } = 2000f;
-
-    private Entity owner;
-    private Vector2 knockbackVelocity = Vector2.Zero;
-    private float knockbackDuration = 0f;
+    private Entity _owner;
+    private Vector2 _knockbackVelocity = Vector2.Zero;
+    private float _knockbackDuration = 0f;
 
     public void OnReady(Entity owner)
     {
-        this.owner = owner;
+        _owner = owner;
     }
 
     public void OnProcess(double delta)
@@ -21,22 +17,20 @@ public class KnockbackBehavior : IEntityBehavior
 
     public void OnPhysicsProcess(double delta)
     {
-        if (!CanBeKnockedBack || owner == null)
+        if (_owner == null || _knockbackDuration <= 0f)
             return;
 
-        if (knockbackDuration > 0f || knockbackVelocity.Length() > 0.1f)
-        {
-            knockbackDuration -= (float)delta;
-            owner.Velocity = knockbackVelocity;
-            owner.MoveAndSlide();
-            knockbackVelocity = knockbackVelocity.MoveToward(Vector2.Zero, KnockbackDecay * (float)delta);
+        _knockbackDuration -= (float)delta;
+        _owner.Velocity = _knockbackVelocity;
+        _owner.MoveAndSlide();
+        _knockbackVelocity = _knockbackVelocity.MoveToward(Vector2.Zero, _owner.KnockbackDecay * (float)delta);
 
-            if (knockbackDuration <= 0f && knockbackVelocity.Length() < 1f)
-            {
-                knockbackVelocity = Vector2.Zero;
-                knockbackDuration = 0f;
-                    owner.NotifyKnockbackFinished();
-            }
+        // Stop exactly at the duration boundary so this never slides in the same
+        // frame as MovementBehavior once the state machine has moved on.
+        if (_knockbackDuration <= 0f)
+        {
+            StopKnockback();
+            _owner.NotifyKnockbackFinished();
         }
     }
 
@@ -46,21 +40,21 @@ public class KnockbackBehavior : IEntityBehavior
 
     public void ApplyKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
     {
-        if (!CanBeKnockedBack || owner == null)
+        if (_owner == null)
             return;
 
-        Vector2 direction = (owner.GlobalPosition - sourcePosition).Normalized();
+        Vector2 direction = (_owner.GlobalPosition - sourcePosition).Normalized();
         ApplyKnockbackFromDirection(direction, force, duration);
     }
 
     public void ApplyKnockbackFromDirection(Vector2 direction, float force, float duration = 0.1f)
     {
-        if (!CanBeKnockedBack || owner == null)
+        if (_owner == null || !_owner.CanBeKnockedBack)
             return;
 
-        float effectiveForce = force / Mathf.Max(Weight, 0.1f);
-        knockbackVelocity = direction.Normalized() * effectiveForce;
-        knockbackDuration = duration;
+        float effectiveForce = force / Mathf.Max(_owner.Weight, 0.1f);
+        _knockbackVelocity = direction.Normalized() * effectiveForce;
+        _knockbackDuration = duration;
     }
 
     public void ApplyAttackPushback(Vector2 direction, float force, float duration = 0.1f)
@@ -68,11 +62,11 @@ public class KnockbackBehavior : IEntityBehavior
         ApplyKnockbackFromDirection(direction, force, duration);
     }
 
-    public bool IsKnockbackActive => knockbackVelocity.Length() > 0.1f || knockbackDuration > 0f;
+    public bool IsKnockbackActive => _knockbackDuration > 0f;
 
     public void StopKnockback()
     {
-        knockbackVelocity = Vector2.Zero;
-        knockbackDuration = 0f;
+        _knockbackVelocity = Vector2.Zero;
+        _knockbackDuration = 0f;
     }
 }

@@ -4,21 +4,23 @@ public partial class Weapon
 {
     public void StartAttackSequence(bool isHeavy)
     {
+        _entitiesHitThisSwing.Clear();
+
         if (isHeavy)
         {
             ResetAttackSequence();
             return;
         }
 
-        queuedAttackFollowUp = false;
-        comboWindowTimer = 0f;
+        _queuedAttackFollowUp = false;
+        _comboWindowTimer = 0f;
     }
 
     public void QueueAttackFollowUp()
     {
-        if (comboWindowTimer > 0f)
+        if (_comboWindowTimer > 0f)
         {
-            queuedAttackFollowUp = true;
+            _queuedAttackFollowUp = true;
         }
     }
 
@@ -26,47 +28,47 @@ public partial class Weapon
     {
         duration = 0f;
 
-        if (!queuedAttackFollowUp)
+        if (!_queuedAttackFollowUp)
             return false;
 
-        queuedAttackFollowUp = false;
-        comboWindowTimer = 0f; 
+        _queuedAttackFollowUp = false;
+        _comboWindowTimer = 0f;
 
         if (isHeavy)
         {
-            duration = currentArc?.HeavyAttackDuration ?? 1.5f;
+            duration = _currentArc?.HeavyAttackDuration ?? 1.5f;
             return true;
         }
 
-        attackSequenceIndex = Mathf.Min(attackSequenceIndex + 1, MaxComboSteps - 1);
+        _attackSequenceIndex = Mathf.Min(_attackSequenceIndex + 1, MaxComboSteps - 1);
 
-        int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
-        duration = currentArc != null
-            ? currentArc.GetAttackSequenceDuration(clampedIndex)
-            : attackDurations[clampedIndex];
+        int clampedIndex = Mathf.Clamp(_attackSequenceIndex, 0, _attackDurations.Length - 1);
+        duration = _currentArc != null
+            ? _currentArc.GetAttackSequenceDuration(clampedIndex)
+            : _attackDurations[clampedIndex];
         return true;
     }
 
     public void ResetAttackSequence()
     {
-        attackSequenceIndex = 0;
-        comboWindowTimer = 0f;
-        queuedAttackFollowUp = false;
+        _attackSequenceIndex = 0;
+        _comboWindowTimer = 0f;
+        _queuedAttackFollowUp = false;
     }
 
     private void UpdateComboTimers(float delta)
     {
-        if (comboCooldownTimer > 0f)
+        if (_comboCooldownTimer > 0f)
         {
-            comboCooldownTimer = Mathf.Max(comboCooldownTimer - delta, 0f);
-            if (comboCooldownTimer <= 0f)
+            _comboCooldownTimer = Mathf.Max(_comboCooldownTimer - delta, 0f);
+            if (_comboCooldownTimer <= 0f)
                     return;
         }
 
-        if (comboWindowTimer > 0f)
+        if (_comboWindowTimer > 0f)
         {
-            comboWindowTimer = Mathf.Max(comboWindowTimer - delta, 0f);
-            if (comboWindowTimer <= 0f)
+            _comboWindowTimer = Mathf.Max(_comboWindowTimer - delta, 0f);
+            if (_comboWindowTimer <= 0f)
             {
                 ResetAttackSequence();
             }
@@ -75,23 +77,21 @@ public partial class Weapon
 
     private float GetCurrentAttackSequenceDuration(bool isHeavy)
     {
-        if (currentArc != null)
+        if (_currentArc != null)
         {
             if (isHeavy)
-                return currentArc.HeavyAttackDuration;
+                return _currentArc.HeavyAttackDuration;
 
-            return currentArc.GetAttackSequenceDuration(attackSequenceIndex);
+            return _currentArc.GetAttackSequenceDuration(_attackSequenceIndex);
         }
 
         if (isHeavy)
             return 1.5f;
 
-        if (attackDurations == null || attackDurations.Length == 0)
+        if (_attackDurations == null || _attackDurations.Length == 0)
             return 0.37f;
 
-        int clampedIndex = Mathf.Clamp(attackSequenceIndex, 0, attackDurations.Length - 1);
-        return attackDurations[clampedIndex];
+        int clampedIndex = Mathf.Clamp(_attackSequenceIndex, 0, _attackDurations.Length - 1);
+        return _attackDurations[clampedIndex];
     }
-
-
 }

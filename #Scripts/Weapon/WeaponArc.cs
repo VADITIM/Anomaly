@@ -15,6 +15,7 @@ public partial class WeaponArc : Node2D
     [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
     [Export] public float PlayerPushForce { get; set; } = 0f;
     [Export] public float StaminaRestoreMultiplier { get; set; } = 1f;
+    [Export] public float StaminaCostMultiplier { get; set; } = 1f;
 
     public float DamageMultiplier { get; set; } = 1f;
     public float TenacityMultiplier { get; set; } = 1f;
@@ -32,16 +33,14 @@ public partial class WeaponArc : Node2D
 
     public float Damage => ParentWeapon.Damage * DamageMultiplier;
     public float Knockback { get => _knockback; set => _knockback = value; }
-    public float StaminaCost => ParentWeapon.StaminaCost;
-    public float TenacityDamage { get => ParentWeapon.TenacityDamage * TenacityMultiplier; set => ParentWeapon.TenacityDamage = value; }
+    public float StaminaCost => ParentWeapon.StaminaCost * StaminaCostMultiplier;
+    public float TenacityDamage => ParentWeapon.TenacityDamage * TenacityMultiplier;
     public float StaminaRestore => ParentWeapon.StaminaRestore * StaminaRestoreMultiplier;
-    public float Penetration { get => ParentWeapon.Penetration * PenetrationMultiplier; set => ParentWeapon.Penetration = value; }
+    public float Penetration => ParentWeapon.Penetration * PenetrationMultiplier;
     public float HeavyAttackDuration { get => _heavyAttackDuration; set => _heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
     public float SpecialCooldownDuration { get => _specialCooldownDuration; set => _specialCooldownDuration = Mathf.Clamp(value, 0f, 10f); }
     public int SpecialHitInterval { get => ParentWeapon.SpecialHitInterval; set => ParentWeapon.SpecialHitInterval = value; }
     public int HitCount { get => ParentWeapon.HitCount; set => ParentWeapon.HitCount = value; }
-    public float CurrentTenacityDamageMultiplier { get => ParentWeapon.CurrentTenacityDamageMultiplier; set => ParentWeapon.CurrentTenacityDamageMultiplier = value; }
-    public float OutsideKnockbackForce { get => ParentWeapon.OutsideKnockbackForce; set => ParentWeapon.OutsideKnockbackForce = value; }
 
     public static Timer QuickTimer(Node parent, float time)
     {
@@ -214,18 +213,6 @@ public partial class WeaponArc : Node2D
             AnimationPlayer.SpeedScale = 1f;
             AnimationPlayer.Play("idle");
         }
-    }
-
-    public void CheckWeaknessExploited(Enemy enemy)
-    {
-        enemy.OutsideKnockbackForce = 1f;
-    }
-
-    public bool IsEnemyHit()
-    {
-        if (Hitbox == null)
-            return false;
-        return Hitbox.GetOverlappingBodies().Count > 0;
     }
 
     public float ApplyDamage(Enemy enemy)

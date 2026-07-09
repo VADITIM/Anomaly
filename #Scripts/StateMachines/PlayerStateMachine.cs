@@ -117,17 +117,17 @@ public partial class PlayerStateMachine : StateMachine
 
         UpdateMovementDirection();
 
+        if (IsInLockedState())
+            return;
+
         if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
         {
             if (CurrentState == State.Healing)
                 RaiseHealEnded();
             Vector2 dodgeInput = movementBehavior?.GetMovementVector() ?? Vector2.Zero;
-            RequestDodge(dodgeInput, GetDodgeBehavior()?.GetDodgeDuration() ?? 0f);
+            RequestDodge(dodgeInput);
             return;
         }
-
-        if (IsInLockedState())
-            return;
 
         if (CurrentState == State.Healing)
             return;
@@ -208,7 +208,7 @@ public partial class PlayerStateMachine : StateMachine
         RaiseHealStarted(duration);
     }
 
-    public void RequestDodge(Vector2 direction, float duration)
+    public void RequestDodge(Vector2 direction)
     {
         if (CurrentState == State.Dead) return;
         var dodgeBehavior = GetDodgeBehavior();

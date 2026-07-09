@@ -185,7 +185,7 @@ public class ResourceManager : IEntityBehavior
         _consecutiveHitCount = 0;
     }
 
-    public void StartHealing(float healDuration)
+    public void StartHealing()
     {
         _isHealing = true;
         _healConsumptionTimer = HealConsumptionDuration;

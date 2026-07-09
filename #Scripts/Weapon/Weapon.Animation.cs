@@ -2,7 +2,7 @@ public partial class Weapon
 {
     public float GetNativeAnimationLength(string direction, bool isHeavy)
     {
-        return WeaponAnimations.GetNativeAnimationLength(weaponAnimationPlayer, direction, isHeavy, attackSequenceIndex);
+        return WeaponAnimations.GetNativeAnimationLength(_animationPlayer, direction, isHeavy, _attackSequenceIndex);
     }
 
     private float GetStateAnimationDuration(string animationName)
@@ -17,38 +17,36 @@ public partial class Weapon
     public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
     {
         string resolvedAnim = WeaponAnimations.GetAttackAnimationName(
-            weaponAnimationPlayer, direction, isHeavy, attackSequenceIndex);
+            _animationPlayer, direction, isHeavy, _attackSequenceIndex);
 
 
         float duration = GetCurrentAttackSequenceDuration(isHeavy);
-        WeaponAnimations.PlayAttackAnimation(weaponAnimationPlayer, resolvedAnim, duration);
+        WeaponAnimations.PlayAttackAnimation(_animationPlayer, resolvedAnim, duration);
 
-        currentArc?.PrepareAttack(direction, isHeavy, attackSequenceIndex);
+        _currentArc?.PrepareAttack(direction, isHeavy, _attackSequenceIndex);
     }
 
     public void OnAttackAnimationFinished()
     {
-        bool isLastComboStep = attackSequenceIndex >= MaxComboSteps - 1;
+        bool isLastComboStep = _attackSequenceIndex >= MaxComboSteps - 1;
 
         if (isLastComboStep)
         {
-            comboCooldownTimer = ComboFinisherCooldown;
+            _comboCooldownTimer = ComboFinisherCooldown;
             ResetAttackSequence();
         }
         else
         {
-            comboWindowTimer = ComboFollowUpWindow;
+            _comboWindowTimer = ComboFollowUpWindow;
         }
     }
 
     public void PlayStateAnimation(string animationName)
     {
-        if (weaponAnimationPlayer == null)
+        if (_animationPlayer == null)
             return;
 
         float desiredDuration = GetStateAnimationDuration(animationName);
-        WeaponAnimations.PlayStateAnimation(weaponAnimationPlayer, animationName, desiredDuration);
+        WeaponAnimations.PlayStateAnimation(_animationPlayer, animationName, desiredDuration);
     }
-
-
 }

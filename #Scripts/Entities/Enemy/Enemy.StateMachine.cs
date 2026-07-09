@@ -7,11 +7,10 @@ public abstract partial class Enemy
     public bool IsRecovering => TenacitySystem?.IsRecovering ?? false;
     public bool IsDead => StateMachine?.IsDead ?? false;
     public int CurrentStaggers => TenacitySystem?.CurrentStaggerCount ?? 0;
-    public bool HasCameraFocus => HasBeenHit && !IsDead && IsWithinCameraFocusRange();
+    public bool HasCameraFocus => _hasBeenHit && !IsDead && IsWithinCameraFocusRange();
 
     private void InitializeStateMachine()
     {
-        StateMachine.SetMaxStaggers(MaxStaggers);
         StateMachine.Target = Player;
 
         StateMachine.OnDied += OnDeathHandler;
@@ -35,7 +34,7 @@ public abstract partial class Enemy
 
     private void OnDeathHandler()
     {
-        OnDeath();
+        GrantDeathRewards();
 
         GetBehavior<ResourceBarBehavior>()?.DestroyBars();
 

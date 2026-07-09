@@ -2,26 +2,13 @@ using Godot;
 
 public partial class Player
 {
-    public void OnActionPerformed() { staminaRegenerationTimer = staminaRegenCooldown; }
-    private void OnAttackStarted(bool isHeavy) { }
-    private void OnAttackEnded() { }
-    private void OnDodgeStarted(Vector2 direction) { }
-    private void OnPlayerDied() { }
+    public void OnActionPerformed() { _staminaRegenerationTimer = StaminaRegenCooldown; }
 
-    public static bool CanMove
+    // NOTE: Interim death loop — reload and re-apply the last save. Replaced by the
+    // SavePoint location-map respawn once design.md §3.13 defines the locations.
+    private void OnPlayerDied()
     {
-        get => Player.Instance?.StateMachine?.CanMove ?? true;
-        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanMove = value; }
-    }
-    public static bool CanAttack
-    {
-        get => Player.Instance?.StateMachine?.CanAttack ?? true;
-        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.CanAttack = value; }
-    }
-    public static bool IsPaused
-    {
-        get => Player.Instance?.StateMachine?.IsPaused ?? false;
-        set { if (Player.Instance?.StateMachine != null) Player.Instance.StateMachine.IsPaused = value; }
+        GetTree().CreateTimer(2.5).Timeout += SaveManager.ReloadFromDisk;
     }
 
     protected override State GetCurrentAnimationState() { return StateMachine?.CurrentState ?? State.Idle; }

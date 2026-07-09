@@ -8,11 +8,10 @@ public enum EnemyDifficultyScaling { Regular, Corrupted }
 public abstract partial class Enemy : Entity
 {
     private static readonly List<Enemy> ActiveEnemies = new();
-    private static bool ShowDebugLabels = false;
+    private static bool _showDebugLabels = false;
 
     public Player Player { get; private set; }
     public new EnemyStateMachine StateMachine => (EnemyStateMachine)base.StateMachine;
-    private WeaponArc WeaponArc => Player?.Weapon?.GetCurrentArc();
 
     protected override StateMachine CreateStateMachine() => new EnemyStateMachine();
 
@@ -24,19 +23,29 @@ public abstract partial class Enemy : Entity
 
     [Export] public float ChaseRange    { get; set; } = 200f;
     [Export] public float AttackRange   { get; set; } = 50f;
-    [Export] public float StopDistance  { get; set; } = 20f;
 
     // Sampled once per lifetime from the world DifficultyLevel — runtime state, never saved.
     public int EnemyLevel { get; private set; } = 1;
 
-    private float hitTimer = 0f;
-    private const float HIT_WINDOW = 1.5f;
+    private float _hitTimer = 0f;
+    private const float HitWindow = 1.5f;
 
-    private bool HasBeenHit = false;
+    private bool _hasBeenHit = false;
 
-    private void UpdateHitTimer(float delta) { if (hitTimer > 0) hitTimer -= delta; }
+    private void UpdateHitTimer(float delta) { if (_hitTimer > 0) _hitTimer -= delta; }
     private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CameraFocus.CAMERA_FOCUS_RANGE; }
-    public void MarkCameraFocus() { HasBeenHit = true; }
+    public void MarkCameraFocus() { _hasBeenHit = true; }
+
+    public bool IsWeakTo(WeaponArc.WeaponAttackType attackType)
+    {
+        return attackType switch
+        {
+            WeaponArc.WeaponAttackType.Slashing => WeaknessType == EnemyWeaknessType.Slashing,
+            WeaponArc.WeaponAttackType.Piercing => WeaknessType == EnemyWeaknessType.Piercing,
+            WeaponArc.WeaponAttackType.Smashing => WeaknessType == EnemyWeaknessType.Smashing,
+            _ => false
+        };
+    }
 
     public void InitializeEnemy()
     {
@@ -72,7 +81,7 @@ public abstract partial class Enemy : Entity
 
     public static void ToggleDebugLabels()
     {
-        ShowDebugLabels = !ShowDebugLabels;
+        _showDebugLabels = !_showDebugLabels;
 
         foreach (Enemy enemy in ActiveEnemies)
         {
@@ -135,41 +144,44 @@ public abstract partial class Enemy : Entity
         return bestEnemy;
     }
 
-    protected virtual void OnDeath()
+    protected virtual void GrantDeathRewards()
     {
-        Player.Instance?.ResourceManager?.AddCorruption(2f);
+        if (Player == null)
+            return;
 
-        float currentVessel = Player.Instance.Stats.GetCurrent(StatType.Vessel);
-        float maxVessel = Player.Instance.Stats.GetCurrentMax(StatType.Vessel);
-        Player.Instance.Stats.SetCurrent(StatType.Vessel, Mathf.Min(currentVessel + VesselReward, maxVessel));
+        Player.ResourceManager?.AddCorruption(2f);
 
-        float currentSoul = Player.Instance.Stats.GetCurrent(StatType.Soul);
-        float maxSoul = Player.Instance.Stats.GetCurrentMax(StatType.Soul);
-        Player.Instance.Stats.SetCurrent(StatType.Soul, Mathf.Min(currentSoul + SoulReward, maxSoul));
+        float currentVessel = Player.Stats.GetCurrent(StatType.Vessel);
+        float maxVessel = Player.Stats.GetCurrentMax(StatType.Vessel);
+        Player.Stats.SetCurrent(StatType.Vessel, Mathf.Min(currentVessel + VesselReward, maxVessel));
+
+        float currentSoul = Player.Stats.GetCurrent(StatType.Soul);
+        float maxSoul = Player.Stats.GetCurrentMax(StatType.Soul);
+        Player.Stats.SetCurrent(StatType.Soul, Mathf.Min(currentSoul + SoulReward, maxSoul));
     }
 
     private void DisplayStats()
     {
-        if (testDisplay == null) return;
+        if (_testDisplay == null) return;
 
         UpdateDebugLabelVisibility();
 
-        if (!testDisplay.Visible)
+        if (!_testDisplay.Visible)
             return;
 
         string stateInfo = StateMachine != null ? StateMachine.CurrentState.ToString() : "Unknown";
 
-        testDisplay.Text = $"[color=yellow]State:[/color] {stateInfo} \n" +
+        _testDisplay.Text = $"[color=yellow]State:[/color] {stateInfo} \n" +
                            $"\n[color=red]Health:[/color] {GetHealth():F0} / {GetMaxHealth():F0} [color=gray]Armor:[/color] {Armor}" +
-                           $"\n[color=green]Tenacity:[/color] {Tenacity:F1} / 10 [color=orange]Staggers:[/color] {CurrentStaggers} / {MaxStaggers}" +
-                           $"\n[color=cyan]Weakness:[/color] {WeaknessType}";
+                           $"\n[color=green]Tenacity:[/color] {Tenacity:F1} / {MaxTenacity:F1} [color=orange]Staggers:[/color] {CurrentStaggers} / {MaxStaggers}" +
+                           $"\n[color=cyan]Weakness:[/color] {WeaknessType} [color=purple]Level:[/color] {EnemyLevel}";
     }
 
     private void UpdateDebugLabelVisibility()
     {
-        if (testDisplay == null)
+        if (_testDisplay == null)
             return;
 
-        testDisplay.Visible = ShowDebugLabels;
+        _testDisplay.Visible = _showDebugLabels;
     }
 }

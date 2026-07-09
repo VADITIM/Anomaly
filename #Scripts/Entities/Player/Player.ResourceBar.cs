@@ -2,8 +2,8 @@ using Godot;
 
 public partial class Player
 {
-    private float staminaRegenerationTimer = 0f;
-    public float staminaRegenCooldown = 1.2f;
+    private float _staminaRegenerationTimer = 0f;
+    private const float StaminaRegenCooldown = 1.2f;
 
     // ResourceManager is created in _Ready; base-class calls before that fall back to Stats.
     protected override float GetHealth() => ResourceManager?.Health ?? Stats?.GetCurrent(StatType.Health) ?? base.GetHealth();
@@ -31,9 +31,9 @@ public partial class Player
 
     private void PassiveStaminaRegeneration(float delta)
     {
-        staminaRegenerationTimer -= delta;
+        _staminaRegenerationTimer -= delta;
 
-        if (staminaRegenerationTimer > 0) return;
+        if (_staminaRegenerationTimer > 0) return;
 
         float currentStamina = ResourceManager.Stamina;
         float maxStamina = ResourceManager.MaxStamina;
