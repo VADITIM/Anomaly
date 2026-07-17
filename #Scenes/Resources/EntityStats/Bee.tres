@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="EnemyStats" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://#Scripts/Entities/Enemy/EnemyStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+MaxHealth = 15.0
+Speed = 150.0
+Damage = 15.0
+Armor = 30.0
+Weight = 1.0
+UseKnockback = true
+UseTenacity = true
+Tenacity = 3.0
+MaxTenacity = 3.0
+MaxStaggers = 5
+CameraPriority = 1.25
+AttackDuration = 1.2
+CorruptionReward = 10
+SoulReward = 50.0
+DamageType = 1
+WeaknessType = 1
+ChaseRange = 200.0
+AttackRange = 10.0

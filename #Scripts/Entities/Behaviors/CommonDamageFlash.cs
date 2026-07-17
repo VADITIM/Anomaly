@@ -41,6 +41,8 @@ public class CommonDamageFlash : IEntityBehavior
         if (flashMaterial != null)
             return;
 
+        // Only the entity's standard "Sprite" flashes — never shadows, tenacity
+        // animations, or other visuals on the entity.
         sprite = owner.GetNodeOrNull<Sprite2D>("Sprite");
         if (sprite == null)
             return;
@@ -49,15 +51,15 @@ public class CommonDamageFlash : IEntityBehavior
         if (shader == null)
             return;
 
+        // A material authored in the scene is a shared sub-resource: every instance
+        // of the scene points at the same one, so setting shader params on it would
+        // flash all instances at once. Always own a per-instance material.
         if (sprite.Material is ShaderMaterial existingMaterial && existingMaterial.Shader == shader)
-        {
-            flashMaterial = existingMaterial;
-        }
+            flashMaterial = (ShaderMaterial)existingMaterial.Duplicate();
         else
-        {
             flashMaterial = new ShaderMaterial { Shader = shader };
-            sprite.Material = flashMaterial;
-        }
+
+        sprite.Material = flashMaterial;
 
         flashMaterial.SetShaderParameter("flash_color", FlashColor);
         flashMaterial.SetShaderParameter("flash_value", 0f);

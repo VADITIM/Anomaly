@@ -2,14 +2,14 @@ using Godot;
 
 public partial class ResourcesUI : Control
 {
-    [Export] public SegmentManager SegmentManager;
+    [Export] public PlayerResourceBars Bars;
     private ResourceManager _resourceManager;
     private bool _subscribed;
 
     public override void _Ready()
     {
-        if (SegmentManager == null)
-            SegmentManager = GetNodeOrNull<SegmentManager>("Segment Manager") ?? GetParent() as SegmentManager;
+        if (Bars == null)
+            Bars = GetNodeOrNull<PlayerResourceBars>("Segment Manager") ?? GetParent() as PlayerResourceBars;
 
         CallDeferred(nameof(DeferredSubscribe));
     }
@@ -36,12 +36,12 @@ public partial class ResourcesUI : Control
         _resourceManager.OnStaminaSChanged += OnResourceChangedHandler;
         _subscribed = true;
 
-        SegmentManager?.Refresh();
+        Bars?.Refresh();
     }
 
     private void OnResourceChangedHandler(float current, float max)
     {
-        SegmentManager?.Refresh();
+        Bars?.Refresh();
     }
 
     public override void _ExitTree()

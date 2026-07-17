@@ -7,9 +7,9 @@
 [ext_resource type="PackedScene" uid="uid://bo8wy1jc7h2bo" path="res://#Scenes/Entities/Enemies/Bee.tscn" id="6_0ennt"]
 [ext_resource type="PackedScene" uid="uid://drd25waqbbhwc" path="res://#Scenes/Entities/Player.tscn" id="7_mjgta"]
 
-[node name="Node2D" type="Node2D" unique_id=835527753]
+[node name="Main" type="Node2D" unique_id=835527753]
 
-[node name="Node2D" parent="." unique_id=747993253 instance=ExtResource("1_klt0f")]
+[node name="Wrold Scene" parent="." unique_id=747993253 instance=ExtResource("1_klt0f")]
 position = Vector2(537, 484)
 
 [node name="Enemies" type="Node2D" parent="." unique_id=411547642]
@@ -19,6 +19,18 @@ position = Vector2(810, 218)
 
 [node name="Practice Dummy" parent="Enemies" unique_id=970362701 instance=ExtResource("3_tx5dj")]
 position = Vector2(513, 580)
+
+[node name="Bee" parent="Enemies" unique_id=236554094 instance=ExtResource("6_0ennt")]
+position = Vector2(167, 351)
+
+[node name="Bee2" parent="Enemies" unique_id=1545064365 instance=ExtResource("6_0ennt")]
+position = Vector2(231, 587)
+
+[node name="Bee3" parent="Enemies" unique_id=2130038753 instance=ExtResource("6_0ennt")]
+position = Vector2(561, 407)
+
+[node name="Bee4" parent="Enemies" unique_id=1541985008 instance=ExtResource("6_0ennt")]
+position = Vector2(940, 517)
 
 [node name="Player" parent="." unique_id=996730977 instance=ExtResource("7_mjgta")]
 position = Vector2(592, 555)

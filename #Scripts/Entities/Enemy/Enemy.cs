@@ -15,9 +15,8 @@ public abstract partial class Enemy : Entity
 
     protected override StateMachine CreateStateMachine() => new EnemyStateMachine();
 
-    [Export] public float VesselReward { get; set; } = 10f;
-    [Export] public float SoulReward   { get; set; } = 50f;
-
+    [Export(PropertyHint.Range, "1,10")] public int CorruptionReward { get; set; } = 2;
+    [Export] public float SoulReward { get; set; } = 50f;
     [Export] public EnemyDamageType   DamageType   { get; set; }
     [Export] public EnemyWeaknessType WeaknessType { get; set; }
 
@@ -51,6 +50,8 @@ public abstract partial class Enemy : Entity
     {
         Player = GetTree().Root.FindChild("Player", true, false) as Player;
 
+        ApplyEnemyStats();
+
         SaveManager.EnsureLoaded();
         EnemyLevel = DifficultyScalingSystem.SampleEnemyLevel(SaveManager.Difficulty.DifficultyLevel);
         float statMultiplier = DifficultyScalingSystem.GetStatMultiplier(EnemyLevel);
@@ -70,6 +71,21 @@ public abstract partial class Enemy : Entity
         InitializeStateMachine();
 
         UpdateAnimation();
+    }
+
+    // Enemy-specific fields from the assigned blueprint. Base EntityStats fields are
+    // already applied by Entity.ApplyEntityStats in _Ready; this adds the EnemyStats layer.
+    private void ApplyEnemyStats()
+    {
+        if (EntityStats is not EnemyStats stats)
+            return;
+
+        CorruptionReward = stats.CorruptionReward;
+        SoulReward       = stats.SoulReward;
+        DamageType       = stats.DamageType;
+        WeaknessType     = stats.WeaknessType;
+        ChaseRange       = stats.ChaseRange;
+        AttackRange      = stats.AttackRange;
     }
 
     private void InitializeEnemyResourceBars()
@@ -149,11 +165,7 @@ public abstract partial class Enemy : Entity
         if (Player == null)
             return;
 
-        Player.ResourceManager?.AddCorruption(2f);
-
-        float currentVessel = Player.Stats.GetCurrent(StatType.Vessel);
-        float maxVessel = Player.Stats.GetCurrentMax(StatType.Vessel);
-        Player.Stats.SetCurrent(StatType.Vessel, Mathf.Min(currentVessel + VesselReward, maxVessel));
+        Player.ResourceManager?.AddCorruption(CorruptionReward);
 
         float currentSoul = Player.Stats.GetCurrent(StatType.Soul);
         float maxSoul = Player.Stats.GetCurrentMax(StatType.Soul);

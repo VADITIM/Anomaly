@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://dpw5xycjoyqy4"]
 
-[ext_resource type="Script" uid="uid://cxi48node6iie" path="res://#Scripts/Systems/ResourceManager.cs" id="1_h0kwx"]
-[ext_resource type="Script" uid="uid://6jkta12jpl1l" path="res://#Scripts/UI/SegmentManager.cs" id="2_4ep0o"]
+[ext_resource type="Script" uid="uid://6jkta12jpl1l" path="res://#Scripts/UI/PlayerResourceBars.cs" id="2_4ep0o"]
 [ext_resource type="Texture2D" uid="uid://drr4tt8jqlj6m" path="res://#Assets/UI/Resources UI/Player/Stamina Bar/Stamina_Bar_Under.png" id="5_anwd2"]
 [ext_resource type="Texture2D" uid="uid://bc6pwhihuoe55" path="res://#Assets/UI/Resources UI/Player/Stamina Bar/Stamina_Bar_Over.png" id="6_h0kwx"]
 [ext_resource type="Texture2D" uid="uid://cmjba61fniccy" path="res://#Assets/UI/Resources UI/Player/Stamina Bar/Stamina_Bar_Progress.png" id="7_7cm8p"]
@@ -22,7 +21,6 @@
 [ext_resource type="Texture2D" uid="uid://b5gkdrcll1v4j" path="res://#Assets/UI/Resources UI/Player/Stamina Bar/Stamina_Star_Progress.png" id="27_fmeed"]
 
 [node name="Resoruces UI" type="Control" unique_id=2052102617]
-layout_direction = 1
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -30,25 +28,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 size_flags_horizontal = 4
+layout_direction = 1
 
-[node name="Segment Manager" type="Control" parent="." unique_id=1799294788 node_paths=PackedStringArray("HealthBar", "HealthStar", "CorruptionBar", "VesselBar", "StaminaBar", "StaminaStar")]
+[node name="Segment Manager" type="Control" parent="." unique_id=1799294788]
 layout_mode = 1
 anchors_preset = 0
 scale = Vector2(5, 5)
 script = ExtResource("2_4ep0o")
-HealthBar = NodePath("Health Bar")
-HealthStar = NodePath("Health Star")
-CorruptionBar = NodePath("Corruption Bar")
-VesselBar = NodePath("Vessel Bar")
-StaminaBar = NodePath("Stamina Bar")
-StaminaStar = NodePath("Stamina Star")
 
 [node name="Vessel Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1034278239]
 layout_mode = 0
-offset_left = 35.2
-offset_top = 12.8
-offset_right = 77.2
-offset_bottom = 22.8
+offset_left = 35.999996
+offset_top = 13.0
+offset_right = 78.0
+offset_bottom = 16.0
 value = 33.0
 nine_patch_stretch = true
 stretch_margin_left = 20
@@ -111,9 +104,10 @@ texture_progress = ExtResource("21_fls33")
 
 [node name="Corruption Bar" type="TextureProgressBar" parent="Segment Manager" unique_id=1214269965]
 layout_mode = 0
-offset_top = 6.3999977
+offset_top = 6.4
 offset_right = 36.0
-offset_bottom = 46.399998
+offset_bottom = 46.4
+value = 10.0
 fill_mode = 3
 texture_under = ExtResource("10_4fbix")
 texture_over = ExtResource("11_bkxok")

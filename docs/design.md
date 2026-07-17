@@ -440,8 +440,10 @@ The Resources UI is an Entity UI component providing resource meters. Each Entit
 |---|---|
 | Health Bar | HP meter. Healing contributed by the Vessel meter. |
 | Stamina Bar | Stamina meter. Regenerates automatically after a short hard-cooldown. |
-| Corruption Bar | Aetheriac State meter. Spending from it activates the Aetheriac State. |
-| Vessel Bar | Healing meter. Fills on each hit; all direct healing resolves through this. |
+| Corruption Bar | Aetheriac State meter. Fills on each enemy kill by that enemy's `CorruptionReward` (1–10, authored per enemy type). Spending from it activates the Aetheriac State. |
+| Vessel Bar | Healing meter. Fills on each hit; all direct healing resolves through this. Not granted on kill. |
+
+Each meter grows with progression rather than showing segments: a stat's Max upgrade widens its bar by 5px (Health widens the Health and Vessel bars; Stamina widens the Stamina bar). The Vessel bar's max value stays fixed at 100 regardless of width.
 
 #### Enemy
 

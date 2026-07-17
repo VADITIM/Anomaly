@@ -22,7 +22,6 @@ public partial class Entity : CharacterBody2D
     [Export] public float MaxTenacity          { get; set; } = 10f;
     [Export] public int   MaxStaggers          { get; set; } = 3;
     [Export] public float CameraPriority       { get; set; } = 0f;
-
     [Export] public float JumpImpulse         { get; set; } = 300f;
     [Export] public float JumpFallSpeed       { get; set; } = 1200f;
     [Export] public float ShadowScaleWhenJump { get; set; } = 0.5f;
@@ -292,12 +291,18 @@ public partial class Entity : CharacterBody2D
     private void ApplyEntityStats()
     {
         if (EntityStats == null) return;
-        MaxHealth      = EntityStats.MaxHealth;
-        Health         = EntityStats.MaxHealth;
-        Weight         = EntityStats.Weight;
+        MaxHealth        = EntityStats.MaxHealth;
+        Health           = EntityStats.MaxHealth;
+        Speed            = EntityStats.Speed;
+        Damage           = EntityStats.Damage;
+        Armor            = EntityStats.Armor;
+        Weight           = EntityStats.Weight;
         CanBeKnockedBack = EntityStats.UseKnockback;
-        Tenacity       = EntityStats.Tenacity;
-        MaxTenacity    = EntityStats.Tenacity;
+        Tenacity         = EntityStats.Tenacity;
+        MaxTenacity      = EntityStats.MaxTenacity;
+        MaxStaggers      = EntityStats.MaxStaggers;
+        CameraPriority   = EntityStats.CameraPriority;
+        AttackDuration   = EntityStats.AttackDuration;
     }
 
     private void InitializeZAxis()

@@ -18,10 +18,12 @@
 
 - `docs/design.md` — design intent: lore, mechanics math, target architecture.
 - `docs/architecture.md` — as-built reality, including known divergences from design.
+- `docs/ui-narrative.md` — narrative scene UI spec (dialogue boxes, choices, portraits) and dialogue/NPC-state architecture.
 - `docs/pitfalls.md` — tracked structural debt; check before building on Entity, StateMachine, Stats, Save, or Weapon systems.
 - Any C# work MUST follow the `code-anomaly` skill (.NET naming, exports, node access, Resource rules).
 - Any narrative/design work MUST pass the `lore-anomaly` skill.
 - New gameplay features/systems go through the `feature-dev` skill workflow.
+- At session end / before commits, run the `docs-sync` skill to reconcile docs with the changed code.
 
 ## Don'ts
 
@@ -29,3 +31,4 @@
 - Touch `.tscn`/`.tres` only when explicitly asked — they are editor-owned.
 - Never `[Export]` a node reference — config primitives and Resources only.
 - Never deepen an open pitfall: no new magic stat strings, `.Instance` singletons, StateMachine branches, or save writes that bypass `SaveManager`.
+- A material authored on a node in a scene is shared across every instance of that scene. For per-instance shader effects (damage flash, etc.), `Duplicate()` the material at runtime before setting parameters — see `CommonDamageFlash`.

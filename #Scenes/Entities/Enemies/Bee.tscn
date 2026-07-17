@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://bo8wy1jc7h2bo"]
 
-[ext_resource type="Script" uid="uid://bua0gmhm6c6oo" path="res://#Scripts/Entities/Enemy/Types/Bee.cs" id="1_micq5"]
+[ext_resource type="Script" uid="uid://cn3e7oh1xml16" path="res://#Scripts/Entities/Enemy/Types/Bee.cs" id="1_micq5"]
 [ext_resource type="Shader" uid="uid://ehmd2835rdgo" path="res://#Shaders/damageflash.gdshader" id="2_icawu"]
 [ext_resource type="Texture2D" uid="uid://v8x0jfhuq3gt" path="res://#Assets/VFX/Tenacity VFX/cue1.png" id="3_4upu0"]
 [ext_resource type="Texture2D" uid="uid://b4ksppuu05qfh" path="res://#Assets/VFX/Tenacity VFX/cue2.png" id="4_5b6a6"]
@@ -170,7 +170,7 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("18_t4woj")
 }],
-"loop": false,
+"loop": 0,
 "name": &"tenacity broken",
 "speed": 30.0
 }, {
@@ -223,18 +223,17 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("18_t4woj")
 }],
-"loop": false,
+"loop": 0,
 "name": &"tenacity recovered",
 "speed": 30.0
 }]
 
-[node name="Bee" type="CharacterBody2D" unique_id=1778528792 node_paths=PackedStringArray("AnimationPlayer")]
+[node name="Bee" type="CharacterBody2D" unique_id=1778528792]
 collision_layer = 24
 collision_mask = 295
 motion_mode = 1
 wall_min_slide_angle = 0.0
 script = ExtResource("1_micq5")
-AnimationPlayer = NodePath("Animation Player")
 
 [node name="Hurtbox" type="CollisionShape2D" parent="." unique_id=1240647017]
 shape = SubResource("RectangleShape2D_0a874")

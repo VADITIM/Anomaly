@@ -26,7 +26,7 @@ public class WeaponStats
     public WeaponStats()
     {
         _stats[WeaponStatType.Damage] = new Stat { Current = 5f, Max = 150f };
-        _stats[WeaponStatType.StaminaCost] = new Stat { Current = 51f, Max = float.MaxValue };
+        _stats[WeaponStatType.StaminaCost] = new Stat { Current = 10f, Max = float.MaxValue };
         _stats[WeaponStatType.TenacityDamage] = new Stat { Current = 10f, Max = 10f };
         _stats[WeaponStatType.StaminaRestore] = new Stat { Current = 10f, Max = 10f };
         _stats[WeaponStatType.Penetration] = new Stat { Current = 50f, Max = 200f };
