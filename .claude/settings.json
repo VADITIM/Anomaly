@@ -1,6 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-
   "permissions": {
     "allow": [
       "Bash(dotnet build *)",
@@ -33,7 +32,6 @@
       "Edit(**/*.key)"
     ]
   },
-
   "hooks": {
     "PreToolUse": [
       {
@@ -84,5 +82,8 @@
         ]
       }
     ]
+  },
+  "enabledPlugins": {
+    "godot-claude-skills@godot-claude-skills": true
   }
 }

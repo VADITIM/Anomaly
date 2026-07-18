@@ -14,6 +14,12 @@
 - `Tests/` — xunit project for engine-free math (difficulty tables, stat math)
 - `#Scenes/`, `#Assets/`, `#Shaders/` — Godot scenes, art, GDShader
 
+## Editor Tooling (MCP + skills)
+
+- Godot editor access goes through the **Godot AI MCP server** (`godot-ai` in `claude mcp list`; editor-side addon `addons/godot_ai`, must be enabled in Project Settings → Plugins with the editor running).
+- The **godot-claude-skills** plugin provides the Godot workflow skills (`godot-code-gen`, `godot-scene-design`, `godot-live-edit`, `godot-shader`, `godot-interactive`) — use them for Godot-side work alongside the MCP tools.
+- Guardrail: the MCP server can create/modify scenes, resources, and scripts directly in the editor. The Don'ts below still apply — only touch `.tscn`/`.tres` through MCP when explicitly asked, and summarize every editor-side change so it can be reviewed like a diff.
+
 ## Docs & Skills (authority order)
 
 - `docs/design.md` — design intent: lore, mechanics math, target architecture.
