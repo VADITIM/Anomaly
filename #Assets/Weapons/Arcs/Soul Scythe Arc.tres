@@ -1,0 +1,9 @@
+[gd_resource type="Resource" script_class="SoulWeaponArc" format=3 uid="uid://b4adultu32by6"]
+
+[ext_resource type="Script" uid="uid://bef0tt33u8vch" path="res://#Scripts/Weapon/SoulWeaponArc.cs" id="1_arc"]
+
+[resource]
+script = ExtResource("1_arc")
+Knockback = 93.0
+PlayerPushForce = 150.0
+SpecialHitTenacityMultiplier = 1.2

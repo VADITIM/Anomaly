@@ -26,6 +26,40 @@ public partial class Entity : CharacterBody2D
     [Export] public float JumpFallSpeed       { get; set; } = 1200f;
     [Export] public float ShadowScaleWhenJump { get; set; } = 0.5f;
 
+    // Jump reach in elevations is not a stat — it falls out of JumpImpulse/JumpFallSpeed
+    // divided by ElevationMath.PixelsPerElevation. See docs/design.md §3.2 "Z Axis Development".
+    [Export] public float StartElevation { get; set; } = 0f;
+
+    // Most entities are small enough to be jumped over. Trees, pillars and anything solid set this
+    // false and join the Wall layer, which airborne entities never stop colliding with.
+    [Export] public bool CanBeJumpedOver { get; set; } = true;
+
+    /// <summary>The scene-authored mask, before elevation rules rewrite it every physics frame.</summary>
+    public uint BaseCollisionMask { get; private set; }
+
+    // Highest elevation reached since leaving the ground — impact damage is measured from the apex,
+    // not from where the jump or fall started.
+    private float peakElevation;
+
+    /// <summary>The plane this entity stands on. Whole numbers while grounded.</summary>
+    public float GroundElevation { get; private set; }
+
+    // A jump never skips a plane, however high the sprite arcs.
+    [Export] public float MaxJumpElevations { get; set; } = 1f;
+
+    /// <summary>
+    /// Plane plus current jump height, capped at <see cref="MaxJumpElevations"/> above the plane —
+    /// the value all elevation rules compare against.
+    /// </summary>
+    public float Elevation => ElevationMath.ReachableElevation(
+        GroundElevation,
+        GroundElevation + ElevationMath.HeightToElevation(ZAxis?.Height ?? 0f),
+        airborneCeiling);
+
+    // Caps a jump at MaxJumpElevations; a fall is uncapped, since its height above the destination
+    // plane is real distance rather than jump reach.
+    private float airborneCeiling = float.MaxValue;
+
     protected ZAxisSystem ZAxis;
 
     [Export] public float AttackDuration { get; set; } = 1f;
@@ -61,6 +95,7 @@ public partial class Entity : CharacterBody2D
 
     public virtual float GetAttackDuration() => AttackDuration;
     public bool IsJumping => ZAxis?.IsJumping ?? false;
+    public bool IsFalling => ZAxis?.IsFalling ?? false;
 
     public override void _Ready()
     {
@@ -75,6 +110,9 @@ public partial class Entity : CharacterBody2D
     public override void _PhysicsProcess(double delta)
     {
         ZAxis.Update((float)delta);
+        if (IsJumping && Elevation > peakElevation)
+            peakElevation = Elevation;
+        ElevationSystem.Update(this);
         YSortSystem.Update(this);
         for (int i = 0; i < behaviors.Count; i++)
             behaviors[i].OnPhysicsProcess(delta);
@@ -122,8 +160,40 @@ public partial class Entity : CharacterBody2D
 
     public virtual void Jump()
     {
+        airborneCeiling = MaxJumpElevations;
         ZAxis.Jump();
     }
+
+    public void SetGroundElevation(float elevation)
+    {
+        GroundElevation = elevation;
+        peakElevation   = elevation;
+    }
+
+    /// <summary>Drops to a lower plane — the ground under this entity vanished (pushed off an edge).</summary>
+    public void BeginFall(float surfaceElevation)
+    {
+        peakElevation   = Elevation;
+        GroundElevation = surfaceElevation;
+        airborneCeiling = float.MaxValue;
+
+        float fallenPixels = (peakElevation - surfaceElevation) * ElevationMath.PixelsPerElevation;
+        ZAxis.BeginFall(fallenPixels, ElevationMath.FallSpeed(JumpFallSpeed, Weight));
+    }
+
+    public void LandOnElevation(float elevation)
+    {
+        float elevationsFallen = peakElevation - elevation;
+
+        GroundElevation = elevation;
+        peakElevation   = elevation;
+        airborneCeiling = float.MaxValue;
+        ZAxis.Land();
+
+        OnLanded(elevation, elevationsFallen);
+    }
+
+    protected virtual void OnLanded(float elevation, float elevationsFallen) { }
 
     public virtual void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
     {
@@ -307,6 +377,12 @@ public partial class Entity : CharacterBody2D
 
     private void InitializeZAxis()
     {
+        GroundElevation   = StartElevation;
+        BaseCollisionMask = CollisionMask;
+
+        if (!CanBeJumpedOver)
+            CollisionLayer |= ElevationMath.WallBit;
+
         ZAxis = new ZAxisSystem
         {
             JumpImpulse         = JumpImpulse,

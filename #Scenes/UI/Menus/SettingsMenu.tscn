@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://d2lqg4ugquasb"]
+
+[ext_resource type="Script" uid="uid://bm3rlqdw4rrhg" path="res://#Scripts/UI/Menus/SettingsMenu.cs" id="1_nmemg"]
+[ext_resource type="Script" uid="uid://bnwjac6bsv7je" path="res://#Scripts/UI/Menus/ControlsMenu.cs" id="2_2o0go"]
+
+[node name="SettingsMenu" type="Control" unique_id=1375858120]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_nmemg")
+
+[node name="Tabs" type="TabContainer" parent="." unique_id=1174493744]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+current_tab = 0
+
+[node name="Audio" type="VBoxContainer" parent="Tabs" unique_id=154368110]
+layout_mode = 2
+metadata/_tab_index = 0
+
+[node name="VolumeLabel" type="Label" parent="Tabs/Audio" unique_id=1037801688]
+layout_mode = 2
+text = "Master Volume"
+
+[node name="VolumeSlider" type="HSlider" parent="Tabs/Audio" unique_id=641018014]
+custom_minimum_size = Vector2(300, 24)
+layout_mode = 2
+max_value = 1.0
+step = 0.01
+
+[node name="Display" type="VBoxContainer" parent="Tabs" unique_id=871315919]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="FullscreenCheck" type="CheckButton" parent="Tabs/Display" unique_id=2079837521]
+layout_mode = 2
+text = "Fullscreen"
+
+[node name="VSyncCheck" type="CheckButton" parent="Tabs/Display" unique_id=1136989156]
+layout_mode = 2
+text = "VSync"
+
+[node name="Controls" type="Control" parent="Tabs" unique_id=278614698]
+visible = false
+layout_mode = 2
+script = ExtResource("2_2o0go")
+metadata/_tab_index = 2
+
+[node name="Panel" type="Panel" parent="Tabs/Controls" unique_id=796457415]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0

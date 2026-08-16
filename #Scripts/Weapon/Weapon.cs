@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 public partial class Weapon : Node2D
 {
+    // Kio's native Arc, slotted at _Ready (design.md §3.5).
+    [Export] public PackedScene DefaultArcScene { get; set; }
+
     private WeaponArc _currentArc;
     private Sprite2D _weaponSprite;
     private AnimationPlayer _animationPlayer;
@@ -17,10 +20,12 @@ public partial class Weapon : Node2D
     private WeaponStats _weaponStats = new WeaponStats();
     public WeaponStats Stats => _weaponStats;
 
+    // The Scythe owns swing pacing for every Arc — Arcs no longer carry their own
+    // AttackDurations, only their heavy-attack duration.
     private float[] _attackDurations = new float[4] { 0.37f, 0.45f, 0.35f, 0.6f };
     private float[] _attackDamageMultipliers = new float[4] { 1f, 1.15f, 1.3f, 1.5f };
-    private int _specialHitInterval = 4;
     private int _hitCount = 0;
+    private bool _isSpecialHitSwing = false;
     private float _currentTenacityDamageMultiplier = 1f;
 
     private int _attackSequenceIndex = 0;
@@ -42,11 +47,16 @@ public partial class Weapon : Node2D
 
     public float Damage { get => _weaponStats.GetCurrent(WeaponStatType.Damage); set => _weaponStats.SetCurrent(WeaponStatType.Damage, value); }
     public float StaminaCost { get => _weaponStats.GetCurrent(WeaponStatType.StaminaCost); set => _weaponStats.SetCurrent(WeaponStatType.StaminaCost, value); }
+    public float HeavyStaminaCost { get => _weaponStats.GetCurrent(WeaponStatType.HeavyStaminaCost); set => _weaponStats.SetCurrent(WeaponStatType.HeavyStaminaCost, value); }
     public float TenacityDamage { get => _weaponStats.GetCurrent(WeaponStatType.TenacityDamage); set => _weaponStats.SetCurrent(WeaponStatType.TenacityDamage, Mathf.Clamp(value, 0f, 100f)); }
     public float StaminaRestore { get => _weaponStats.GetCurrent(WeaponStatType.StaminaRestore); set => _weaponStats.SetCurrent(WeaponStatType.StaminaRestore, Mathf.Clamp(value, 0f, 10f)); }
     public float Penetration { get => _weaponStats.GetCurrent(WeaponStatType.Penetration); set => _weaponStats.SetCurrent(WeaponStatType.Penetration, Mathf.Clamp(value, 0f, 100f)); }
-    public int SpecialHitInterval { get => _specialHitInterval; set => _specialHitInterval = value; }
-    public int HitCount { get => _hitCount; set => _hitCount = value; }
+    public int SpecialHitInterval => _currentArc?.Data?.SpecialHitInterval ?? 4;
+    public int HitCount => _hitCount;
+
+    // True for the whole of the current swing once its first hit has landed on
+    // the Arc's special-hit interval. Computed once, read by every consumer.
+    public bool IsSpecialHitSwing => _isSpecialHitSwing;
     public float CurrentTenacityDamageMultiplier { get => _currentTenacityDamageMultiplier; set => _currentTenacityDamageMultiplier = value; }
     public int CurrentAttackSequenceIndex => _attackSequenceIndex;
 
@@ -55,6 +65,25 @@ public partial class Weapon : Node2D
     public bool IsInComboCooldown => _comboCooldownTimer > 0f;
 
     private Player OwnerPlayer => OwnerStateMachine?.OwnerEntity as Player;
+
+    /// <summary>
+    /// The plane this weapon swings on. Walks up to the owning Entity rather than going through the
+    /// state machine, so the elevation guard in RegisterSwingHit can never be skipped by an
+    /// unresolved owner.
+    /// </summary>
+    private float SwingElevation
+    {
+        get
+        {
+            for (Node current = GetParent(); current != null; current = current.GetParent())
+            {
+                if (current is Entity entity)
+                    return entity.Elevation;
+            }
+
+            return 0f;
+        }
+    }
 
     private StateMachine OwnerStateMachine
     {
@@ -98,9 +127,7 @@ public partial class Weapon : Node2D
             _hitbox.Monitoring = false;
         }
 
-        ScytheArc scytheArc = new ScytheArc();
-        AddChild(scytheArc);
-        SlotArc(scytheArc);
+        SlotArc(FindAuthoredArc() ?? InstantiateDefaultArc());
     }
 
     public override void _Process(double delta)
@@ -110,10 +137,41 @@ public partial class Weapon : Node2D
             _hitbox.Monitoring = OwnerStateMachine?.IsAttacking ?? false;
     }
 
+    // The Weapon scene authors Kio's native Arc as a child; DefaultArcScene is
+    // only the fallback when that child is missing.
+    private WeaponArc FindAuthoredArc()
+    {
+        foreach (Node child in GetChildren())
+        {
+            if (child is WeaponArc arc)
+                return arc;
+        }
+
+        return null;
+    }
+
+    private WeaponArc InstantiateDefaultArc()
+    {
+        if (DefaultArcScene == null)
+        {
+            GD.PushError($"{Name}: no Arc child in the scene and no DefaultArcScene assigned — the Scythe cannot attack.");
+            return null;
+        }
+
+        WeaponArc arc = DefaultArcScene.Instantiate<WeaponArc>();
+        AddChild(arc);
+        return arc;
+    }
+
     public void SlotArc(WeaponArc newArc)
     {
-        if (newArc == null)
+        if (newArc == null || newArc == _currentArc)
             return;
+
+        // Arcs are instantiated as children on every swap — free the outgoing one
+        // so slotting doesn't leak a node (and a stale hitbox) per swap.
+        if (_currentArc != null && IsInstanceValid(_currentArc))
+            _currentArc.QueueFree();
 
         _currentArc = newArc;
         _currentArc.SetParentWeapon(this);
@@ -127,7 +185,20 @@ public partial class Weapon : Node2D
 
     private bool RegisterSwingHit(Entity targetEntity)
     {
-        return _entitiesHitThisSwing.Add(targetEntity.GetInstanceId());
+        // Single choke point for every direct swing hit — elevation separation is enforced here so
+        // hurtbox, enemy-body and prop hits all obey it (docs/design.md §3.2 "Z Axis Development").
+        if (!ElevationMath.SharesPlane(SwingElevation, targetEntity.Elevation))
+            return false;
+
+        bool isFirstHitOfSwing = _entitiesHitThisSwing.Count == 0;
+
+        if (!_entitiesHitThisSwing.Add(targetEntity.GetInstanceId()))
+            return false;
+
+        if (isFirstHitOfSwing)
+            AdvanceHitCounter();
+
+        return true;
     }
 
     private void OnHurtboxHit(Area2D area)
@@ -144,6 +215,7 @@ public partial class Weapon : Node2D
         if (wasStaggered)
             ApplyStaggerHitStaminaRestore(_currentArc.StaminaRestore);
         _currentArc.TriggerHitAnimation();
+        TriggerSpecialHit(targetEntity);
     }
 
     private void OnEnemyHit(Node2D body)
@@ -156,6 +228,7 @@ public partial class Weapon : Node2D
         if (wasStaggered)
             ApplyStaggerHitStaminaRestore(_currentArc.StaminaRestore);
         _currentArc.TriggerHitAnimation();
+        TriggerSpecialHit(enemy);
     }
 
     private void OnPropHit(Node2D body)

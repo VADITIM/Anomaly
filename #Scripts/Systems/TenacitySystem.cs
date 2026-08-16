@@ -111,7 +111,7 @@ public class TenacitySystem
 
         _pendingWeaponReset = weapon;
         float tenacityDamage = weapon.CalculateTenacityDamage(weapon.TenacityDamage);
-        if (Combat.IsHeavyAttacking())
+        if (_enemy.Player?.StateMachine?.IsHeavyAttacking ?? false)
             tenacityDamage *= 1.30f;
 
         _enemy.Tenacity -= tenacityDamage;
@@ -177,8 +177,7 @@ public class TenacitySystem
 
         if (staggerApplied)
         {
-            bool isSpecialHit = (weapon.HitCount % weapon.SpecialHitInterval) == 0;
-            ApplyStaggerKnockback(playerPosition, weapon, isSpecialHit);
+            ApplyStaggerKnockback(playerPosition, weapon, weapon.IsSpecialHitSwing);
 
             if (isFirstStagger)
             {

@@ -4,6 +4,8 @@
 [ext_resource type="Texture2D" uid="uid://hsm5n86vlb6u" path="res://#Assets/Entities/shadow.png" id="2_2d3aw"]
 [ext_resource type="Script" uid="uid://bqgxuvsplogs4" path="res://#Scripts/Camera/CameraFocus.cs" id="2_53fn5"]
 [ext_resource type="PackedScene" uid="uid://fxjx3vvpgvb5" path="res://#Scenes/Entities/Weapon.tscn" id="3_f1srr"]
+[ext_resource type="PackedScene" uid="uid://d0gcf7sylcnog" path="res://#Scenes/UI/Menus/EscapeMenu.tscn" id="4_nfknd"]
+[ext_resource type="PackedScene" uid="uid://0wsea1rwqcp0" path="res://#Scenes/UI/Menus/WeaponArcSelection.tscn" id="5_hwhrv"]
 [ext_resource type="Script" uid="uid://b1xb0rxo2com0" path="res://#Scripts/Camera/PhantomCameraCursorOffset.cs" id="6_sueg4"]
 [ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="12_o3h8g"]
 [ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="13_1e7my"]
@@ -524,11 +526,18 @@ visible = false
 
 [node name="Resoruces UI" parent="Player UI Layer" unique_id=2052102617 instance=ExtResource("19_53fn5")]
 
+[node name="Escape Menu" parent="Player UI Layer" unique_id=2010718372 instance=ExtResource("4_nfknd")]
+
+[node name="WeaponArcSelection" parent="Player UI Layer" unique_id=472836196 instance=ExtResource("5_hwhrv")]
+grow_horizontal = 2
+grow_vertical = 2
+
 [node name="CAMERA" type="Node2D" parent="." unique_id=1828703016]
 visible = false
 
 [node name="Camera2D" type="Camera2D" parent="CAMERA" unique_id=861298931]
 physics_interpolation_mode = 1
+top_level = true
 zoom = Vector2(3.2, 3.2)
 process_callback = 0
 editor_draw_limits = true

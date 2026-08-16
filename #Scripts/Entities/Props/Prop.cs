@@ -6,6 +6,8 @@ public partial class Prop : Entity
     public float StartingHealth { get; set; } = 90f;
     public bool Destroyable { get; set; } = true;
 
+    [Export] public float ImpactRadius { get; set; } = 24f;
+
     private bool _isDead = false;
 
     protected override State GetCurrentAnimationState()
@@ -57,6 +59,33 @@ public partial class Prop : Entity
                 if (!_isDead && !(GetBehavior<KnockbackBehavior>()?.IsKnockbackActive ?? false))
                     PlayAnimation("Idle_Down");
             };
+        }
+    }
+
+    // A prop pushed off a ledge crushes whatever it lands on. Damage scales with the drop and the
+    // prop's Weight (ElevationMath.FallImpactDamage) — see docs/design.md §3.2 "Z Axis Development".
+    protected override void OnLanded(float elevation, float elevationsFallen)
+    {
+        float impactDamage = ElevationMath.FallImpactDamage(elevationsFallen, Weight);
+        if (impactDamage <= 0f)
+            return;
+
+        var query = new PhysicsShapeQueryParameters2D
+        {
+            Shape = new CircleShape2D { Radius = ImpactRadius },
+            Transform = new Transform2D(0f, GlobalPosition),
+            CollideWithBodies = true,
+            CollideWithAreas = false,
+            CollisionMask = BaseCollisionMask
+        };
+
+        foreach (Godot.Collections.Dictionary hit in GetWorld2D().DirectSpaceState.IntersectShape(query))
+        {
+            if (hit["collider"].As<GodotObject>() is not Entity crushed || crushed == this)
+                continue;
+
+            if (ElevationMath.SharesPlane(elevation, crushed.Elevation))
+                crushed.TakeDamage(impactDamage, GlobalPosition);
         }
     }
 

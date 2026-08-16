@@ -10,7 +10,7 @@ public partial class Weapon
         if (!WeaponAnimations.IsAttackAnimation(animationName))
             return 0f;
 
-        return GetCurrentAttackSequenceDuration(WeaponAnimations.IsHeavyAttack(animationName));
+        return GetAttackAnimationDuration(null, WeaponAnimations.IsHeavyAttack(animationName));
     }
 
 
@@ -20,7 +20,7 @@ public partial class Weapon
             _animationPlayer, direction, isHeavy, _attackSequenceIndex);
 
 
-        float duration = GetCurrentAttackSequenceDuration(isHeavy);
+        float duration = GetAttackAnimationDuration(direction, isHeavy);
         WeaponAnimations.PlayAttackAnimation(_animationPlayer, resolvedAnim, duration);
 
         _currentArc?.PrepareAttack(direction, isHeavy, _attackSequenceIndex);

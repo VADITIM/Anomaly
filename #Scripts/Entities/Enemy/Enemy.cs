@@ -23,6 +23,9 @@ public abstract partial class Enemy : Entity
     [Export] public float ChaseRange    { get; set; } = 200f;
     [Export] public float AttackRange   { get; set; } = 50f;
 
+    // 0 keeps this enemy blind to other elevation planes. See EnemyStats.SightElevationSpan.
+    [Export] public float SightElevationSpan { get; set; } = 0f;
+
     // Sampled once per lifetime from the world DifficultyLevel — runtime state, never saved.
     public int EnemyLevel { get; private set; } = 1;
 
@@ -35,13 +38,13 @@ public abstract partial class Enemy : Entity
     private bool IsWithinCameraFocusRange() { if (Player == null) return false; return GlobalPosition.DistanceTo(Player.GlobalPosition) <= CameraFocus.CAMERA_FOCUS_RANGE; }
     public void MarkCameraFocus() { _hasBeenHit = true; }
 
-    public bool IsWeakTo(WeaponArc.WeaponAttackType attackType)
+    public bool IsWeakTo(WeaponAttackType attackType)
     {
         return attackType switch
         {
-            WeaponArc.WeaponAttackType.Slashing => WeaknessType == EnemyWeaknessType.Slashing,
-            WeaponArc.WeaponAttackType.Piercing => WeaknessType == EnemyWeaknessType.Piercing,
-            WeaponArc.WeaponAttackType.Smashing => WeaknessType == EnemyWeaknessType.Smashing,
+            WeaponAttackType.Slashing => WeaknessType == EnemyWeaknessType.Slashing,
+            WeaponAttackType.Piercing => WeaknessType == EnemyWeaknessType.Piercing,
+            WeaponAttackType.Smashing => WeaknessType == EnemyWeaknessType.Smashing,
             _ => false
         };
     }
@@ -84,8 +87,9 @@ public abstract partial class Enemy : Entity
         SoulReward       = stats.SoulReward;
         DamageType       = stats.DamageType;
         WeaknessType     = stats.WeaknessType;
-        ChaseRange       = stats.ChaseRange;
-        AttackRange      = stats.AttackRange;
+        ChaseRange         = stats.ChaseRange;
+        AttackRange        = stats.AttackRange;
+        SightElevationSpan = stats.SightElevationSpan;
     }
 
     private void InitializeEnemyResourceBars()

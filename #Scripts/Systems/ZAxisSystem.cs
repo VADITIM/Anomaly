@@ -12,6 +12,7 @@ public class ZAxisSystem
     private Entity owner;
     private Sprite2D sprite;
 
+    private float activeFallSpeed = 0f;
     private float jumpTimer = 0f;
     private float jumpVelocity = 0f;
     private float jumpPosition = 0f;
@@ -20,6 +21,8 @@ public class ZAxisSystem
     private Vector2 shadowBaseScale = Vector2.One;
 
     public bool IsJumping => jumpTimer > 0f;
+    public bool IsFalling => jumpTimer > 0f && jumpVelocity < 0f;
+    public float Height => jumpPosition;
 
     public void Initialize(Entity owner)
     {
@@ -39,8 +42,20 @@ public class ZAxisSystem
         if (jumpTimer > 0f)
             return;
 
-        jumpVelocity = JumpImpulse;
-        jumpTimer = 1f;
+        jumpVelocity    = JumpImpulse;
+        jumpTimer       = 1f;
+        activeFallSpeed = JumpFallSpeed;
+    }
+
+    /// <summary>Drops from <paramref name="heightInPixels"/> with no upward impulse — walking off an edge.</summary>
+    public void BeginFall(float heightInPixels, float fallSpeed)
+    {
+        jumpVelocity    = 0f;
+        jumpPosition    = heightInPixels;
+        jumpTimer       = 1f;
+        activeFallSpeed = fallSpeed;
+
+        UpdateSpriteOffset(jumpPosition);
     }
 
     public void Update(float delta)
@@ -48,7 +63,7 @@ public class ZAxisSystem
         if (jumpTimer <= 0f)
             return;
 
-        jumpVelocity -= JumpFallSpeed * delta;
+        jumpVelocity -= activeFallSpeed * delta;
         jumpPosition += jumpVelocity * delta;
         jumpPosition  = Mathf.Max(0f, jumpPosition);
 
@@ -60,14 +75,19 @@ public class ZAxisSystem
         UpdateShadowScale(heightRatio);
 
         if (jumpPosition <= 0f && jumpVelocity < 0f)
-        {
-            jumpTimer    = 0f;
-            jumpVelocity = 0f;
-            jumpPosition = 0f;
-            UpdateSpriteOffset(0f);
-            if (SpriteShadow != null)
-                SpriteShadow.Scale = shadowBaseScale;
-        }
+            Land();
+    }
+
+    /// <summary>Ends the jump immediately — called on touchdown, including landing on a higher plane.</summary>
+    public void Land()
+    {
+        jumpTimer    = 0f;
+        jumpVelocity = 0f;
+        jumpPosition = 0f;
+        UpdateSpriteOffset(0f);
+
+        if (SpriteShadow != null)
+            SpriteShadow.Scale = shadowBaseScale;
     }
 
     private void UpdateSpriteOffset(float offset)

@@ -41,11 +41,7 @@ public partial class Weapon
         }
 
         _attackSequenceIndex = Mathf.Min(_attackSequenceIndex + 1, MaxComboSteps - 1);
-
-        int clampedIndex = Mathf.Clamp(_attackSequenceIndex, 0, _attackDurations.Length - 1);
-        duration = _currentArc != null
-            ? _currentArc.GetAttackSequenceDuration(clampedIndex)
-            : _attackDurations[clampedIndex];
+        duration = GetLightAttackDuration(_attackSequenceIndex);
         return true;
     }
 
@@ -75,23 +71,4 @@ public partial class Weapon
         }
     }
 
-    private float GetCurrentAttackSequenceDuration(bool isHeavy)
-    {
-        if (_currentArc != null)
-        {
-            if (isHeavy)
-                return _currentArc.HeavyAttackDuration;
-
-            return _currentArc.GetAttackSequenceDuration(_attackSequenceIndex);
-        }
-
-        if (isHeavy)
-            return 1.5f;
-
-        if (_attackDurations == null || _attackDurations.Length == 0)
-            return 0.37f;
-
-        int clampedIndex = Mathf.Clamp(_attackSequenceIndex, 0, _attackDurations.Length - 1);
-        return _attackDurations[clampedIndex];
-    }
 }

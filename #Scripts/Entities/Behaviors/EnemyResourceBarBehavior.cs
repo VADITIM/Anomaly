@@ -26,7 +26,7 @@ public class EnemyResourceBarBehavior : ResourceBarBehavior
     {
         base.OnHealthChanged(health, maxHealth);
 
-        if (HealthBar != null)
+        if (GodotObject.IsInstanceValid(HealthBar))
         {
             float healthMax = Mathf.Max(maxHealth, 1f);
             HealthBar.MaxValue = healthMax;
@@ -34,9 +34,15 @@ public class EnemyResourceBarBehavior : ResourceBarBehavior
         }
     }
 
+    public override void DestroyBars()
+    {
+        base.DestroyBars();
+        tenacityBar = null;
+    }
+
     private void UpdateTenacityBar()
     {
-        if (tenacityBar == null || enemy == null)
+        if (enemy == null || !GodotObject.IsInstanceValid(tenacityBar))
             return;
 
         float tenacityMax = Mathf.Max(enemy.MaxTenacity, 1f);

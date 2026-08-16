@@ -12,25 +12,34 @@ public class WeaponStats
     }
 
     private readonly Dictionary<WeaponStatType, Stat> _stats = new();
+    private readonly Dictionary<WeaponStatType, Stat> _baselines = new();
 
     // Legacy save files used display-style keys before WeaponStatType existed.
     private static readonly Dictionary<string, WeaponStatType> LegacyKeyMap = new()
     {
         ["Stamina Cost"] = WeaponStatType.StaminaCost,
-        ["Stamina Restore"] = WeaponStatType.StaminaRestore,
-        ["Special Hit Interval"] = WeaponStatType.SpecialHitInterval
+        ["Stamina Restore"] = WeaponStatType.StaminaRestore
     };
 
     // Defaults are the Scythe baseline — Arc flavor applies through WeaponArc
     // multipliers at point of use and is never written back here (design.md §3.10).
     public WeaponStats()
     {
-        _stats[WeaponStatType.Damage] = new Stat { Current = 5f, Max = 150f };
-        _stats[WeaponStatType.StaminaCost] = new Stat { Current = 10f, Max = float.MaxValue };
-        _stats[WeaponStatType.TenacityDamage] = new Stat { Current = 10f, Max = 10f };
-        _stats[WeaponStatType.StaminaRestore] = new Stat { Current = 10f, Max = 10f };
-        _stats[WeaponStatType.Penetration] = new Stat { Current = 50f, Max = 200f };
-        _stats[WeaponStatType.SpecialHitInterval] = new Stat { Current = 4f, Max = float.MaxValue };
+        Define(WeaponStatType.Damage, current: 5f, max: 150f);
+        Define(WeaponStatType.StaminaCost, current: 4f, max: float.MaxValue);
+        Define(WeaponStatType.HeavyStaminaCost, current: 10f, max: float.MaxValue);
+        Define(WeaponStatType.TenacityDamage, current: 10f, max: 10f);
+        Define(WeaponStatType.StaminaRestore, current: 10f, max: 10f);
+        Define(WeaponStatType.Penetration, current: 50f, max: 200f);
+    }
+
+    // Baselines are the tuning source of truth. Saves persist only UpgradeLevels
+    // and replay them onto these, so editing a baseline here retunes existing
+    // save files instead of being overwritten by them.
+    private void Define(WeaponStatType type, float current, float max)
+    {
+        _stats[type] = new Stat { Current = current, Max = max };
+        _baselines[type] = new Stat { Current = current, Max = max };
     }
 
     public Stat GetStat(WeaponStatType type)
@@ -99,16 +108,25 @@ public class WeaponStats
         }
     }
 
+    // Replays IncreaseStat() `levels` times against the baseline, matching it
+    // exactly: each level raises Max by 1 and refills Current to the new Max.
+    private void ApplyUpgradeLevels(WeaponStatType type, Stat stat, int levels)
+    {
+        var baseline = _baselines[type];
+        levels = Math.Max(0, levels);
+
+        stat.UpgradeLevels = levels;
+        stat.Max = baseline.Max + levels;
+        stat.Current = levels > 0 ? stat.Max : baseline.Current;
+    }
+
     public Godot.Collections.Dictionary ToDictionary()
     {
         var outDict = new Godot.Collections.Dictionary();
         foreach (var kv in _stats)
         {
-            var s = kv.Value;
             var statDict = new Godot.Collections.Dictionary();
-            statDict["Current"] = s.Current;
-            statDict["Max"] = s.Max;
-            statDict["UpgradeLevels"] = s.UpgradeLevels;
+            statDict["UpgradeLevels"] = kv.Value.UpgradeLevels;
             outDict[kv.Key.ToString()] = statDict;
         }
         return outDict;
@@ -126,9 +144,10 @@ public class WeaponStats
             if (!data.TryGetValue(key, out var statDictVar)) continue;
             var statDict = statDictVar.AsGodotDictionary();
             if (statDict == null) continue;
-            if (statDict.TryGetValue("Current", out var curr)) s.Current = (float)curr;
-            if (statDict.TryGetValue("Max", out var max)) s.Max = (float)max;
-            if (statDict.TryGetValue("UpgradeLevels", out var upLvl)) s.UpgradeLevels = (int)upLvl;
+            if (!statDict.TryGetValue("UpgradeLevels", out var upLvl)) continue;
+            // Current/Max are derived, not restored — older saves still carry them
+            // as keys and are intentionally ignored.
+            ApplyUpgradeLevels(type, s, (int)upLvl);
         }
     }
 }

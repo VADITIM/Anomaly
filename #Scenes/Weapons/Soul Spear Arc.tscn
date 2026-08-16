@@ -1,14 +1,16 @@
 [gd_scene format=3 uid="uid://drls02dfnacq0"]
 
-[ext_resource type="Script" uid="uid://rsftpla73pqh" path="res://#Scripts/Weapons/Weapon Arcs/SpearArc.cs" id="1_0msrr"]
+[ext_resource type="Script" uid="uid://dye4g1hoyvlmc" path="res://#Scripts/Weapon/WeaponArc.cs" id="1_0msrr"]
+[ext_resource type="Resource" path="res://#Assets/Weapons/Arcs/Soul Spear Arc.tres" id="3_arcdata"]
 [ext_resource type="Texture2D" uid="uid://s0mt200dgsge" path="res://#Assets/Weapons/spear.png" id="2_0msrr"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_lqgd4"]
 height = 48.78862
 
-[node name="Piercing Weapon" type="Node2D" unique_id=398307262]
+[node name="Soul Spear Arc" type="Node2D" unique_id=398307262]
 rotation = -0.7853982
 script = ExtResource("1_0msrr")
+Data = ExtResource("3_arcdata")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=202251563]
 position = Vector2(10, -9)

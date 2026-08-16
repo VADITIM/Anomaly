@@ -16,7 +16,7 @@ public partial class Weapon
 
     public float ApplyDamage(Enemy enemy)
     {
-        float rawDamage = Damage * (_currentArc?.DamageMultiplier ?? 1f);
+        float rawDamage = Damage * (_currentArc?.Data?.DamageMultiplier ?? 1f);
 
         if (OwnerStateMachine?.IsHeavyAttacking ?? false)
         {
@@ -42,13 +42,10 @@ public partial class Weapon
 
     public float CalculateTenacityDamage(float baseTenacityDamage)
     {
-        _hitCount++;
-        bool isSpecialHit = (_hitCount % _specialHitInterval) == 0;
-
         float tenacityDamageValue = baseTenacityDamage * _currentTenacityDamageMultiplier / 10f;
 
-        if (isSpecialHit)
-            tenacityDamageValue *= 1.2f;
+        if (_isSpecialHitSwing)
+            tenacityDamageValue *= _currentArc?.Data?.SpecialHitTenacityMultiplier ?? 1.2f;
 
         _currentTenacityDamageMultiplier -= 0.003f;
         _currentTenacityDamageMultiplier = Mathf.Max(_currentTenacityDamageMultiplier, 0.1f);
@@ -56,23 +53,28 @@ public partial class Weapon
         return tenacityDamageValue;
     }
 
+    // NOTE: _hitCount is not reset here — the special-hit interval runs
+    // continuously across combos and Tenacity resets by design.
     public void ResetTenacityDamage()
     {
         _currentTenacityDamageMultiplier = 1f;
-        _hitCount = 0;
+    }
+
+    public float GetLightAttackDuration(int sequenceIndex)
+    {
+        if (_attackDurations == null || _attackDurations.Length == 0)
+            return 0.37f;
+
+        int clampedIndex = Mathf.Clamp(sequenceIndex, 0, _attackDurations.Length - 1);
+        return _attackDurations[clampedIndex];
     }
 
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        if (_currentArc != null)
-        {
-            if (isHeavy)
-                return _currentArc.HeavyAttackDuration;
+        if (isHeavy && _currentArc != null)
+            return _currentArc.HeavyAttackDuration;
 
-            return _currentArc.GetAttackSequenceDuration(_attackSequenceIndex);
-        }
-
-        return GetCurrentAttackSequenceDuration(isHeavy);
+        return GetLightAttackDuration(_attackSequenceIndex);
     }
 
 

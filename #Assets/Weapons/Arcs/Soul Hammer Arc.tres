@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="SoulWeaponArc" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://#Scripts/Weapon/SoulWeaponArc.cs" id="1_arc"]
+
+[resource]
+script = ExtResource("1_arc")
+ArcName = "Soul Hammer Arc"
+AttackType = 2
+DamageMultiplier = 2.0
+TenacityMultiplier = 1.5
+PenetrationMultiplier = 1.0
+StaminaCostMultiplier = 2.1
+HeavyStaminaCostMultiplier = 2.1
+StaminaRestoreMultiplier = 1.0
+Knockback = 15.0
+PlayerPushForce = 0.0
+HeavyAttackDuration = 0.8
+SpecialCooldownDuration = 0.8
+SpecialHitInterval = 5
+SpecialHit = 2
+SpecialHitTenacityMultiplier = 1.2
+ShatterDelay = 0.35
+ShatterRadius = 72.0
+ShatterDamageMultiplier = 1.5

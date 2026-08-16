@@ -557,13 +557,13 @@ sources/1 = SubResource("TileSetAtlasSource_3s8t0")
 environment = SubResource("Environment_irh2j")
 
 [node name="Elevation 2" type="Node2D" parent="." unique_id=304425234]
+visible = false
 
 [node name="E2 Ground" type="TileMapLayer" parent="Elevation 2" unique_id=367834982]
 visible = false
 tile_set = SubResource("TileSet_cqpmk")
 
 [node name="E2 Wall" type="TileMapLayer" parent="Elevation 2" unique_id=1920120689]
-visible = false
 tile_set = SubResource("TileSet_2diw0")
 
 [node name="Elevation 1" type="Node2D" parent="." unique_id=994049203]

@@ -1,27 +1,17 @@
 using Godot;
 using System;
 
+// Presentation half of a Soul Weapon Arc: sprite, animation and hitbox. All
+// tuning lives in the SoulWeaponArc Resource (design.md §3.5) — this class owns
+// no balance values of its own.
 public partial class WeaponArc : Node2D
 {
-    public enum WeaponAttackType { Slashing, Piercing, Smashing }
+    [Export] public SoulWeaponArc Data { get; set; }
 
     public Area2D Hitbox { get; private set; }
     public Sprite2D Sprite { get; private set; }
     public AnimationPlayer AnimationPlayer { get; private set; }
 
-    [Export] public float[] AttackDurations = new float[4] { 0.2f, 0.2f, 0.2f, 0.6f };
-    [Export] private float _heavyAttackDuration = 1.5f;
-    [Export] private float _specialCooldownDuration = 0f;
-    [Export] public WeaponAttackType AttackType { get; set; } = WeaponAttackType.Slashing;
-    [Export] public float PlayerPushForce { get; set; } = 0f;
-    [Export] public float StaminaRestoreMultiplier { get; set; } = 1f;
-    [Export] public float StaminaCostMultiplier { get; set; } = 1f;
-
-    public float DamageMultiplier { get; set; } = 1f;
-    public float TenacityMultiplier { get; set; } = 1f;
-    public float PenetrationMultiplier { get; set; } = 1f;
-
-    private float _knockback = 0f;
     private Timer _attackAnimationStopTimer;
     private string _preparedDirection = "Down";
     private bool _preparedHeavyAttack = false;
@@ -31,16 +21,22 @@ public partial class WeaponArc : Node2D
     private Weapon ParentWeapon => _parentWeapon
         ?? throw new InvalidOperationException($"{Name}: parent Weapon not set. Call SetParentWeapon() when slotting the Arc.");
 
-    public float Damage => ParentWeapon.Damage * DamageMultiplier;
-    public float Knockback { get => _knockback; set => _knockback = value; }
-    public float StaminaCost => ParentWeapon.StaminaCost * StaminaCostMultiplier;
-    public float TenacityDamage => ParentWeapon.TenacityDamage * TenacityMultiplier;
-    public float StaminaRestore => ParentWeapon.StaminaRestore * StaminaRestoreMultiplier;
-    public float Penetration => ParentWeapon.Penetration * PenetrationMultiplier;
-    public float HeavyAttackDuration { get => _heavyAttackDuration; set => _heavyAttackDuration = Mathf.Clamp(value, 0.1f, 5f); }
-    public float SpecialCooldownDuration { get => _specialCooldownDuration; set => _specialCooldownDuration = Mathf.Clamp(value, 0f, 10f); }
-    public int SpecialHitInterval { get => ParentWeapon.SpecialHitInterval; set => ParentWeapon.SpecialHitInterval = value; }
-    public int HitCount { get => ParentWeapon.HitCount; set => ParentWeapon.HitCount = value; }
+    private SoulWeaponArc ArcData => Data
+        ?? throw new InvalidOperationException($"{Name}: no SoulWeaponArc Resource assigned. Assign Data on the Arc scene root.");
+
+    public WeaponAttackType AttackType => ArcData.AttackType;
+    public float Knockback => ArcData.Knockback;
+    public float PlayerPushForce => ArcData.PlayerPushForce;
+    public float HeavyAttackDuration => ArcData.HeavyAttackDuration;
+    public int SpecialHitInterval => ArcData.SpecialHitInterval;
+    public bool IsSpecialHitSwing => ParentWeapon.IsSpecialHitSwing;
+
+    public float Damage => ParentWeapon.Damage * ArcData.DamageMultiplier;
+    public float StaminaCost => ParentWeapon.StaminaCost * ArcData.StaminaCostMultiplier;
+    public float HeavyStaminaCost => ParentWeapon.HeavyStaminaCost * ArcData.HeavyStaminaCostMultiplier;
+    public float TenacityDamage => ParentWeapon.TenacityDamage * ArcData.TenacityMultiplier;
+    public float StaminaRestore => ParentWeapon.StaminaRestore * ArcData.StaminaRestoreMultiplier;
+    public float Penetration => ParentWeapon.Penetration * ArcData.PenetrationMultiplier;
 
     public static Timer QuickTimer(Node parent, float time)
     {
@@ -53,7 +49,7 @@ public partial class WeaponArc : Node2D
         return timer;
     }
 
-    public virtual void SetParentWeapon(Weapon weapon)
+    public void SetParentWeapon(Weapon weapon)
     {
         _parentWeapon = weapon;
     }
@@ -68,6 +64,14 @@ public partial class WeaponArc : Node2D
 
         if (Hitbox == null)
             GD.PushError($"{Name}: no hitbox node found (expected a child Area2D named 'Hitbox Area'). Arc hits will not register.");
+
+        if (Data == null)
+            GD.PushError($"{Name}: no SoulWeaponArc Resource assigned. Arc will not resolve damage or its special hit.");
+    }
+
+    public float GetSpecialCooldownDuration()
+    {
+        return ArcData.SpecialCooldownDuration > 0f ? ArcData.SpecialCooldownDuration : ArcData.HeavyAttackDuration;
     }
 
     public void PlayAttackAnimation(string direction = "Down", bool isHeavy = false)
@@ -162,23 +166,13 @@ public partial class WeaponArc : Node2D
         return Mathf.Max(0.1f, (float)animation.Length);
     }
 
+    // Swing pacing is the Scythe's alone (single source of truth) — an Arc only
+    // overrides the duration of its own heavy attack.
     public float GetAttackAnimationDuration(string direction, bool isHeavy)
     {
-        return isHeavy && HeavyAttackDuration > 0f ? HeavyAttackDuration : GetAttackSequenceDuration(_preparedSequenceIndex);
-    }
-
-    public float GetSpecialCooldownDuration()
-    {
-        return SpecialCooldownDuration > 0f ? SpecialCooldownDuration : HeavyAttackDuration;
-    }
-
-    public float GetAttackSequenceDuration(int sequenceIndex)
-    {
-        if (AttackDurations == null || AttackDurations.Length == 0)
-            return 0.37f;
-
-        int clampedIndex = Mathf.Clamp(sequenceIndex, 0, AttackDurations.Length - 1);
-        return AttackDurations[clampedIndex];
+        return isHeavy && HeavyAttackDuration > 0f
+            ? HeavyAttackDuration
+            : ParentWeapon.GetLightAttackDuration(_preparedSequenceIndex);
     }
 
     public void PlayStateAnimation(string animationName)

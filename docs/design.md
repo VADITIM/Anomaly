@@ -271,14 +271,47 @@ The Entity reads from `Stats` at initialization; it never mutates the Resource i
 
 #### Z Axis Development
 
-Currently under active development. Future responsibilities include:
+The world is built in stacked elevation planes so space can be reused vertically — a bridge on
+elevation 5 passes over ground at elevation 3. Every entity carries a **float** `Elevation`.
 
-- Jumping
-- Falling
-- Airborne states
-- Elevation
-- Gravity
-- Weight-influenced vertical movement
+**The world's ground TileMapLayers are the elevation authority.** A world scene holds one
+`Elevation N` node per plane containing `EN Ground` and `EN Wall` TileMapLayers. A cell in
+`E3 Ground` means elevation 3 exists at that cell; the surface at a position is the highest such
+plane. No separate elevation data is authored.
+
+**`EN Wall` is the face that stands on plane N and holds up plane N+1** — `E0 Wall` is what gates
+`E1 Ground`. It is painted on the upper plateau's own perimeter cells (two tiles tall on a
+south-facing edge, one tile on left/top/right), so it draws *over* the plateau it supports and
+carries the `Elevation N+1` physics layer.
+
+- **Entity elevation**: `Elevation = GroundElevation + jumpHeight / PixelsPerElevation` (32 px per
+  plane, one wall tile). Whole while grounded, fractional mid-jump.
+- **Jump reach is not a stat.** It falls out of `JumpImpulse` / `JumpFallSpeed`: the default
+  300/1200 apexes at 37.5 px = 1.17 planes, so entities clear one elevation and never two.
+- **Edges are physics, not raycasts.** `EN Wall` tiles carry the `Elevation N` physics layer. A
+  grounded entity masks every wall plane `>= its own` (its own plateau edge blocks it); an airborne
+  entity masks only planes `> its current elevation`, so rising past 1.0 unblocks the 1-wall and it
+  crosses the edge exactly when the jump was high enough.
+- **A wall only opens for a landing that exists.** Before relaxing the mask mid-jump, the surface
+  ahead is probed at full height. If that surface is beyond the entity's reach, every wall stays
+  solid — the lower face of a two-plane cliff is authored as `E1 Wall`, so wall layer alone would let
+  a one-plane jumper into the cliff. An entity can never occupy a plane it could not jump to.
+- **Landing** resolves to the highest plane at or below the entity's current elevation, so downward
+  transitions are unlimited (4 → 0 works). Upward is hard-capped at `MaxJumpElevations` (1): however
+  high the sprite arcs, a jump never skips a plane. Falls are uncapped — their height above the
+  destination is real distance, not jump reach.
+- **Combat is plane-locked**: melee and ranged only connect within the same plane. Area bursts are
+  the exception, carrying an elevation span (`SoulWeaponArc.ShatterElevationSpan`) that says how many
+  planes above and below the impact they threaten.
+- **Perception is plane-locked too**: an enemy's `SightElevationSpan` (0 by default) decides how many
+  planes above and below it can notice the player at all. A plane-blind enemy drops the chase the
+  moment the player changes elevation.
+- **Jumping over things**: entities default to `CanBeJumpedOver = true` — airborne entities stop
+  colliding with bodies. An entity that must never be cleared (a tree) sets it false and joins the
+  Wall layer, which stays masked while airborne.
+- **Weight** decides how easily a prop is pushed (knockback force ÷ weight), how fast it falls, and
+  its impact damage on landing: `(elevationsFallen - 1) × weight × 10`. The one-plane grace and the
+  per-elevation factor are `[UNDEFINED]` placeholders pending confirmation.
 
 ### 3.3 Behavior System
 
@@ -384,6 +417,16 @@ The Soul Stone holds a reference to the currently equipped Arc:
 Equipping a new Arc via **The Rend** is a single reassignment of `CurrentArc` — no branching combat code per archetype. Combat resolution reads `BaseEfficiency`/`MatchedEfficiency` from the Resource to determine the 90–100% vs. 130% damage outcome described in [§1.2](https://claude.ai/chat/2a16c8f3-f9fd-49bd-8b14-a94eaa9593ee#12-core-combat-identity--the-rend--soul-weapon-arcs).
 
 > This is the clearest Resource use case in the project: Arcs have no behavior of their own, are meant to be authored and rebalanced by design, and are reused identically across every Scythe instance.
+
+**Special hit** is a separate axis from the Special Move above. Every Arc carries a `SpecialHitInterval`; each Nth *landed* swing fires the Arc's signature effect and VFX. The counter runs continuously — it is not reset when the 4-step combo wraps — so an interval of 3 lands on combo steps 3, 2, 1, 4, and so on. The Scythe's swing animation and pacing never change; only the special-hit effect differs per Arc.
+
+| Arc | Interval | Special hit effect |
+|---|---|---|
+| Soul Scythe Arc | 4 | None (baseline) — tenacity bonus only |
+| Soul Spear Arc | 3 | 4 consecutive piercing strikes over 0.2s |
+| Soul Hammer Arc | 5 | Delayed force shatter in a radius, `[UNDEFINED]` VFX |
+
+The heavy-attack cooldown source is `[UNDEFINED]` — intended to be the Health Star Resource Bar, which does not exist yet; `SoulWeaponArc.SpecialCooldownDuration` is the interim gate.
 
 ### Known Arcs
 

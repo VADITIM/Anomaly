@@ -13,8 +13,8 @@ public class ResourceManager : IEntityBehavior
     private float _healConsumptionTimer = 0f;
     private bool _isHealing = false;
     private float _healStartHealthS = 0f;
-    private float _healStartVessel = 0f;
     private float _healLastProgress = 0f;
+    private const float BasePotency = 25f;
 
     public event Action<float, float> OnHealthChanged;
     public event Action<float, float> OnStaminaChanged;
@@ -172,13 +172,21 @@ public class ResourceManager : IEntityBehavior
         if (!Mathf.IsEqualApprox(currentVessel, newVessel))
             OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax(StatType.Vessel));
 
-        if (newVessel >= 100f)
+        // A full Health S has nowhere to drain to, so Vessel holds at 100 until the heal is spent.
+        if (newVessel >= 100f && !IsHealthSFull)
         {
             _player.Stats.SetCurrent(StatType.Vessel, 0f);
             OnVesselChanged?.Invoke(0f, _player.Stats.GetCurrentMax(StatType.Vessel));
             StartHealthSFill();
         }
     }
+
+    public bool IsHealthSFull => Mathf.IsEqualApprox(_player.Stats.GetCurrent(StatType.HealthS), 100f);
+
+    public bool CanHeal => IsHealthSFull && _healthSFillTimer <= 0f;
+
+    // design.md §3.8: flat HP restored per Vessel consumption, +0.5 per Max Health upgrade.
+    public float Potency => BasePotency + _player.Stats.GetUpgradeLevels(StatType.Health) * 0.5f;
 
     public void ResetConsecutiveHits()
     {
@@ -187,10 +195,12 @@ public class ResourceManager : IEntityBehavior
 
     public void StartHealing()
     {
+        if (!CanHeal)
+            return;
+
         _isHealing = true;
         _healConsumptionTimer = HealConsumptionDuration;
         _healStartHealthS = _player.Stats.GetCurrent(StatType.HealthS);
-        _healStartVessel = _player.Stats.GetCurrent(StatType.Vessel);
         _healLastProgress = 0f;
     }
 
@@ -205,7 +215,7 @@ public class ResourceManager : IEntityBehavior
         if (!_isHealing || _healConsumptionTimer <= 0f)
             return;
 
-        if (_healStartHealthS <= 0f || _healStartVessel <= 0f)
+        if (_healStartHealthS <= 0f)
         {
             _healConsumptionTimer = 0f;
             return;
@@ -216,16 +226,11 @@ public class ResourceManager : IEntityBehavior
         float progress = Mathf.Clamp(1f - (_healConsumptionTimer / HealConsumptionDuration), 0f, 1f);
 
         float newHealthS = Mathf.Lerp(_healStartHealthS, 0f, progress);
-        float newVessel = Mathf.Lerp(_healStartVessel, 0f, progress);
-
         _player.Stats.SetCurrent(StatType.HealthS, newHealthS);
-        _player.Stats.SetCurrent(StatType.Vessel, newVessel);
-
         OnHealthSChanged?.Invoke(newHealthS, _player.Stats.GetCurrentMax(StatType.HealthS));
-        OnVesselChanged?.Invoke(newVessel, _player.Stats.GetCurrentMax(StatType.Vessel));
 
-        // Total heal over the full consumption equals the Health S that was drained, frame-rate independent.
-        float healAmount = _healStartHealthS * (progress - _healLastProgress);
+        // Total heal over the full consumption equals Potency, frame-rate independent.
+        float healAmount = Potency * (progress - _healLastProgress);
         _healLastProgress = progress;
 
         float currentHealth = _player.Stats.GetCurrent(StatType.Health);

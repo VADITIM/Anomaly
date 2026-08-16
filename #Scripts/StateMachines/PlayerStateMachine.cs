@@ -107,9 +107,18 @@ public partial class PlayerStateMachine : StateMachine
         ProcessInput();
     }
 
+    private PlayerInputBehavior GetInputBehavior()
+    {
+        return OwnerEntity?.GetBehavior<PlayerInputBehavior>();
+    }
+
     private void ProcessInput()
     {
         if (!CanAct || Player == null)
+            return;
+
+        var input = GetInputBehavior();
+        if (input == null)
             return;
 
         var movementBehavior = GetMovementBehavior();
@@ -120,7 +129,7 @@ public partial class PlayerStateMachine : StateMachine
         if (IsInLockedState())
             return;
 
-        if (Input.IsActionJustPressed(Keybinds.Dodge) && CanMove)
+        if (input.DodgeJustPressed && CanMove)
         {
             if (CurrentState == State.Healing)
                 RaiseHealEnded();
@@ -134,7 +143,7 @@ public partial class PlayerStateMachine : StateMachine
 
         if (CurrentState == State.Attacking)
         {
-            if (Input.IsActionJustPressed(Keybinds.Attack))
+            if (input.AttackJustPressed)
                 Player.Weapon?.QueueAttackFollowUp();
             return;
         }
@@ -142,18 +151,18 @@ public partial class PlayerStateMachine : StateMachine
         if (CurrentState == State.HeavyAttacking)
             return;
 
-        if (Input.IsActionJustPressed(Keybinds.Heal) && CanAct)
+        if (input.HealJustPressed && CanAct)
         {
             RequestHeal(HealDuration);
             return;
         }
 
-        if (Input.IsActionPressed(Keybinds.Heavy) && CanAttack && !IsComboCoolingDown())
+        if (input.HeavyPressed && CanAttack && !IsComboCoolingDown())
         {
             if (!Player.ResourceManager.HasSpecialAttackReady())
                 return;
 
-            if (HasAttackStamina())
+            if (HasAttackStamina(true))
             {
                 if (CurrentState != State.HeavyCharging)
                     StartHeavyCharge();
@@ -161,15 +170,15 @@ public partial class PlayerStateMachine : StateMachine
             return;
         }
 
-        if (Input.IsActionJustReleased(Keybinds.Heavy) && CurrentState == State.HeavyCharging)
+        if (input.HeavyJustReleased && CurrentState == State.HeavyCharging)
         {
             ExecuteHeavyAttack();
             return;
         }
 
-        if (Input.IsActionJustPressed(Keybinds.Attack) && CanAttack && !IsComboCoolingDown())
+        if (input.AttackJustPressed && CanAttack && !IsComboCoolingDown())
         {
-            if (HasAttackStamina())
+            if (HasAttackStamina(false))
             {
                 if (Player.Weapon != null && Player.Weapon.CanQueueAttackFollowUp)
                 {
@@ -203,6 +212,8 @@ public partial class PlayerStateMachine : StateMachine
         if (CurrentState == State.Dead) return;
         if (CurrentState != State.Idle && CurrentState != State.Moving)
             return;
+        if (Player?.ResourceManager?.CanHeal != true)
+            return;
         _healDuration = duration;
         TransitionTo(State.Healing);
         RaiseHealStarted(duration);
@@ -219,14 +230,27 @@ public partial class PlayerStateMachine : StateMachine
         RaiseDodgeStarted(dodgeBehavior.GetDodgeDirection());
     }
 
-    private bool HasAttackStamina()
+    // Cost routes through the slotted Arc so its multiplier applies; an unslotted
+    // weapon falls back to the bare Scythe baseline.
+    private float GetAttackStaminaCost(bool isHeavy)
     {
-        return Player.ResourceManager.HasStamina(Player.Weapon.StaminaCost);
+        var weapon = Player.Weapon;
+        if (weapon == null) return 0f;
+
+        if (weapon.CurrentArc != null)
+            return isHeavy ? weapon.CurrentArc.HeavyStaminaCost : weapon.CurrentArc.StaminaCost;
+
+        return isHeavy ? weapon.HeavyStaminaCost : weapon.StaminaCost;
     }
 
-    private void SpendAttackStamina()
+    private bool HasAttackStamina(bool isHeavy)
     {
-        Player.ResourceManager.TryUseStamina(Player.Weapon.StaminaCost);
+        return Player.ResourceManager.HasStamina(GetAttackStaminaCost(isHeavy));
+    }
+
+    private void SpendAttackStamina(bool isHeavy)
+    {
+        Player.ResourceManager.TryUseStamina(GetAttackStaminaCost(isHeavy));
     }
 
     private void StartHeavyCharge()
@@ -241,6 +265,7 @@ public partial class PlayerStateMachine : StateMachine
     private void ExecuteHeavyAttack()
     {
         HeavyChargeProgress = 0f;
+        SpendAttackStamina(true);
         _attackDuration = Player.GetCurrentAttackAnimationDuration(true);
         Player.Weapon?.StartAttackSequence(true);
         Player.ResourceManager.StartSpecialCooldown(Player.Weapon?.CurrentArc?.GetSpecialCooldownDuration() ?? _attackDuration);
@@ -252,7 +277,7 @@ public partial class PlayerStateMachine : StateMachine
     {
         if (CurrentState != State.Idle && CurrentState != State.Moving) return;
 
-        SpendAttackStamina();
+        SpendAttackStamina(false);
         _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
         Player.Weapon?.StartAttackSequence(false);
         TransitionTo(State.Attacking);
@@ -266,7 +291,7 @@ public partial class PlayerStateMachine : StateMachine
         if (!Player.Weapon.TryConsumeQueuedAttack(false, out float duration))
             return;
 
-        SpendAttackStamina();
+        SpendAttackStamina(false);
         _attackDuration = duration;
         Player.Weapon.StartAttackSequence(false);
         TransitionTo(IsAirborne ? State.AirAttacking : State.Attacking);
@@ -277,7 +302,7 @@ public partial class PlayerStateMachine : StateMachine
     {
         if (CurrentState != State.Airborne) return;
 
-        SpendAttackStamina();
+        SpendAttackStamina(false);
         _attackDuration = Player.GetCurrentAttackAnimationDuration(false);
         Player.Weapon?.StartAttackSequence(false);
         TransitionTo(State.AirAttacking);

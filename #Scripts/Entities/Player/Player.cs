@@ -3,7 +3,6 @@ using System;
 
 public partial class Player : Entity
 {
-    public static Player Instance;
     public PlayerStats Stats { get; private set; }
     public new PlayerStateMachine StateMachine => (PlayerStateMachine)base.StateMachine;
     public ResourceManager ResourceManager { get; private set; }
@@ -24,7 +23,6 @@ public partial class Player : Entity
     public override void _Ready()
     {
         base._Ready();
-        Instance = this;
         Stats = new PlayerStats();
         Weapon = GetNodeOrNull<Weapon>("WEAPON");
         if (Weapon == null)

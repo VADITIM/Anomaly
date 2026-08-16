@@ -39,8 +39,16 @@ public class ResourceBarBehavior : IEntityBehavior
         healthBarAnimator?.OnHealthChanged(health, maxHealth);
     }
 
-    public void DestroyBars()
+    // The Enemy outlives its bars — it keeps processing through the death
+    // animation before QueueFree. Drop the references so nothing touches a freed
+    // node (a freed Godot node is not null, it throws on first access).
+    public virtual void DestroyBars()
     {
         ResourceBarControl?.QueueFree();
+
+        ResourceBarControl = null;
+        HealthBar = null;
+        HealthBarGhost = null;
+        healthBarAnimator = null;
     }
 }

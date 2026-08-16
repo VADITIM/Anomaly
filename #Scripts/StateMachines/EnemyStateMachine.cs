@@ -21,6 +21,16 @@ public partial class EnemyStateMachine : StateMachine
         Target = GetTree().Root.FindChild("Player", true, false) as Node2D;
     }
 
+    // Most enemies only perceive their own plane. SightElevationSpan widens that for the ones that
+    // are meant to notice the player above or below them (design.md §3.2).
+    private bool CanSeeTarget()
+    {
+        if (Target is not Entity target || Enemy == null)
+            return true;
+
+        return ElevationMath.SharesPlane(Enemy.Elevation, target.Elevation, 0.5f + Enemy.SightElevationSpan);
+    }
+
     protected override void OnAttackRequested(bool isHeavy)
     {
         CurrentAttackPhase = EnemyAttackPhase.WindUp;
@@ -48,8 +58,11 @@ public partial class EnemyStateMachine : StateMachine
         }
 
         var movementBehavior = GetMovementBehavior();
-        if (Target == null)
+        if (Target == null || !CanSeeTarget())
         {
+            if (CurrentState == State.Chasing)
+                TransitionTo(State.Idle);
+
             movementBehavior?.SetDirectionFromVector(Vector2.Zero);
             return;
         }
@@ -121,6 +134,9 @@ public partial class EnemyStateMachine : StateMachine
 
         float distanceToTarget = Enemy.GlobalPosition.DistanceTo(player.GlobalPosition);
         if (distanceToTarget > Enemy.AttackRange * StrikeRangeGrace)
+            return;
+
+        if (!ElevationMath.SharesPlane(Enemy.Elevation, player.Elevation))
             return;
 
         player.TakeDamage(Enemy.Damage, Enemy.GlobalPosition);

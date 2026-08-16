@@ -1,33 +1,9 @@
 [gd_scene format=3 uid="uid://d0gcf7sylcnog"]
 
-[ext_resource type="Texture2D" uid="uid://kyusuogsyad3" path="res://#Assets/UI/Icons/weapons.png" id="1_f0d42"]
-[ext_resource type="Texture2D" uid="uid://dthkn7hgwytn3" path="res://#Assets/UI/Menus/background.png" id="1_q82kj"]
-[ext_resource type="Script" uid="uid://6gfxi2jwsvlw" path="res://#Scripts/UI/UI.cs" id="1_qfslo"]
-[ext_resource type="Texture2D" uid="uid://bsaikot68m70g" path="res://#Assets/UI/Icons/inventory.png" id="2_r7fpj"]
-[ext_resource type="Texture2D" uid="uid://bpp8ox1413yyj" path="res://#Assets/UI/Icons/bar-stats.png" id="3_q82kj"]
-[ext_resource type="Texture2D" uid="uid://cha1j4rf66s6" path="res://#Assets/UI/Icons/history-book.png" id="4_qfslo"]
-[ext_resource type="Texture2D" uid="uid://c35x727im5rdb" path="res://#Assets/UI/Icons/gear.png" id="5_ycvyr"]
-[ext_resource type="FontFile" uid="uid://ceiw7dkwk6bie" path="res://#Assets/UI/Fonts/Zodiak-VariableItalic.ttf" id="6_pwctk"]
-[ext_resource type="Texture2D" uid="uid://by033xwdj7m5i" path="res://#Assets/UI/Menus/equipment_background.png" id="7_r7fpj"]
+[ext_resource type="Script" uid="uid://b5eyuffacvq4n" path="res://#Scripts/UI/Menus/EscapeMenu.cs" id="1_2ehy4"]
+[ext_resource type="PackedScene" uid="uid://d2lqg4ugquasb" path="res://#Scenes/UI/Menus/SettingsMenu.tscn" id="2_vxpd6"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_qfslo"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-
-[sub_resource type="LabelSettings" id="LabelSettings_ycvyr"]
-font = ExtResource("6_pwctk")
-font_size = 100
-shadow_size = 0
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_pwctk"]
-bg_color = Color(0.6, 0.6, 0.6, 0)
-
-[sub_resource type="LabelSettings" id="LabelSettings_v13be"]
-font = ExtResource("6_pwctk")
-font_size = 100
-shadow_size = 0
-
-[node name="Escape Menu" type="Control"]
-layout_direction = 1
+[node name="Escape Menu" type="Control" unique_id=2010718372]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,290 +11,62 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 pivot_offset = Vector2(576, 324)
-script = ExtResource("1_qfslo")
+layout_direction = 1
+script = ExtResource("1_2ehy4")
 
-[node name="Control" type="Control" parent="." node_paths=PackedStringArray("escapeMenu", "equipmentPanel", "equipmentButton", "background")]
-layout_mode = 3
-anchors_preset = 0
-offset_left = 64.0
-offset_top = -74.0
-offset_right = 64.0
-offset_bottom = -74.0
-scale = Vector2(0.35, 0.35)
-script = ExtResource("1_qfslo")
-escapeMenu = NodePath(".")
-equipmentPanel = NodePath("Panel")
-equipmentButton = NodePath("Left Container/Buttons/Equipment Button")
-background = NodePath("Container")
-
-[node name="Container" type="TextureRect" parent="Control"]
-self_modulate = Color(0.152941, 0.152941, 0.152941, 0.529412)
-layout_mode = 1
-anchors_preset = 15
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1497472335]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -983.0
-offset_top = -237.0
-offset_right = 617.0
-offset_bottom = 660.0
-grow_horizontal = 2
-grow_vertical = 2
-texture = ExtResource("1_q82kj")
-expand_mode = 1
+color = Color(0, 0, 0, 0.6)
 
-[node name="Left Container" type="Panel" parent="Control"]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = -982.857
-offset_top = -28.5714
-offset_right = -831.857
-offset_bottom = 516.429
-grow_vertical = 2
-scale = Vector2(1.65, 1.65)
-pivot_offset = Vector2(0, 324)
-
-[node name="Container" type="HBoxContainer" parent="Control/Left Container"]
-custom_minimum_size = Vector2(151, 378)
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Icons" type="VBoxContainer" parent="Control/Left Container"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_right = -101.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(0, 189)
-theme_override_constants/separation = 20
-alignment = 1
-
-[node name="TextureRect" type="TextureRect" parent="Control/Left Container/Icons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-texture = ExtResource("1_f0d42")
-expand_mode = 2
-
-[node name="TextureRect2" type="TextureRect" parent="Control/Left Container/Icons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-texture = ExtResource("2_r7fpj")
-expand_mode = 2
-
-[node name="TextureRect3" type="TextureRect" parent="Control/Left Container/Icons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-texture = ExtResource("3_q82kj")
-expand_mode = 2
-
-[node name="TextureRect4" type="TextureRect" parent="Control/Left Container/Icons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-texture = ExtResource("4_qfslo")
-expand_mode = 2
-
-[node name="TextureRect5" type="TextureRect" parent="Control/Left Container/Icons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-texture = ExtResource("5_ycvyr")
-expand_mode = 2
-
-[node name="Buttons" type="VBoxContainer" parent="Control/Left Container"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-pivot_offset = Vector2(0, 189)
-theme_override_constants/separation = 20
-alignment = 1
-
-[node name="Equipment Button" type="Button" parent="Control/Left Container/Buttons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("6_pwctk")
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_qfslo")
-alignment = 2
-
-[node name="Label" type="Label" parent="Control/Left Container/Buttons/Equipment Button"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -253.0
-offset_top = -54.0
-offset_right = 265.0
-offset_bottom = 233.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "Equipment"
-label_settings = SubResource("LabelSettings_ycvyr")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="Inventory Button" type="Button" parent="Control/Left Container/Buttons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("6_pwctk")
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_qfslo")
-alignment = 2
-
-[node name="Label" type="Label" parent="Control/Left Container/Buttons/Inventory Button"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -253.0
-offset_top = -54.0
-offset_right = 265.0
-offset_bottom = 233.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "Inventory"
-label_settings = SubResource("LabelSettings_ycvyr")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="Status Button" type="Button" parent="Control/Left Container/Buttons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("6_pwctk")
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_qfslo")
-alignment = 2
-
-[node name="Label" type="Label" parent="Control/Left Container/Buttons/Status Button"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -253.0
-offset_top = -54.0
-offset_right = 265.0
-offset_bottom = 233.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "Status"
-label_settings = SubResource("LabelSettings_ycvyr")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="Messages Button" type="Button" parent="Control/Left Container/Buttons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("6_pwctk")
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_qfslo")
-alignment = 2
-
-[node name="Label" type="Label" parent="Control/Left Container/Buttons/Messages Button"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -253.0
-offset_top = -54.0
-offset_right = 265.0
-offset_bottom = 233.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "Messages"
-label_settings = SubResource("LabelSettings_ycvyr")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="System" type="Button" parent="Control/Left Container/Buttons"]
-custom_minimum_size = Vector2(0, 50)
-layout_mode = 2
-theme_override_fonts/font = ExtResource("6_pwctk")
-theme_override_font_sizes/font_size = 17
-theme_override_styles/normal = SubResource("StyleBoxFlat_qfslo")
-alignment = 2
-
-[node name="Label" type="Label" parent="Control/Left Container/Buttons/System"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -253.0
-offset_top = -54.0
-offset_right = 265.0
-offset_bottom = 233.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "System"
-label_settings = SubResource("LabelSettings_ycvyr")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="Panel" type="Panel" parent="Control"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -182.857
-offset_top = 211.429
-offset_right = -182.857
-offset_bottom = 211.429
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(1.479, 1.479)
-theme_override_styles/panel = SubResource("StyleBoxFlat_pwctk")
-
-[node name="Label" type="Label" parent="Control/Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -81.0
-offset_right = -15.0
-offset_bottom = -417.0
-grow_horizontal = 2
-grow_vertical = 2
-scale = Vector2(0.15, 0.15)
-pivot_offset = Vector2(356, 63.5)
-text = "Equipment"
-label_settings = SubResource("LabelSettings_v13be")
-horizontal_alignment = 2
-vertical_alignment = 1
-justification_flags = 162
-
-[node name="TextureRect" type="TextureRect" parent="Control/Panel"]
+[node name="MainPanel" type="CenterContainer" parent="." unique_id=213205140]
 layout_mode = 1
 anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -299.5
-offset_top = -262.0
-offset_right = 299.5
-offset_bottom = 262.0
+anchor_left = 0.15
+anchor_top = 0.15
+anchor_right = 0.85
+anchor_bottom = 0.85
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("7_r7fpj")
+
+[node name="Buttons" type="VBoxContainer" parent="MainPanel" unique_id=990597812]
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="MainPanel/Buttons" unique_id=1870817086]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+text = "Resume"
+
+[node name="SettingsButton" type="Button" parent="MainPanel/Buttons" unique_id=298704174]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+text = "Settings"
+
+[node name="QuitButton" type="Button" parent="MainPanel/Buttons" unique_id=843606721]
+custom_minimum_size = Vector2(240, 48)
+layout_mode = 2
+text = "Quit"
+
+[node name="SettingsPanel" type="Control" parent="." unique_id=1991926834]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.15
+anchor_top = 0.15
+anchor_right = 0.85
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="SettingsMenu" parent="SettingsPanel" unique_id=1375858120 instance=ExtResource("2_vxpd6")]
+layout_mode = 1
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="BackButton" type="Button" parent="SettingsPanel" unique_id=1019033238]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 69.0
+offset_bottom = 55.0
+text = "Back"

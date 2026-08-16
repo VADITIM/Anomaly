@@ -13,4 +13,8 @@ public partial class EnemyStats : EntityStats
     [Export] public EnemyWeaknessType WeaknessType { get; set; }
     [Export] public float ChaseRange { get; set; } = 200f;
     [Export] public float AttackRange { get; set; } = 50f;
+
+    // How many elevations above and below its own plane this enemy can perceive the player.
+    // 0 = plane-blind, the default: it never notices a player on a ledge above or below.
+    [Export(PropertyHint.Range, "0,10,1")] public float SightElevationSpan { get; set; } = 0f;
 }

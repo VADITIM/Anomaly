@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://0wsea1rwqcp0"]
+
+[ext_resource type="Script" uid="uid://d2xi1nrbk3nfd" path="res://#Scripts/UI/Menus/WeaponArcSelectionMenu.cs" id="1_wjthh"]
+[ext_resource type="PackedScene" uid="uid://b8qxomuahcc2v" path="res://#Scenes/UI/WeapnItemControl.tscn" id="2_wj8od"]
+[ext_resource type="Script" uid="uid://coqgtwr24ehyt" path="res://#Scripts/Weapon/WeaponManager.cs" id="3_7o5do"]
+[ext_resource type="Script" uid="uid://cp3w71omtqs2m" path="res://#Scripts/Weapon/WeaponArcInventory.cs" id="4_y1g2r"]
+[ext_resource type="PackedScene" uid="uid://drls02dfnacq0" path="res://#Scenes/Weapons/Soul Spear Arc.tscn" id="5_7g74t"]
+[ext_resource type="PackedScene" uid="uid://dygiv72viw8hp" path="res://#Scenes/Weapons/Soul Hammer Arc.tscn" id="6_41lsc"]
+[ext_resource type="PackedScene" uid="uid://4vrodf6tt6t6" path="res://#Scenes/Weapons/Soul Scythe Arc.tscn" id="7_mjbkl"]
+
+[node name="WeaponArcSelection" type="Control" unique_id=472836196]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_wjthh")
+ItemControlScene = ExtResource("2_wj8od")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=1316594817]
+layout_mode = 0
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0, 0, 0, 0.75)
+
+[node name="Frame" type="Control" parent="." unique_id=1771572574]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.15
+anchor_top = 0.15
+anchor_right = 0.85
+anchor_bottom = 0.85
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HeaderLabel" type="Label" parent="Frame" unique_id=1771572573]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 23.0
+grow_horizontal = 2
+text = "Maldor Arakhan — Soul Weapon Arcs"
+
+[node name="WeaponManager" type="Node" parent="." unique_id=538146297]
+script = ExtResource("3_7o5do")
+
+[node name="Inventory" type="Node" parent="." unique_id=1148567247]
+script = ExtResource("4_y1g2r")
+StartingWeaponArc = Array[PackedScene]([ExtResource("5_7g74t"), ExtResource("6_41lsc"), ExtResource("7_mjbkl")])
+
+[node name="ItemContainer" type="GridContainer" parent="Frame" unique_id=1689723392]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 56.0
+offset_bottom = -72.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/h_separation = 32
+theme_override_constants/v_separation = 32
+columns = 4
+
+[node name="CloseButton" type="Button" parent="Frame" unique_id=722492750]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -48.0
+offset_right = 96.0
+grow_vertical = 0
+text = "Close"
