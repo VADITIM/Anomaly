@@ -112,7 +112,8 @@ Scope: new arts added to the existing tree. Nothing already in it is removed or 
 
 A later feature: a combo performed in the air converts the air momentum and state into a new ground combo. This is not in the current steps. It affects Step 2 only in that the air string needs to expose its state (height, momentum, hits so far) so a later landing combo can read it.
 
+- **Air dodge resets on landing only.** One air dodge per jump. A landed hit does not refresh it. Revisit with the dodge rework.
+
 ## Open questions
 
-1. **Air dodge reset.** Options: landing alone refreshes it (one air dodge per jump), or a landed hit refreshes it too (rewards aggression). Recommendation: landing only, until the dodge rework.
-2. **Air string in the tree.** Is Meteor Slam still the air charge in the new air branch, or does the air branch get its own charged art?
+1. **Air string in the tree.** Is Meteor Slam still the air charge in the new air branch, or does the air branch get its own charged art?
