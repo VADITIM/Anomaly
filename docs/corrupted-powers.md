@@ -56,8 +56,14 @@ Each power needs one line from Maldor that is unique to it. He speaks it when th
 
 - Corruption attunement: **40** points.
 - Weapon cap: **40**.
-- Soul Arc cap: **20**.
+- Soul Arc level cap: **20** upgrades. Level 5 is still the Corrupted Power gate.
+
+## Pacing
+
+- Target length: **6–10 hours** of gameplay.
+- The Arc upgrade curve has to fill 20 levels across that time. Code currently has `ArcUpgrades.MAX_LEVEL = 5`, with `DAMAGE_PER_LEVEL` (4%) and `COOLDOWN_CUT_PER_LEVEL` (6%) tuned for 5 levels. At 20 levels those give about 1.76x damage and a cooldown cut that would reach zero, so they need retuning before the cap changes.
+- The soul cost curve (`150 + 120 * (level - 1)`) also needs a pass for 20 levels.
 
 ## Open questions
 
-1. **Soul Arc cap of 20.** Is this the Arc's own level cap (currently `MAX_LEVEL` is 5), or a different number? The Arc levels here and in code do not match yet.
+1. None left from the decisions so far. Balance numbers above are for tuning.
