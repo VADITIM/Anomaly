@@ -69,18 +69,17 @@ Scope: the first two tree items in the dodge branch, implemented with a base ver
 
 ## Step 5: append the new tree members
 
-Scope: new arts added to the existing tree. Nothing already in it is removed or moved.
+Scope: new arts added to the existing tree. Nothing already in it is removed, renamed or moved. The tree has three branches (Rage, Dexterity, Corruption); see `docs/skill-tree.md` for the mapping.
 
-| Area | Existing members | New members (appended) |
+| Branch | Existing members | New members (appended) |
 | --- | --- | --- |
-| Ground combo | 4th Strike, 5th Strike, Momentum, Echo | none |
-| Charged arts | Rising Reap, Whirlwind, Cataclysm | none; the timing change in Step 1 applies to these |
-| Air | Juggle, Sky Rhythm, Meteor Slam | air 2-hit slice base, 4-hit air string, airborne damage |
-| Dodge | none | dodge strike, dodge jump, air dodge |
+| Rage | 4th Strike, 5th Strike, Momentum, Echo, Rising Reap, Whirlwind, Cataclysm, Juggle, Meteor Slam | air 2-hit slice base, 4-hit air string, airborne damage, dodge strike |
+| Dexterity | Sky Rhythm | dodge jump, air dodge |
+| Corruption | none | Aetheriac sub-branch, main bonuses (undefined) |
 
 - New members go at the end of `CombatSkill` and at the end of `All`, in the order listed above.
-- `Requires` points at an existing member where the new art follows from it (for example, the dodge strike after 5th Strike), so the new arts are reachable without a new branch layout.
-- The branch layout around the ring is decided during the Step 5 work, after the new members exist.
+- The branch is a field on each member, not a layout change. The ring layout is not part of this step.
+- The Forge is not part of the tree and is not changed by this step.
 
 ## Dependencies and order
 
