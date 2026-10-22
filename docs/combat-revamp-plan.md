@@ -45,7 +45,8 @@ Scope: the charged art timing from `docs/combat-revamp.md`. The `COMBO` table do
 Scope: air attacks become a 2-hit slice combo. Base only, no tree yet.
 
 - In `EnterAttack`, when not grounded, use `AIR_COMBO` (two slices) and an air string counter, separate from the ground `comboStep`.
-- Remove the Slam drift, the grind-in-air behaviour and `UpdateAirDescent` from the air path. Keep the ground behaviour unchanged.
+- Air attacks get a whole new implementation, not a patch on the ground string. The Slam drift, the grind-in-air behaviour and `UpdateAirDescent` are removed from the air path. Keep the ground behaviour unchanged.
+- The air string exposes its state (hits so far, height, fall speed, momentum) on the player, so the future air-to-ground combo can read it.
 - Confirm how the `Falling` state enters attacks today (`Player.cs` around `EnterFalling`) before changing it. Air attack entry is the first thing to check.
 - Stamina per air hit: start from the ground values, tune later.
 
@@ -62,7 +63,7 @@ Scope: a single strike during a dash.
 
 Scope: the first two tree items in the dodge branch, implemented with a base version and the tree controlling them.
 
-- **Dodge jump:** a buffered Jump during the last part of a dash launches a jump with the dash's momentum. Gated by `CombatSkill` (new member, appended).
+- **Dodge jump:** a buffered Jump launches when the dash ends, carrying the dash's momentum. Gated by `CombatSkill` (new member, appended).
 - **Air dodge:** `CanDash()` also allows dash while `Falling` when the skill is learned. One air dash per airtime; it resets on landing (`OnLanded`).
 - Both reuse `EnterDash` and the existing jump code. No new movement state.
 
@@ -103,9 +104,15 @@ Scope: new arts added to the existing tree. Nothing already in it is removed or 
 - **Tree is append-only.** Old members stay, new ones are appended. No retirement.
 - **Charged damage.** Non-perfect release does 90% to the whole charged hit.
 - **Perfect window.** Read as a band around 0.3 s, not an exact frame. The answer to question 2 was "yes", which this plan takes as the band. Confirm if it meant something else.
+- **Dash into jump.** The jump launches at the end of the dash, not during it.
+- **Dodge is provisional.** The dodge is too strong right now. It will be refactored and polished later, toward the Enter the Gungeon feel: a committed roll with clear i-frames and a recovery cost. The dodge steps (3, 4) ship as a base that will change, so keep their numbers in one place.
+- **Air attacks are their own implementation.** Air attacks get a whole new implementation, with their own combos and their own branched combos in the tree. The 2-hit air slice is only the base of that branch.
+
+## Future: air to ground
+
+A later feature: a combo performed in the air converts the air momentum and state into a new ground combo. This is not in the current steps. It affects Step 2 only in that the air string needs to expose its state (height, momentum, hits so far) so a later landing combo can read it.
 
 ## Open questions
 
-1. **Dash into jump.** Is the jump launched during the dash, or only after it ends?
-2. **Air dodge reset.** Does landing reset it only, or does a hit or a Sky Rhythm-style hang also reset it?
-3. **Air string in the tree.** Does the air string grow past two hits only through the tree (the design says up to 4), and is Meteor Slam still the air charge?
+1. **Air dodge reset.** Options: landing alone refreshes it (one air dodge per jump), or a landed hit refreshes it too (rewards aggression). Recommendation: landing only, until the dodge rework.
+2. **Air string in the tree.** Is Meteor Slam still the air charge in the new air branch, or does the air branch get its own charged art?
