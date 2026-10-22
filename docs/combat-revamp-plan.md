@@ -15,7 +15,7 @@ Status: plan, not started. Design is in `docs/combat-revamp.md`. This file maps 
 
 - **Never rename an existing `CombatSkill` member.** Saves store the name. Renaming silently drops the skill for every existing save.
 - **Append, don't insert.** `Info()` uses `All[(int)skill]`. New members go at the end of the enum, in the same position in `All`.
-- **Retired skills stay in the enum.** Mark them retired (hidden from the tree, still loaded) instead of deleting them.
+- **Keep the old tree.** No existing member is retired or rewritten. Rising Reap, Juggle, Sky Rhythm, Meteor Slam, Momentum, Echo, Whirlwind and Cataclysm stay as they are. New arts are appended after `Cataclysm`, with new members at the end of the enum and `All`.
 
 ## Step 0: refactor, no behaviour change (optional)
 
@@ -26,20 +26,19 @@ Split `Player.Combat.cs` (681 lines) so the new work has somewhere to go:
 
 Only moves. Compile. Play nothing; the change is structural.
 
-## Step 1: charged hit (replaces hold-to-charge)
+## Step 1: charged arts get a timed windup
 
-Scope: the charged third hit from `docs/combat-revamp.md`.
+Scope: the charged art timing from `docs/combat-revamp.md`. The `COMBO` table does not change. Charged arts are branches off the combo path, not replacements for its hits.
 
-- Remove hold-to-charge from `Player.Skills.cs`: `EnterCharge`, `UpdateCharge`, `ReleaseCharge`, `ChargeFx`, and the charge constants.
-- Add a windup on the third hit: when Strike is held through hit 3 it enters a `Windup` phase of 0.4 s.
+- Keep the existing charged arts and their tree members: Rising Reap (hit 1), Whirlwind (hit 3), Cataclysm (hit 5), Meteor Slam (air).
+- Replace the hold-to-charge timing in `Player.Skills.cs` (`EnterCharge`, `UpdateCharge`, `ReleaseCharge`, `ChargeFx`, `CHARGE_FULL_TIME`) with a fixed windup of 0.4 s per charged art. The charged art is not gated by how long Strike is held.
 - Release timing:
   - released at about 0.3 s into the windup: perfect, 100% damage;
   - released at any other time before 0.4 s: 90% damage;
   - still held at 0.4 s: fires at 90% automatically.
+- The 90% applies to the whole charged hit, not only its extra part.
 - Put the perfect window in one constant (`CHARGED_PERFECT_TIME = 0.3f`, `CHARGED_PERFECT_TOLERANCE`) so playtests can tune it.
 - Charged damage multipliers live with the hit data (`AttackProfile.DamageMultiplier`), not in input code.
-
-Tree impact in this step: the charged art on the held hit is whichever one the tree picked. Keep the current three charged arts mapped to hit 3 only, until Step 5 rewrites the tree.
 
 ## Step 2: air string split
 
@@ -67,18 +66,20 @@ Scope: the first two tree items in the dodge branch, implemented with a base ver
 - **Air dodge:** `CanDash()` also allows dash while `Falling` when the skill is learned. One air dash per airtime; it resets on landing (`OnLanded`).
 - Both reuse `EnterDash` and the existing jump code. No new movement state.
 
-## Step 5: skill tree rewrite
+## Step 5: append the new tree members
 
-Scope: the tree from `docs/combat-revamp.md`. Four branches around the ring:
+Scope: new arts added to the existing tree. Nothing already in it is removed or moved.
 
-| Branch | Base | Notes |
+| Area | Existing members | New members (appended) |
 | --- | --- | --- |
-| Ground combo | 3 hits | 4th and 5th hits keep their current enum members |
-| Charged hit | timed hit 3 | wraps Step 1; the held-hit art choice is open |
-| Air | 2-hit slice | new members for air string length and airborne damage |
-| Dodge | dodge strike | new members for dodge strike upgrades, dodge jump and air dodge |
+| Ground combo | 4th Strike, 5th Strike, Momentum, Echo | none |
+| Charged arts | Rising Reap, Whirlwind, Cataclysm | none; the timing change in Step 1 applies to these |
+| Air | Juggle, Sky Rhythm, Meteor Slam | air 2-hit slice base, 4-hit air string, airborne damage |
+| Dodge | none | dodge strike, dodge jump, air dodge |
 
-Existing members that don't fit (`RisingReap`, `Juggle`, `SkyRhythm`, `MeteorSlam`, `Momentum`, `Echo`, `Whirlwind`, `Cataclysm`) are retired, not deleted, per the save rules above. Any player who learned one keeps the skill in their save, and it's hidden from the tree.
+- New members go at the end of `CombatSkill` and at the end of `All`, in the order listed above.
+- `Requires` points at an existing member where the new art follows from it (for example, the dodge strike after 5th Strike), so the new arts are reachable without a new branch layout.
+- The branch layout around the ring is decided during the Step 5 work, after the new members exist.
 
 ## Dependencies and order
 
@@ -96,12 +97,15 @@ Existing members that don't fit (`RisingReap`, `Juggle`, `SkyRhythm`, `MeteorSla
 - Timing constants (windup, perfect window, dodge threshold) are in one place each, so playtests can tune them without a code search.
 - No visual check unless asked. `tools/autopilot.ps1` is only for explicit requests.
 
+## Decisions
+
+- **Combo table unchanged.** The hit combos stay as they are. Charged arts branch off the original combo path.
+- **Tree is append-only.** Old members stay, new ones are appended. No retirement.
+- **Charged damage.** Non-perfect release does 90% to the whole charged hit.
+- **Perfect window.** Read as a band around 0.3 s, not an exact frame. The answer to question 2 was "yes", which this plan takes as the band. Confirm if it meant something else.
+
 ## Open questions
 
-1. **Held hit art.** Only hit 3 can be charged in the new design. The tree has three charged arts (Rising Reap on hit 1, Whirlwind on hit 3, Cataclysm on hit 5). Which of them survive, and does the held hit choose between arts, or does the tree pick one?
-2. **Perfect window.** The windup is 0.4 s and the perfect release is at 0.3 s. Is the tolerance exact, or a band (for example ±2–3 frames)?
-3. **Charged damage on the perfect path.** Is the 90% for non-perfect releases applied to the whole charged hit or only its extra part?
-4. **Air string in the tree.** Does the air string grow past two hits only through the tree (the design says up to 4), and does Meteor Slam survive as the air charge?
-5. **Dash into jump.** Is the jump launched during the dash, or only after it ends?
-6. **Air dodge reset.** Does landing reset it only, or does a hit or a Sky Rhythm-style hang also reset it?
-7. **Enum cleanup.** Retire the old members, or keep them visible as tree nodes that do nothing? (Recommendation: retire.)
+1. **Dash into jump.** Is the jump launched during the dash, or only after it ends?
+2. **Air dodge reset.** Does landing reset it only, or does a hit or a Sky Rhythm-style hang also reset it?
+3. **Air string in the tree.** Does the air string grow past two hits only through the tree (the design says up to 4), and is Meteor Slam still the air charge?
