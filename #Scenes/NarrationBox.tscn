@@ -1,0 +1,199 @@
+[gd_scene format=3 uid="uid://c6a53x22eni0i"]
+
+[ext_resource type="Script" uid="uid://bark7r0e8c4wl" path="res://#Scripts/UI/NarrationBox.cs" id="1_box"]
+[ext_resource type="FontFile" uid="uid://bol6w1bkx5llu" path="res://#Assets/UI/Fonts/Yoster.ttf" id="2_title"]
+[ext_resource type="FontFile" uid="uid://icnvq5jp36xm" path="res://#Assets/UI/Fonts/PortoBuena.otf" id="3_body"]
+[ext_resource type="Texture2D" uid="uid://cc50p4luyyf5y" path="res://#Assets/Portraits/Mono/portrait_03.png" id="4_kio"]
+[ext_resource type="Script" uid="uid://cqjup527kr0m6" path="res://#Scripts/UI/Divider.cs" id="6_rule"]
+[ext_resource type="Script" uid="uid://bd7oaieavbulu" path="res://#Scripts/UI/DiamondMark.cs" id="7_mark"]
+
+[sub_resource type="Gradient" id="Gradient_wash"]
+offsets = PackedFloat32Array(0, 0.55, 1)
+colors = PackedColorArray(0, 0, 0, 0, 0, 0, 0, 0.396, 0, 0, 0, 0.88)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_wash"]
+gradient = SubResource("Gradient_wash")
+width = 4
+height = 128
+fill_to = Vector2(0, 1)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kio"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_kio")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="LabelSettings" id="LabelSettings_name"]
+font = ExtResource("2_title")
+font_size = 12
+font_color = Color(0.93, 0.75, 0.47, 1)
+outline_size = 2
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_text"]
+font = ExtResource("3_body")
+font_size = 6
+font_color = Color(0.9, 0.86, 0.78, 1)
+outline_size = 2
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_choice"]
+content_margin_left = 12.0
+content_margin_right = 6.0
+
+[node name="Narration" type="CanvasLayer" unique_id=1972534408]
+process_mode = 3
+layer = 29
+scale = Vector2(4, 4)
+transform = Transform2D(4, 0, 0, 4, 0, 0)
+script = ExtResource("1_box")
+
+[node name="Root" type="Control" parent="." unique_id=1360952634]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Wash" type="Control" parent="Root" unique_id=1461274980]
+anchors_preset = 0
+mouse_filter = 2
+
+[node name="Ramp" type="TextureRect" parent="Root/Wash" unique_id=1220381118]
+texture_filter = 2
+layout_mode = 0
+offset_top = 118.0
+offset_right = 480.0
+offset_bottom = 206.0
+mouse_filter = 2
+texture = SubResource("GradientTexture2D_wash")
+expand_mode = 1
+
+[node name="Solid" type="ColorRect" parent="Root/Wash" unique_id=1820323494]
+layout_mode = 0
+offset_left = 0.25
+offset_top = 206.0
+offset_right = 480.0
+offset_bottom = 269.5
+mouse_filter = 2
+color = Color(0, 0, 0, 0.88)
+
+[node name="LeftSlot" type="Node2D" parent="Root" unique_id=1420299668]
+position = Vector2(6, 0)
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Root/LeftSlot" unique_id=105859653]
+texture_filter = 1
+position = Vector2(0, 142)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_kio")
+centered = false
+
+[node name="RightSlot" type="Node2D" parent="Root" unique_id=360037470]
+position = Vector2(410, 0)
+
+[node name="Sprite" type="AnimatedSprite2D" parent="Root/RightSlot" unique_id=1727293538]
+texture_filter = 1
+position = Vector2(-63.25, 142)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_kio")
+centered = false
+
+[node name="NameLabel" type="Label" parent="Root" unique_id=1971959998]
+texture_filter = 2
+layout_mode = 0
+offset_left = 146.0
+offset_top = 198.0
+offset_right = 334.0
+offset_bottom = 210.0
+text = "Kio"
+label_settings = SubResource("LabelSettings_name")
+
+[node name="NameRule" type="Control" parent="Root" unique_id=753600861]
+custom_minimum_size = Vector2(0, 5)
+anchors_preset = 0
+offset_left = 144.0
+offset_top = 211.0
+offset_right = 332.0
+offset_bottom = 216.0
+mouse_filter = 2
+script = ExtResource("6_rule")
+Centered = false
+
+[node name="TextLabel" type="Label" parent="Root" unique_id=490593279]
+texture_filter = 2
+layout_mode = 0
+offset_left = 146.0
+offset_top = 221.0
+offset_right = 334.0
+offset_bottom = 267.0
+text = "Sample line of narration text, wrapped across the width of the band. It types out one character at a time, pausing on punctuation."
+label_settings = SubResource("LabelSettings_text")
+autowrap_mode = 3
+
+[node name="NextHint" type="Control" parent="Root" unique_id=921240845]
+anchors_preset = 0
+offset_left = 330.5
+offset_top = 260.5
+offset_right = 330.5
+offset_bottom = 260.5
+mouse_filter = 2
+script = ExtResource("7_mark")
+Fill = Color(0.93, 0.75, 0.47, 1)
+
+[node name="ChoiceList" type="VBoxContainer" parent="Root" unique_id=1678141139]
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 0
+offset_left = 10.0
+offset_top = 194.0
+offset_right = 130.0
+offset_bottom = 230.0
+theme_override_constants/separation = 0
+
+[node name="Choice1" type="Button" parent="Root/ChoiceList" unique_id=1368349239]
+texture_filter = 2
+custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.6, 0.55, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0.03, 0.01, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("3_body")
+theme_override_font_sizes/font_size = 6
+theme_override_styles/normal = SubResource("StyleBoxEmpty_choice")
+text = "Who are you?"
+alignment = 0
+
+[node name="Choice2" type="Button" parent="Root/ChoiceList" unique_id=1316668750]
+texture_filter = 2
+custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.6, 0.55, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0.03, 0.01, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("3_body")
+theme_override_font_sizes/font_size = 6
+theme_override_styles/normal = SubResource("StyleBoxEmpty_choice")
+text = "What is this place?"
+alignment = 0
+
+[node name="Choice3" type="Button" parent="Root/ChoiceList" unique_id=1977658041]
+texture_filter = 2
+custom_minimum_size = Vector2(120, 12)
+layout_mode = 2
+focus_mode = 0
+theme_override_colors/font_color = Color(0.6, 0.55, 0.55, 1)
+theme_override_colors/font_outline_color = Color(0.03, 0.01, 0.04, 1)
+theme_override_constants/outline_size = 3
+theme_override_fonts/font = ExtResource("3_body")
+theme_override_font_sizes/font_size = 6
+theme_override_styles/normal = SubResource("StyleBoxEmpty_choice")
+text = "Leave"
+alignment = 0

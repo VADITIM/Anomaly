@@ -1,0 +1,395 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://#Scripts/UI/Menus/AmuletWindow.cs" id="1_window"]
+[ext_resource type="FontFile" uid="uid://bol6w1bkx5llu" path="res://#Assets/UI/Fonts/Yoster.ttf" id="2_title"]
+[ext_resource type="FontFile" uid="uid://icnvq5jp36xm" path="res://#Assets/UI/Fonts/PortoBuena.otf" id="3_body"]
+[ext_resource type="Script" uid="uid://cqjup527kr0m6" path="res://#Scripts/UI/Divider.cs" id="4_rule"]
+[ext_resource type="Script" uid="uid://bd7oaieavbulu" path="res://#Scripts/UI/DiamondMark.cs" id="5_mark"]
+[ext_resource type="Script" path="res://#Scripts/UI/AmuletIcon.cs" id="6_icon"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.04, 0.024, 0.05, 0.96)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.52, 0.41, 0.35, 0.75)
+
+[sub_resource type="LabelSettings" id="LabelSettings_title"]
+font = ExtResource("2_title")
+font_size = 9
+font_color = Color(0.93, 0.75, 0.47, 1)
+outline_size = 3
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_caption"]
+font = ExtResource("3_body")
+font_size = 6
+font_color = Color(0.6, 0.55, 0.55, 1)
+outline_size = 2
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_name"]
+font = ExtResource("2_title")
+font_size = 9
+font_color = Color(0.95, 0.25, 0.25, 1)
+outline_size = 3
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_text"]
+font = ExtResource("3_body")
+font_size = 6
+font_color = Color(0.9, 0.86, 0.78, 1)
+outline_size = 2
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="LabelSettings" id="LabelSettings_perks"]
+font = ExtResource("3_body")
+font_size = 6
+font_color = Color(0.93, 0.75, 0.47, 1)
+outline_size = 2
+outline_color = Color(0.03, 0.01, 0.04, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot"]
+bg_color = Color(0, 0, 0, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.36, 0.33, 0.33, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_slot_focus"]
+bg_color = Color(0.12, 0.08, 0.1, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.93, 0.75, 0.47, 1)
+
+[node name="AmuletWindow" type="CanvasLayer"]
+process_mode = 3
+layer = 30
+scale = Vector2(4, 4)
+transform = Transform2D(4, 0, 0, 4, 0, 0)
+script = ExtResource("1_window")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 480.0
+offset_bottom = 270.0
+mouse_filter = 2
+
+[node name="Blocker" type="ColorRect" parent="Root"]
+layout_mode = 0
+offset_left = -2000.0
+offset_top = -2000.0
+offset_right = 2480.0
+offset_bottom = 2270.0
+color = Color(0, 0, 0, 0.3)
+
+[node name="Panel" type="Panel" parent="Root"]
+layout_mode = 0
+offset_left = 72.0
+offset_top = 29.0
+offset_right = 384.0
+offset_bottom = 236.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Title" type="Label" parent="Root/Panel"]
+texture_filter = 2
+layout_mode = 0
+offset_top = 4.0
+offset_right = 312.0
+offset_bottom = 16.0
+text = "AMULET SLOT 1"
+label_settings = SubResource("LabelSettings_title")
+horizontal_alignment = 1
+
+[node name="TitleRule" type="Control" parent="Root/Panel"]
+custom_minimum_size = Vector2(0, 5)
+anchors_preset = 0
+offset_left = 96.0
+offset_top = 16.0
+offset_right = 216.0
+offset_bottom = 21.0
+mouse_filter = 2
+script = ExtResource("4_rule")
+
+[node name="Equipped" type="Control" parent="Root/Panel"]
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 24.0
+offset_right = 150.0
+offset_bottom = 142.0
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="Root/Panel/Equipped"]
+texture_filter = 2
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 8.0
+text = "EQUIPPED"
+label_settings = SubResource("LabelSettings_caption")
+
+[node name="Icon" type="Control" parent="Root/Panel/Equipped"]
+anchors_preset = 0
+offset_top = 10.0
+offset_right = 32.0
+offset_bottom = 42.0
+mouse_filter = 2
+script = ExtResource("6_icon")
+Gem = Color(0.95, 0.25, 0.25, 1)
+
+[node name="Name" type="Label" parent="Root/Panel/Equipped"]
+texture_filter = 2
+layout_mode = 0
+offset_left = 38.0
+offset_top = 11.0
+offset_right = 140.0
+offset_bottom = 23.0
+text = "Fury Fang"
+label_settings = SubResource("LabelSettings_name")
+
+[node name="Line" type="Label" parent="Root/Panel/Equipped"]
+texture_filter = 2
+layout_mode = 0
+offset_left = 38.0
+offset_top = 24.0
+offset_right = 140.0
+offset_bottom = 42.0
+text = "Every strike bites harder"
+label_settings = SubResource("LabelSettings_caption")
+autowrap_mode = 3
+
+[node name="Perks" type="Label" parent="Root/Panel/Equipped"]
+texture_filter = 2
+layout_mode = 0
+offset_top = 46.0
+offset_right = 140.0
+offset_bottom = 54.0
+text = "+20% Damage"
+label_settings = SubResource("LabelSettings_perks")
+
+[node name="Stats" type="GridContainer" parent="Root/Panel/Equipped"]
+layout_mode = 0
+offset_top = 58.0
+offset_right = 140.0
+offset_bottom = 66.0
+mouse_filter = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 3
+columns = 3
+
+[node name="SampleName" type="Label" parent="Root/Panel/Equipped/Stats"]
+texture_filter = 2
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Damage"
+label_settings = SubResource("LabelSettings_caption")
+
+[node name="SampleChange" type="Label" parent="Root/Panel/Equipped/Stats"]
+texture_filter = 2
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "+20%"
+label_settings = SubResource("LabelSettings_perks")
+horizontal_alignment = 2
+
+[node name="SampleOutcome" type="Label" parent="Root/Panel/Equipped/Stats"]
+texture_filter = 2
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+text = "19 > 23"
+label_settings = SubResource("LabelSettings_text")
+horizontal_alignment = 2
+
+[node name="Split" type="ColorRect" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 156.0
+offset_top = 26.0
+offset_right = 157.0
+offset_bottom = 140.0
+mouse_filter = 2
+color = Color(0.52, 0.41, 0.35, 0.35)
+
+[node name="Hovered" type="Control" parent="Root/Panel"]
+anchors_preset = 0
+offset_left = 162.0
+offset_top = 24.0
+offset_right = 302.0
+offset_bottom = 142.0
+mouse_filter = 2
+
+[node name="Caption" type="Label" parent="Root/Panel/Hovered"]
+texture_filter = 2
+layout_mode = 0
+offset_right = 140.0
+offset_bottom = 8.0
+text = "SWAP FOR"
+label_settings = SubResource("LabelSettings_caption")
+
+[node name="Icon" type="Control" parent="Root/Panel/Hovered"]
+anchors_preset = 0
+offset_top = 10.0
+offset_right = 32.0
+offset_bottom = 42.0
+mouse_filter = 2
+script = ExtResource("6_icon")
+
+[node name="Name" type="Label" parent="Root/Panel/Hovered"]
+texture_filter = 2
+layout_mode = 0
+offset_left = 38.0
+offset_top = 11.0
+offset_right = 140.0
+offset_bottom = 23.0
+text = "Mending Charm"
+label_settings = SubResource("LabelSettings_name")
+
+[node name="Line" type="Label" parent="Root/Panel/Hovered"]
+texture_filter = 2
+layout_mode = 0
+offset_left = 38.0
+offset_top = 24.0
+offset_right = 140.0
+offset_bottom = 42.0
+text = "The Vessel pours deeper"
+label_settings = SubResource("LabelSettings_caption")
+autowrap_mode = 3
+
+[node name="Perks" type="Label" parent="Root/Panel/Hovered"]
+texture_filter = 2
+layout_mode = 0
+offset_top = 46.0
+offset_right = 140.0
+offset_bottom = 54.0
+text = "+40% Healing"
+label_settings = SubResource("LabelSettings_perks")
+
+[node name="Stats" type="GridContainer" parent="Root/Panel/Hovered"]
+layout_mode = 0
+offset_top = 58.0
+offset_right = 140.0
+offset_bottom = 66.0
+mouse_filter = 2
+theme_override_constants/h_separation = 4
+theme_override_constants/v_separation = 3
+columns = 3
+
+[node name="SampleName" type="Label" parent="Root/Panel/Hovered/Stats"]
+texture_filter = 2
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Healing"
+label_settings = SubResource("LabelSettings_caption")
+
+[node name="SampleChange" type="Label" parent="Root/Panel/Hovered/Stats"]
+texture_filter = 2
+custom_minimum_size = Vector2(26, 0)
+layout_mode = 2
+text = "+40%"
+label_settings = SubResource("LabelSettings_perks")
+horizontal_alignment = 2
+
+[node name="SampleOutcome" type="Label" parent="Root/Panel/Hovered/Stats"]
+texture_filter = 2
+custom_minimum_size = Vector2(52, 0)
+layout_mode = 2
+text = "35 > 49"
+label_settings = SubResource("LabelSettings_text")
+horizontal_alignment = 2
+
+[node name="RowRule" type="Control" parent="Root/Panel"]
+custom_minimum_size = Vector2(0, 5)
+anchors_preset = 0
+offset_left = 10.0
+offset_top = 146.0
+offset_right = 302.0
+offset_bottom = 151.0
+mouse_filter = 2
+script = ExtResource("4_rule")
+
+[node name="Row" type="HBoxContainer" parent="Root/Panel"]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 156.0
+offset_right = 302.0
+offset_bottom = 184.0
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="Slot" type="Button" parent="Root/Panel/Row"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_slot")
+theme_override_styles/hover = SubResource("StyleBoxFlat_slot")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_slot_focus")
+theme_override_styles/hover_pressed = SubResource("StyleBoxFlat_slot_focus")
+theme_override_styles/focus = SubResource("StyleBoxFlat_slot_focus")
+
+[node name="Icon" type="Control" parent="Root/Panel/Row/Slot"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_icon")
+Empty = true
+
+[node name="Worn" type="Control" parent="Root/Panel/Row/Slot"]
+anchors_preset = 0
+offset_left = 24.0
+offset_top = 4.0
+offset_right = 24.0
+offset_bottom = 4.0
+mouse_filter = 2
+script = ExtResource("5_mark")
+Fill = Color(0.93, 0.75, 0.47, 1)
+
+[node name="SampleMending" type="Button" parent="Root/Panel/Row"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_slot")
+theme_override_styles/hover = SubResource("StyleBoxFlat_slot")
+theme_override_styles/focus = SubResource("StyleBoxFlat_slot_focus")
+
+[node name="Icon" type="Control" parent="Root/Panel/Row/SampleMending"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_icon")
+
+[node name="SampleFury" type="Button" parent="Root/Panel/Row"]
+custom_minimum_size = Vector2(28, 28)
+layout_mode = 2
+theme_override_styles/normal = SubResource("StyleBoxFlat_slot")
+theme_override_styles/hover = SubResource("StyleBoxFlat_slot")
+theme_override_styles/focus = SubResource("StyleBoxFlat_slot_focus")
+
+[node name="Icon" type="Control" parent="Root/Panel/Row/SampleFury"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = ExtResource("6_icon")
+Gem = Color(0.95, 0.25, 0.25, 1)
+
+[node name="Hint" type="Label" parent="Root/Panel"]
+texture_filter = 2
+layout_mode = 0
+offset_top = 192.0
+offset_right = 312.0
+offset_bottom = 200.0
+text = "PRESS AN AMULET TO WEAR IT    ESC TO RETURN"
+label_settings = SubResource("LabelSettings_caption")
+horizontal_alignment = 1

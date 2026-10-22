@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="EntityStats" format=3]
+
+[ext_resource type="Script" path="res://#Scripts/Entities/EntityStats.cs" id="1_stats"]
+
+[resource]
+script = ExtResource("1_stats")
+MaxHealth = 260.0
+Weight = 9999.0
+UseKnockback = false
+UseTenacity = false
+Tenacity = 0.0

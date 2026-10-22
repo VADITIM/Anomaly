@@ -1,40 +1,33 @@
-# Anomaly — Claude Code Guide
+# Anomaly
 
-2D top-down Action-RPG (Ontological Dark Fantasy). Godot 4.x Mono — C# (.NET 8) + GDShader.
+## Level design
 
-## Commands
+- For any work on tilesets, maps, rooms, areas, regions, world layout, worldbuilding, or level generation, load the `anomaly-level-design` skill first. Skip it only when the user explicitly says not to use it.
 
-- Build: `dotnet build Anomaly.sln`
-- Test: `dotnet test Tests/Anomaly.Tests.csproj` (pure-math coverage only)
-- Run: through the Godot editor (no CLI run)
+## UI scenes
 
-## Layout
+- Every UI menu or element needs a scene counterpart in `#Scenes/`. Build it in code first, then convert the code into a `.tscn` for the user to edit and polish, and have the script load the scene instead of building the nodes.
+- The scene must look in the editor as it does in game: real fonts, colours, sample portraits, text and rows, with runtime-only samples hidden or freed in `_Ready`. Author it on the 480x270 design canvas and set the root `CanvasLayer` scale to 4 so it fills the 1920x1080 editor frame (`ViewScale.Fit` overrides it at runtime).
+- Custom-drawn controls used in scenes (`Divider`, `DiamondMark`) live in their own file, named after the class, with `[Tool]` and `[Export]` fields. Godot can only attach a script from a file with the matching name.
+- Example: `#Scenes/NarrationBox.tscn` with `#Scripts/UI/NarrationBox.cs`.
 
-- `#Scripts/` — all C# (Camera, Entities, Behaviors, StateMachines, Systems, Save, UI, Weapon)
-- `Tests/` — xunit project for engine-free math (difficulty tables, stat math)
-- `#Scenes/`, `#Assets/`, `#Shaders/` — Godot scenes, art, GDShader
+## Compiling
 
-## Editor Tooling (MCP + skills)
+- Always compile after changing C# code: `dotnet build Anomaly.csproj -nologo -v q -clp:ErrorsOnly`. A `Stop` hook in `.claude/settings.json` runs this after each response; fix any errors it reports before finishing.
 
-- Godot editor access goes through the **Godot AI MCP server** (`godot-ai` in `claude mcp list`; editor-side addon `addons/godot_ai`, must be enabled in Project Settings → Plugins with the editor running).
-- The **godot-claude-skills** plugin provides the Godot workflow skills (`godot-code-gen`, `godot-scene-design`, `godot-live-edit`, `godot-shader`, `godot-interactive`) — use them for Godot-side work alongside the MCP tools.
-- Guardrail: the MCP server can create/modify scenes, resources, and scripts directly in the editor. The Don'ts below still apply — only touch `.tscn`/`.tres` through MCP when explicitly asked, and summarize every editor-side change so it can be reviewed like a diff.
+## Running the game for tests
 
-## Docs & Skills (authority order)
+- Never verify changes visually (autopilot runs, screenshots) unless the user explicitly asks for it. Compiling is enough by default.
 
-- `docs/design.md` — design intent: lore, mechanics math, target architecture.
-- `docs/architecture.md` — as-built reality, including known divergences from design.
-- `docs/ui-narrative.md` — narrative scene UI spec (dialogue boxes, choices, portraits) and dialogue/NPC-state architecture.
-- `docs/pitfalls.md` — tracked structural debt; check before building on Entity, StateMachine, Stats, Save, or Weapon systems.
-- Any C# work MUST follow the `code-anomaly` skill (.NET naming, exports, node access, Resource rules).
-- Any narrative/design work MUST pass the `lore-anomaly` skill.
-- New gameplay features/systems go through the `feature-dev` skill workflow.
-- At session end / before commits, run the `docs-sync` skill to reconcile docs with the changed code.
-
-## Don'ts
-
-- Never hand-edit Godot-managed files: `.godot/`, `*.import` (hook-enforced).
-- Touch `.tscn`/`.tres` only when explicitly asked — they are editor-owned.
-- Never `[Export]` a node reference — config primitives and Resources only.
-- Never deepen an open pitfall: no new magic stat strings, `.Instance` singletons, StateMachine branches, or save writes that bypass `SaveManager`.
-- A material authored on a node in a scene is shared across every instance of that scene. For per-instance shader effects (damage flash, etc.), `Duplicate()` the material at runtime before setting parameters — see `CommonDamageFlash`.
+- Never launch Godot directly for test runs. Use `tools/autopilot.ps1`. It moves the game window to another virtual desktop (so the user never sees it) and never takes focus from the user:
+  ```
+  powershell -NoProfile -ExecutionPolicy Bypass -File tools/autopilot.ps1 -Mode <autopilot-mode> [-Capture <dir>] [-TimeoutSeconds 60]
+  ```
+  It writes `log.txt` and the screenshots into `-Capture`.
+- It runs Godot with `--audio-driver Dummy`, so test runs are silent. Keep it that way.
+- How it avoids focus:
+  - Starts Godot through WMI, so the game is not a child of the foreground app.
+  - Sets `display/window/size/no_focus` through a temporary `override.cfg`, which is removed once the window exists.
+  - Moves the window to a virtual desktop other than the current one using the `VirtualDesktop` PowerShell module (`C:\Users\vn\dependencies\PSModules\VirtualDesktop`). Needs at least two desktops; one is created if missing. Screenshots come from the viewport texture, so the game renders fine off-screen.
+  - Shows the window with `SW_SHOWNOACTIVATE`.
+- If a stale `override.cfg` is ever left in the project root, delete it. It would stop the user's own runs from taking focus.

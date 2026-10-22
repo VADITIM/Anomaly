@@ -1,14 +1,36 @@
-public enum StatType
+namespace Anomaly;
+
+public enum PlayerStatType
 {
-    Speed,
-    Armor,
-    Tenacity,
-    Health,
-    Stamina,
-    StaminaRegen,
-    Corruption,
-    Vessel,
-    HealthS,
-    StaminaS,
-    Soul
+    MaxHealth,
+    HealingBonus,
+}
+
+public enum WeaponStatType
+{
+    BaseDamage,
+    CriticalChance,
+    CriticalMultiplier,
+}
+
+public enum DamageType
+{
+    Slashing,
+    Piercing,
+    Smashing,
+}
+
+public enum SpecialMoveKind
+{
+    ScytheThrow,
+    ShatterWave,
+    SpearLunge,
+}
+
+public enum Aspect
+{
+    Vitality,
+    Endurance,
+    Might,
+    Resolve,
 }

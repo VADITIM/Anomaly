@@ -1,0 +1,76 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://#Scripts/World/Forge.cs" id="1_forge"]
+[ext_resource type="Script" path="res://#Scripts/World/Maldor.cs" id="2_maldor"]
+[ext_resource type="Texture2D" path="res://#Assets/Entities/Forge/furnace.png" id="3_furnace"]
+[ext_resource type="Texture2D" path="res://#Assets/Entities/Forge/props.png" id="4_props"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_anvil"]
+atlas = ExtResource("4_props")
+region = Rect2(17, 135, 16, 9)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hammer"]
+atlas = ExtResource("4_props")
+region = Rect2(6, 134, 6, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_tongs"]
+atlas = ExtResource("4_props")
+region = Rect2(7, 114, 5, 14)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ingot_hot"]
+atlas = ExtResource("4_props")
+region = Rect2(131, 133, 11, 10)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ingot_steel"]
+atlas = ExtResource("4_props")
+region = Rect2(162, 131, 13, 11)
+
+[node name="Forge" type="Node2D"]
+y_sort_enabled = true
+script = ExtResource("1_forge")
+
+[node name="Visuals" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Furnace" type="Sprite2D" parent="Visuals"]
+position = Vector2(-18, -4)
+scale = Vector2(1.5, 1.5)
+texture = ExtResource("3_furnace")
+offset = Vector2(0, -24)
+
+[node name="Tongs" type="Sprite2D" parent="Visuals"]
+position = Vector2(-34, 6)
+scale = Vector2(1.5, 1.5)
+texture = SubResource("AtlasTexture_tongs")
+offset = Vector2(0, -7)
+
+[node name="Maldor" type="Node2D" parent="Visuals"]
+script = ExtResource("2_maldor")
+
+[node name="Anvil" type="Sprite2D" parent="Visuals"]
+position = Vector2(28, 3)
+scale = Vector2(1.5, 1.5)
+texture = SubResource("AtlasTexture_anvil")
+offset = Vector2(0, -4.5)
+
+[node name="IngotHot" type="Sprite2D" parent="Visuals"]
+position = Vector2(30, -11)
+texture = SubResource("AtlasTexture_ingot_hot")
+offset = Vector2(0, -5)
+
+[node name="Hammer" type="Sprite2D" parent="Visuals"]
+position = Vector2(46, 5)
+scale = Vector2(1.5, 1.5)
+texture = SubResource("AtlasTexture_hammer")
+offset = Vector2(0, -5)
+
+[node name="IngotSteel" type="Sprite2D" parent="Visuals"]
+position = Vector2(-2, 12)
+texture = SubResource("AtlasTexture_ingot_steel")
+offset = Vector2(0, -5)
+
+[node name="FocusPoint" type="Marker2D" parent="Visuals"]
+position = Vector2(-1, -22)
+
+[node name="SparkPoint" type="Marker2D" parent="Visuals"]
+position = Vector2(26, -14)

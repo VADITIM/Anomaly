@@ -1,127 +1,53 @@
 using Godot;
-using System;
 
-public partial class CameraFocus : Camera
+namespace Anomaly;
+
+// Picks the entity to frame during combat from cameraPriority, missing health and pointer proximity,
+// then biases the camera toward the midpoint between Kio and that entity.
+public sealed class CameraFocus
 {
-    public const float CAMERA_FOCUS_RANGE = 300f;
+    private const float FOCUS_RADIUS = 170f;
+    private const float FOCUS_WEIGHT = 0.32f;
+    private const float MAX_FOCUS_OFFSET = 70f;
+    private const float POINTER_BONUS_RADIUS = 40f;
+    // In combat the frame leans harder toward the foe, and the current one is kept unless another clearly outranks it.
+    private const float COMBAT_FOCUS_WEIGHT = 0.42f;
+    private const float COMBAT_MAX_FOCUS_OFFSET = 90f;
+    private const float STICKY_BONUS = 0.75f;
 
-    [Export] protected float focusSpeed = 4f;
-    [Export] protected float offsetRadius = 100;
-    [Export] protected bool showDebugSphere = false;
+    public Entity Focused { get; private set; }
+    public bool Enabled { get; set; } = true;
 
-    protected Vector2 FocusOffset { get; set; } = Vector2.Zero;
-    protected Vector2 ShakeOffset { get; set; } = Vector2.Zero;
-    protected ColorRect debugSphere;
-
-    protected float shakeIntensity = 0f;
-    protected float shakeTimer = 0f;
-
-    protected bool focusActive = true;
-    public bool FocusActive => focusActive;
-    public override bool IsLocked => focusActive && Enemy != null;
-
-    public override void _Ready()
+    public Vector2 ComputeOffset(GameWorld world, Vector2 pointer, bool inCombat = false)
     {
-        base._Ready();
+        Entity previous = Focused;
+        Focused = null;
+        Player player = world.Player;
+        if (!Enabled || player.IsDead)
+            return Vector2.Zero;
 
-        Player = GetTree().Root.FindChild("Player", true, false) as Player;
-        
-        debugSphere = new ColorRect();
-        debugSphere.CustomMinimumSize = new Vector2(8, 8);
-        debugSphere.Color = new Color(1, 1, 0, 0.7f); 
-        debugSphere.MouseFilter = Control.MouseFilterEnum.Ignore;
-        AddChild(debugSphere);
-        debugSphere.Visible = showDebugSphere;
-    }
-
-    public override void _Process(double delta)
-    {
-        if (Input.IsActionJustPressed(Keybinds.FocusToggle))
+        float bestScore = 0f;
+        foreach (Entity entity in world.Entities)
         {
-            focusActive = !focusActive;
-            if (!focusActive)
+            if (entity == player || entity.IsDead || entity.CameraPriority <= 0f)
+                continue;
+            float distance = entity.GlobalPosition.DistanceTo(player.GlobalPosition);
+            if (distance > FOCUS_RADIUS)
+                continue;
+            float score = entity.CameraPriority * (1f - distance / FOCUS_RADIUS * 0.5f);
+            if (entity.VisualCenter.DistanceTo(pointer) < POINTER_BONUS_RADIUS)
+                score += 2f;
+            if (inCombat && entity == previous)
+                score += STICKY_BONUS;
+            if (score > bestScore)
             {
-                Enemy = null;
+                bestScore = score;
+                Focused = entity;
             }
         }
-
-        UpdateFocusOffset((float)delta);
-        UpdateShakeOffset(delta);
-        Offset = GetCameraOffset();
-        UpdateDebugSphere();
-    }
-
-    protected virtual void UpdateFocusOffset(float delta)
-    {
-        Vector2 desiredOffset = Vector2.Zero;
-
-        if (focusActive)
-        {
-            Vector2 cursorPosition = GetGlobalMousePosition();
-            Enemy targetEnemy = Enemy.GetBestCameraTarget(cursorPosition);
-            Enemy = targetEnemy;
-
-            if (targetEnemy != null)
-            {
-                Vector2 toEnemy = targetEnemy.GlobalPosition - Player.GlobalPosition;
-                desiredOffset = toEnemy * 0.5f;
-            }
-            else
-            {
-                Enemy = null;
-            }
-        }
-        else
-        {
-            Enemy = null;
-        }
-
-        float lerpWeight = 1f - Mathf.Exp(-focusSpeed * delta);
-        FocusOffset = FocusOffset.Lerp(desiredOffset, lerpWeight);
-    }
-
-    protected void UpdateShakeOffset(double delta)
-    {
-        ShakeOffset = CameraFeedback.ApplyShake(delta, ref shakeIntensity, ref shakeTimer);
-    }
-
-    protected void ResetShakeOffset()
-    {
-        ShakeOffset = Vector2.Zero;
-        shakeIntensity = 0f;
-        shakeTimer = 0f;
-    }
-
-    protected Vector2 GetCameraOffset()
-    {
-        return FocusOffset + ShakeOffset;
-    }
-
-    protected void UpdateDebugSphere()
-    {
-        if (debugSphere != null && Player != null)
-        {
-            Vector2 focusPoint = Player.GlobalPosition + FocusOffset;
-            debugSphere.GlobalPosition = focusPoint - new Vector2(4, 4);
-            debugSphere.Visible = showDebugSphere;
-        }
-    }
-
-    public override void ShakeCamera(float intensity = 0f)
-    {
-        if (intensity <= 0f)
-            return;
-
-        CameraFeedback.ShakeParams param;
-        if (intensity >= 4.5f)
-            param = CameraFeedback.TenacityBreakShake();
-        else if (intensity >= 1f)
-            param = CameraFeedback.StaggerShake();
-        else if (intensity >= 0.75f)
-            param = CameraFeedback.WeaknessShake();
-        else
-            param = CameraFeedback.NormalShake();
-
-        CameraFeedback.InitiateShake(ref shakeIntensity, ref shakeTimer, param);
+        if (Focused == null)
+            return Vector2.Zero;
+        Vector2 offset = (Focused.VisualCenter - player.VisualCenter) * (inCombat ? COMBAT_FOCUS_WEIGHT : FOCUS_WEIGHT);
+        return offset.LimitLength(inCombat ? COMBAT_MAX_FOCUS_OFFSET : MAX_FOCUS_OFFSET);
     }
 }

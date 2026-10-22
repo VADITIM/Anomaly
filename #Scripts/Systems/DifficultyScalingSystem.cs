@@ -1,65 +1,43 @@
-using System;
+using Godot;
 
-// Pure math on purpose — no Godot dependencies, so the balance tables stay unit-testable.
-// World DifficultyLevel persists in DifficultyData; EnemyLevel is sampled per enemy
-// at _Ready and never saved (design.md §3.12).
+namespace Anomaly;
+
 public static class DifficultyScalingSystem
 {
-    public const int MinDifficultyLevel = 1;
-    public const int MaxDifficultyLevel = 5;
-    public const int MaxEnemyLevel = 6;
+    public const int MAX_DIFFICULTY = 5;
+    public const int MAX_ENEMY_LEVEL = 6;
 
-    private static readonly Random SharedRandom = new();
-
-    // Rows: world DifficultyLevel 1-5. Columns: EnemyLevel 1-6, in percent.
-    private static readonly int[][] EnemyLevelWeights =
+    private static readonly float[][] LEVEL_WEIGHTS =
     {
-        new[] { 90, 10,  0,  0,  0,  0 },
-        new[] { 30, 60, 10,  0,  0,  0 },
-        new[] { 10, 25, 55, 10,  0,  0 },
-        new[] {  0,  5, 20, 65, 10,  0 },
-        new[] {  0,  0,  5, 10, 75, 10 }
+        new[] { 0.90f, 0.10f },
+        new[] { 0.30f, 0.60f, 0.10f },
+        new[] { 0.10f, 0.25f, 0.55f, 0.10f },
+        new[] { 0.00f, 0.05f, 0.20f, 0.65f, 0.10f },
+        new[] { 0.00f, 0.00f, 0.05f, 0.10f, 0.75f, 0.10f },
     };
 
-    // EnemyLevel 1-6. Placeholders — balance pass required (design.md §3.12).
-    private static readonly float[] StatMultipliers = { 1.00f, 1.20f, 1.45f, 1.75f, 2.10f, 2.50f };
+    private static readonly float[] STAT_MULTIPLIERS = { 1.00f, 1.20f, 1.45f, 1.75f, 2.10f, 2.50f };
 
-    public static int NextDifficultyLevel(int currentLevel)
-        => Math.Clamp(currentLevel + 1, MinDifficultyLevel, MaxDifficultyLevel);
-
-    public static int SampleEnemyLevel(int worldDifficultyLevel)
-        => SampleEnemyLevel(worldDifficultyLevel, SharedRandom);
-
-    public static int SampleEnemyLevel(int worldDifficultyLevel, Random random)
+    public static int SampleEnemyLevel(int difficultyLevel)
     {
-        int row = Math.Clamp(worldDifficultyLevel, MinDifficultyLevel, MaxDifficultyLevel) - 1;
-        int[] weights = EnemyLevelWeights[row];
-
-        int roll = random.Next(0, 100);
-        int cumulative = 0;
-        for (int level = 0; level < weights.Length; level++)
+        float[] weights = LEVEL_WEIGHTS[Mathf.Clamp(difficultyLevel, 1, MAX_DIFFICULTY) - 1];
+        float roll = GD.Randf();
+        float cumulative = 0f;
+        for (int i = 0; i < weights.Length; i++)
         {
-            cumulative += weights[level];
+            cumulative += weights[i];
             if (roll < cumulative)
-                return level + 1;
+                return i + 1;
         }
-
         return weights.Length;
     }
 
-    public static float ScaleStat(float baseValue, int enemyLevel)
-    {
-        int index = Math.Clamp(enemyLevel, 1, MaxEnemyLevel) - 1;
-        return baseValue * StatMultipliers[index];
-    }
+    public static float ScaleStat(float baseStat, int enemyLevel) => baseStat * STAT_MULTIPLIERS[Mathf.Clamp(enemyLevel, 1, MAX_ENEMY_LEVEL) - 1];
 
-    public static float GetStatMultiplier(int enemyLevel)
-        => ScaleStat(1f, enemyLevel);
+    public static bool IsRegionFiveUnlocked(int difficultyLevel) => difficultyLevel >= MAX_DIFFICULTY;
 
-    public static int GetEnemyLevelWeight(int worldDifficultyLevel, int enemyLevel)
+    public static void RegisterVoidHeartDestroyed()
     {
-        int row = Math.Clamp(worldDifficultyLevel, MinDifficultyLevel, MaxDifficultyLevel) - 1;
-        int column = Math.Clamp(enemyLevel, 1, MaxEnemyLevel) - 1;
-        return EnemyLevelWeights[row][column];
+        SaveManager.Difficulty.DifficultyLevel = Mathf.Min(SaveManager.Difficulty.DifficultyLevel + 1, MAX_DIFFICULTY);
     }
 }

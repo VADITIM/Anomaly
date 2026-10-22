@@ -1,408 +1,338 @@
-using Godot;
 using System.Collections.Generic;
+using Godot;
 
-public partial class Entity : CharacterBody2D
+namespace Anomaly;
+
+// Node position is the ground-plane footprint; Z is height above the zero plane. Body renders at (0, -Z),
+// so Y-sorting on Position keeps depth correct while elevation, jumps and falls stay a pure Entity concern.
+public abstract partial class Entity : Node2D, IHittable
 {
-    private readonly List<IEntityBehavior> behaviors = new();
-    public StateMachine StateMachine { get; protected set; }
-    public AnimationPlayer AnimationPlayer { get; set; }
-    public Sprite2D Sprite { get; set; }
+    public const float GRAVITY = 1250f;
+    private const float VOID_FALL_THRESHOLD = -4f;
+    private const float VOID_DEPTH = -56f;
+    private const float VOID_CLIP_REACH = 64f;
+    private static readonly Color VoidSwallow = new(0.3f, 0.08f, 0.45f, 0f);
 
-    // Named after its type to leave the plain "Stats" name to subclass runtime
-    // stat containers (Player.Stats is a PlayerStats).
-    [Export] public EntityStats EntityStats { get; set; }
+    [Export] public EntityStats Stats;
 
-    [Export] public bool  CanBeKnockedBack     { get; set; } = true;
-    [Export] public float Weight               { get; set; } = 1f;
-    [Export] public float KnockbackDecay       { get; set; } = 2000f;
-    [Export] public float Speed                { get; set; } = 100f;
-    [Export] public float Damage               { get; set; } = 10f;
-    [Export] public float Armor                { get; set; } = 0f;
-    [Export] public float Tenacity             { get; set; } = 5f;
-    [Export] public float MaxTenacity          { get; set; } = 10f;
-    [Export] public int   MaxStaggers          { get; set; } = 3;
-    [Export] public float CameraPriority       { get; set; } = 0f;
-    [Export] public float JumpImpulse         { get; set; } = 300f;
-    [Export] public float JumpFallSpeed       { get; set; } = 1200f;
-    [Export] public float ShadowScaleWhenJump { get; set; } = 0.5f;
+    public GameWorld World { get; private set; }
+    public Node2D Body { get; private set; }
+    public ImpactBehavior Impact { get; private set; }
+    public ShaderMaterial EntityMaterial { get; private set; }
 
-    // Jump reach in elevations is not a stat — it falls out of JumpImpulse/JumpFallSpeed
-    // divided by ElevationMath.PixelsPerElevation. See docs/design.md §3.2 "Z Axis Development".
-    [Export] public float StartElevation { get; set; } = 0f;
+    public Vector2 MoveVelocity;
+    public float Z { get; set; }
+    public float ZVelocity;
+    public float GravityScale = 1f;
+    public float SupportZ { get; private set; }
+    public bool IsGrounded { get; private set; } = true;
+    public bool IsFlying;
+    public bool IgnorePits;
+    // Walks through walls and obstacles. Debug only.
+    public bool NoClip;
+    public bool CarefulMovement;
+    public bool Solid = true;
+    public float Radius = 5f;
+    public float HurtRadius { get; protected set; } = 8f;
+    public float HeightSpan { get; protected set; } = 22f;
+    public float Health { get; protected set; }
+    public float MaxHealth { get; protected set; }
+    public bool IsDead { get; protected set; }
+    public Vector2 BodyOffset;
 
-    // Most entities are small enough to be jumped over. Trees, pillars and anything solid set this
-    // false and join the Wall layer, which airborne entities never stop colliding with.
-    [Export] public bool CanBeJumpedOver { get; set; } = true;
+    public Vector2 GroundPosition => GlobalPosition;
+    public Vector2 VisualCenter => GlobalPosition + new Vector2(0, -Z - HeightSpan * 0.5f);
+    public float HealthRatio => MaxHealth > 0f ? Health / MaxHealth : 0f;
+    public virtual bool CanReceivePlayerHits => !IsDead;
+    public virtual float CameraPriority => 0f;
+    protected virtual string DefaultStatsPath => null;
 
-    /// <summary>The scene-authored mask, before elevation rules rewrite it every physics frame.</summary>
-    public uint BaseCollisionMask { get; private set; }
+    // Held for the whole run. Once every enemy of a kind has streamed out, a weakly held stats resource can be
+    // finalized by the GC just as the next one loads it from the resource cache, which hands back a dead object.
+    private static readonly Dictionary<string, EntityStats> statsCache = new();
 
-    // Highest elevation reached since leaving the ground — impact damage is measured from the apex,
-    // not from where the jump or fall started.
-    private float peakElevation;
-
-    /// <summary>The plane this entity stands on. Whole numbers while grounded.</summary>
-    public float GroundElevation { get; private set; }
-
-    // A jump never skips a plane, however high the sprite arcs.
-    [Export] public float MaxJumpElevations { get; set; } = 1f;
-
-    /// <summary>
-    /// Plane plus current jump height, capped at <see cref="MaxJumpElevations"/> above the plane —
-    /// the value all elevation rules compare against.
-    /// </summary>
-    public float Elevation => ElevationMath.ReachableElevation(
-        GroundElevation,
-        GroundElevation + ElevationMath.HeightToElevation(ZAxis?.Height ?? 0f),
-        airborneCeiling);
-
-    // Caps a jump at MaxJumpElevations; a fall is uncapped, since its height above the destination
-    // plane is real distance rather than jump reach.
-    private float airborneCeiling = float.MaxValue;
-
-    protected ZAxisSystem ZAxis;
-
-    [Export] public float AttackDuration { get; set; } = 1f;
-
-    [ExportGroup("Health")]
-    [Export] public float MaxHealth { get; set; } = 100f;
-    [Export] public float Health    { get; set; } = 100f;
-
-    private State lastAnimationState = (State)(-1);
-    private string lastAnimationDirection = "";
-    private bool lastAnimationFlipH = false;
-
-    protected virtual bool  CanTakeDamage(float damage, Vector2 sourcePosition)                                         => true;
-    protected virtual float ApplyDamageModifiers(float damage, Vector2 sourcePosition)                                  => damage;
-    protected virtual void  OnDamageTaken(float damage, Vector2 sourcePosition, float previousHealth, float newHealth)  { }
-    protected virtual void  OnDeath(Vector2 sourcePosition)                                                             { }
-    protected virtual void  OnKnockbackFinished()                                                                       { }
-
-    public void NotifyKnockbackFinished()
+    private static EntityStats LoadStats(string path)
     {
-        OnKnockbackFinished();
+        if (!statsCache.TryGetValue(path, out EntityStats stats))
+            statsCache[path] = stats = GD.Load<EntityStats>(path);
+        return stats;
     }
 
-    protected virtual float GetHealth()               => Health;
-    protected virtual void  SetHealth(float value)    { Health = Mathf.Clamp(value, 0f, GetMaxHealth()); NotifyResourceBars(); }
-    protected virtual float GetMaxHealth()            => MaxHealth;
-    protected virtual void  SetMaxHealth(float value) { MaxHealth = Mathf.Max(0f, value); NotifyResourceBars(); }
-
-    public float CurrentHealth    => GetHealth();
-    public float CurrentMaxHealth => GetMaxHealth();
-
-    protected virtual bool UsesDirectionalAnimations => false;
-
-    public virtual float GetAttackDuration() => AttackDuration;
-    public bool IsJumping => ZAxis?.IsJumping ?? false;
-    public bool IsFalling => ZAxis?.IsFalling ?? false;
+    private readonly List<IEntityBehavior> behaviors = new();
+    private float flashRemaining;
+    private float flashDuration = 1f;
+    private bool fellIntoVoid;
 
     public override void _Ready()
     {
-        ApplyEntityStats();
-        InitializeEntity.InitializeNodes(this);
-        EnsureStateMachine();
-        InitializeZAxis();
-        for (int i = 0; i < behaviors.Count; i++)
-            behaviors[i].OnReady(this);
+        World = NodeResolver.FindOnRoot<GameWorld>(this);
+        Stats ??= DefaultStatsPath != null ? LoadStats(DefaultStatsPath) : new EntityStats();
+
+        AddChild(new EntityShadow { Name = "Shadow" });
+        Body = new Node2D { Name = "Body" };
+        AddChild(Body);
+        EntityMaterial = new ShaderMaterial { Shader = ShaderLibrary.Entity };
+
+        Impact = new ImpactBehavior(this);
+        AddBehavior(Impact);
+
+        float surface = World.Grid.SurfaceZAt(GlobalPosition);
+        SupportZ = float.IsNegativeInfinity(surface) ? 0f : surface;
+        Z = SupportZ;
+
+        InitializeEntity();
+        MaxHealth = ComputeMaxHealth();
+        Health = MaxHealth;
+        World.RegisterEntity(this);
     }
 
-    public override void _PhysicsProcess(double delta)
-    {
-        ZAxis.Update((float)delta);
-        if (IsJumping && Elevation > peakElevation)
-            peakElevation = Elevation;
-        ElevationSystem.Update(this);
-        YSortSystem.Update(this);
-        for (int i = 0; i < behaviors.Count; i++)
-            behaviors[i].OnPhysicsProcess(delta);
-    }
-
-    public override void _Process(double delta)
-    {
-        UpdateAnimation(UsesDirectionalAnimations);
-        for (int i = 0; i < behaviors.Count; i++)
-            behaviors[i].OnProcess(delta);
-    }
+    // Reparenting a node (sections adopt their scenery) leaves and re-enters the tree without a second _Ready.
+    public override void _EnterTree() => World?.RegisterEntity(this);
 
     public override void _ExitTree()
     {
-        for (int i = 0; i < behaviors.Count; i++)
-            behaviors[i].OnExitTree();
-        base._ExitTree();
+        World?.UnregisterEntity(this);
     }
 
-    public void AddBehavior(IEntityBehavior behavior)
+    public void AddBehavior(IEntityBehavior behavior) => behaviors.Add(behavior);
+
+    protected abstract void InitializeEntity();
+
+    protected virtual float ComputeMaxHealth() => Stats.MaxHealth;
+
+    protected virtual void TickEntity(float delta) { }
+
+    protected virtual void OnLanded(float impactSpeed) { }
+
+    protected virtual void OnFellIntoVoid() { }
+
+    protected virtual void OnHit(HitInfo hit, ImpactResult impact) { }
+
+    protected virtual void OnDeath(HitInfo hit) { }
+
+    public override void _Process(double delta)
     {
-        if (behavior == null || behaviors.Contains(behavior))
+        float dt = Mathf.Min((float)delta, 1f / 30f);
+        if (dt <= 0f)
             return;
-        behaviors.Add(behavior);
-        if (IsInsideTree())
-            behavior.OnReady(this);
+        foreach (IEntityBehavior behavior in behaviors)
+            behavior.Process(dt);
+        TickEntity(dt);
+        Integrate(dt);
+        UpdateFlash(dt);
+        UpdateVoidFallVisual();
     }
 
-    public void RemoveBehavior(IEntityBehavior behavior)
+    // A body dropping into the Void keeps its Y-sort slot and sinks straight down on screen, as it would in 3D.
+    // Clipping it to the pit opening lets the ground in front of the pit swallow it, while everything north of
+    // its footprint (the far cliff face, the rim behind it) stays behind it.
+    private void UpdateVoidFallVisual()
     {
-        if (behavior == null)
-            return;
-        behaviors.Remove(behavior);
-    }
-
-    public T GetBehavior<T>() where T : class, IEntityBehavior
-    {
-        for (int i = 0; i < behaviors.Count; i++)
+        bool voidFalling = Z < VOID_FALL_THRESHOLD && float.IsNegativeInfinity(SupportZ);
+        Body.Position = new Vector2(0, -Z) + BodyOffset;
+        if (!voidFalling)
         {
-            if (behaviors[i] is T typed)
-                return typed;
+            if (ClipChildren != ClipChildrenMode.Disabled)
+            {
+                ClipChildren = ClipChildrenMode.Disabled;
+                Modulate = Colors.White;
+                QueueRedraw();
+            }
+            return;
         }
-        return null;
+        ClipChildren = ClipChildrenMode.Only;
+        float depth = Mathf.Clamp(Z / VOID_DEPTH, 0f, 1f);
+        Modulate = Colors.White.Lerp(VoidSwallow, depth * depth);
+        QueueRedraw();
     }
 
-    public virtual void Jump()
+    public override void _Draw()
     {
-        airborneCeiling = MaxJumpElevations;
-        ZAxis.Jump();
-    }
-
-    public void SetGroundElevation(float elevation)
-    {
-        GroundElevation = elevation;
-        peakElevation   = elevation;
-    }
-
-    /// <summary>Drops to a lower plane — the ground under this entity vanished (pushed off an edge).</summary>
-    public void BeginFall(float surfaceElevation)
-    {
-        peakElevation   = Elevation;
-        GroundElevation = surfaceElevation;
-        airborneCeiling = float.MaxValue;
-
-        float fallenPixels = (peakElevation - surfaceElevation) * ElevationMath.PixelsPerElevation;
-        ZAxis.BeginFall(fallenPixels, ElevationMath.FallSpeed(JumpFallSpeed, Weight));
-    }
-
-    public void LandOnElevation(float elevation)
-    {
-        float elevationsFallen = peakElevation - elevation;
-
-        GroundElevation = elevation;
-        peakElevation   = elevation;
-        airborneCeiling = float.MaxValue;
-        ZAxis.Land();
-
-        OnLanded(elevation, elevationsFallen);
-    }
-
-    protected virtual void OnLanded(float elevation, float elevationsFallen) { }
-
-    public virtual void TakeKnockback(Vector2 sourcePosition, float force, float duration = 0.1f)
-    {
-        if (!CanBeKnockedBack) return;
-        Vector2 direction = (GlobalPosition - sourcePosition).Normalized();
-        GetBehavior<KnockbackBehavior>()?.ApplyKnockbackFromDirection(direction, force, duration);
-    }
-
-    public virtual void TakeDamage(float damage, Vector2 sourcePosition, WeaponArc weapon = null)
-    {
-        if (damage <= 0f || !CanTakeDamage(damage, sourcePosition))
+        if (ClipChildren == ClipChildrenMode.Disabled)
             return;
+        const int T = WorldGrid.TILE_SIZE;
+        Vector2 origin = GlobalPosition;
+        DrawRect(new Rect2(-VOID_CLIP_REACH, -VOID_CLIP_REACH * 2f, VOID_CLIP_REACH * 2f, VOID_CLIP_REACH * 2f), Colors.White);
+        Vector2I tile = WorldGrid.ToTile(origin);
+        for (int y = tile.Y; y <= tile.Y + 3; y++)
+            for (int x = tile.X - 2; x <= tile.X + 2; x++)
+                if (World.Grid.IsPit(x, y))
+                    DrawRect(new Rect2(new Vector2(x * T, y * T) - origin, T, T), Colors.White);
+    }
 
-        float effectiveDamage = Mathf.Max(0f, ApplyDamageModifiers(damage, sourcePosition));
-        if (effectiveDamage <= 0f)
+    private void Integrate(float delta)
+    {
+        MoveBy(MoveVelocity * delta, CarefulMovement);
+        MoveBy(Impact.KnockbackVelocity * delta, false);
+        if (Solid && !IsDead)
+            SeparateFromNeighbours(delta);
+        ResolveVertical(delta);
+    }
+
+    protected void MoveBy(Vector2 motion, bool careful)
+    {
+        float length = motion.Length();
+        if (length < 0.0001f)
             return;
-
-        float currentHealth = GetHealth();
-        float newHealth     = Mathf.Max(0f, currentHealth - effectiveDamage);
-
-        SetHealth(newHealth);
-        DamageNumber.Spawn(this, effectiveDamage, DamageNumberStyle.Standard);
-        OnDamageTaken(effectiveDamage, sourcePosition, currentHealth, newHealth);
-
-        if (newHealth <= 0f)
-            OnDeath(sourcePosition);
-    }
-
-    protected void NotifyResourceBars()
-    {
-        GetBehavior<ResourceBarBehavior>()?.OnHealthChanged(GetHealth(), GetMaxHealth());
-    }
-
-    protected virtual State GetCurrentAnimationState()
-        => IsEntityDead() ? State.Dead : State.Idle;
-
-    protected virtual string GetCurrentAnimationDirection(bool useDirectionalAnimations, out bool flipH)
-    {
-        flipH = false;
-        return "S";
-    }
-
-    protected virtual bool IsEntityDead() => false;
-
-    protected virtual float GetAnimationDuration(string animationName, bool useDirectionalAnimations)
-        => GetNativeAnimationDuration(animationName);
-
-    protected virtual string[] GetAnimationCandidates(State state, string direction, bool useDirectionalAnimations)
-    {
-        string resolvedDirection = useDirectionalAnimations ? direction : "S";
-        string idle = $"Idle_{resolvedDirection}";
-
-        return state switch
+        int steps = Mathf.CeilToInt(length / 4f);
+        Vector2 step = motion / steps;
+        for (int i = 0; i < steps; i++)
         {
-            State.Moving        => new[] { $"Move_{resolvedDirection}", idle },
-            State.Chasing       => new[] { $"Move_{resolvedDirection}", idle },
-            State.Airborne      => new[] { "Jump_S", idle },
-            State.Attacking     => new[] { $"Attack_{resolvedDirection}_1", $"attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
-            State.HeavyAttacking => new[] { "Attack_Spin", $"Attack_{resolvedDirection}", idle },
-            State.AirAttacking  => new[] { $"Air_Attack_{resolvedDirection}", $"Attack_{resolvedDirection}_1", $"Attack_{resolvedDirection}", idle },
-            State.Dodging       => new[] { $"Dodge_{resolvedDirection}", $"Move_{resolvedDirection}", idle },
-            State.Healing       => new[] { idle },
-            State.Staggered     => new[] { idle },
-            State.Knockback     => new[] { idle },
-            State.Dead          => new[] { $"Die_{resolvedDirection}", "Die_S", "Idle_S", idle },
-            _                   => new[] { idle }
-        };
+            bool movedX = TryMove(new Vector2(step.X, 0), careful);
+            bool movedY = TryMove(new Vector2(0, step.Y), careful);
+            if (!movedX && !movedY)
+                break;
+        }
     }
 
-    protected virtual bool PlayPlayerAnimation(string animationName)
+    private bool TryMove(Vector2 step, bool careful)
     {
-        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
+        if (step == Vector2.Zero)
             return false;
-
-        PlayAnimation(animationName);
+        Vector2 target = Position + step;
+        if (!NoClip && World.Grid.Blocks(target, Radius, Z))
+            return false;
+        if (careful && !IsFlying && IsGrounded)
+        {
+            Vector2 probe = target + step.Normalized() * Radius;
+            if (World.Grid.SurfaceZAt(probe) < SupportZ - 1f)
+                return false;
+        }
+        Position = target;
         return true;
     }
 
-    protected virtual void ApplyFacing(bool flipH)
+    private void SeparateFromNeighbours(float delta)
     {
-        if (Sprite != null)
-            Sprite.FlipH = flipH;
-    }
-
-    protected virtual void OnAnimationPlayed(string animationName, State state, string direction, bool flipH) { }
-
-    protected virtual bool IsAttackAnimation(string animationName)
-    {
-        return animationName.StartsWith("Attack") ||
-               animationName.StartsWith("attack") ||
-               animationName == "Attack_Spin";
-    }
-
-    public virtual void UpdateAnimation()
-    {
-        UpdateAnimation(UsesDirectionalAnimations);
-    }
-
-    public virtual void UpdateAnimation(bool useDirectionalAnimations)
-    {
-        if (AnimationPlayer == null)
-            return;
-
-        State currentState = GetCurrentAnimationState();
-        string direction = GetCurrentAnimationDirection(useDirectionalAnimations, out bool flipH);
-
-        if (currentState == lastAnimationState &&
-            direction == lastAnimationDirection &&
-            flipH == lastAnimationFlipH)
+        foreach (Entity other in World.Entities)
         {
-            return;
-        }
-
-        lastAnimationState = currentState;
-        lastAnimationDirection = direction;
-        lastAnimationFlipH = flipH;
-
-        ApplyFacing(flipH);
-
-        foreach (string animationName in GetAnimationCandidates(currentState, direction, useDirectionalAnimations))
-        {
-            if (!AnimationPlayer.HasAnimation(animationName))
+            if (other == this || !other.Solid || other.IsDead || Mathf.Abs(other.Z - Z) > 18f)
                 continue;
-
-            if (IsAttackAnimation(animationName))
-            {
-                float desiredDuration = GetAnimationDuration(animationName, useDirectionalAnimations);
-                float nativeLength = GetNativeAnimationDuration(animationName);
-                AnimationPlayer.SpeedScale = nativeLength / Mathf.Max(desiredDuration, 0.0001f);
-            }
-            else
-            {
-                AnimationPlayer.SpeedScale = 1f;
-            }
-
-            if (PlayPlayerAnimation(animationName))
-            {
-                OnAnimationPlayed(animationName, currentState, direction, flipH);
-                return;
-            }
+            Vector2 offset = Position - other.Position;
+            float minimum = Radius + other.Radius;
+            float distanceSquared = offset.LengthSquared();
+            if (distanceSquared >= minimum * minimum)
+                continue;
+            float distance = Mathf.Sqrt(distanceSquared);
+            Vector2 normal = distance > 0.01f ? offset / distance : Vector2.Right.Rotated(GetInstanceId() % 628 / 100f);
+            float share = other.Stats.Weight / (Stats.Weight + other.Stats.Weight);
+            MoveBy(normal * (minimum - distance) * share * Mathf.Min(1f, delta * 20f), false);
         }
     }
 
-    public virtual void PlayAnimation(string animName)
+    private void ResolveVertical(float delta)
     {
-        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animName)) return;
-        if (AnimationPlayer.CurrentAnimation != animName)
-            AnimationPlayer.Play(animName);
-    }
-
-    private float GetNativeAnimationDuration(string animationName)
-    {
-        if (AnimationPlayer == null || !AnimationPlayer.HasAnimation(animationName))
-            return 0.1f;
-
-        Animation animation = AnimationPlayer.GetAnimation(animationName);
-        if (animation == null)
-            return 0.1f;
-
-        return Mathf.Max(0.1f, (float)animation.Length);
-    }
-
-    // NOTE: An assigned EntityStats resource is the stat authority — it overrides any
-    // scene-set exported values below. Leave it unassigned to tune per-instance exports.
-    private void ApplyEntityStats()
-    {
-        if (EntityStats == null) return;
-        MaxHealth        = EntityStats.MaxHealth;
-        Health           = EntityStats.MaxHealth;
-        Speed            = EntityStats.Speed;
-        Damage           = EntityStats.Damage;
-        Armor            = EntityStats.Armor;
-        Weight           = EntityStats.Weight;
-        CanBeKnockedBack = EntityStats.UseKnockback;
-        Tenacity         = EntityStats.Tenacity;
-        MaxTenacity      = EntityStats.MaxTenacity;
-        MaxStaggers      = EntityStats.MaxStaggers;
-        CameraPriority   = EntityStats.CameraPriority;
-        AttackDuration   = EntityStats.AttackDuration;
-    }
-
-    private void InitializeZAxis()
-    {
-        GroundElevation   = StartElevation;
-        BaseCollisionMask = CollisionMask;
-
-        if (!CanBeJumpedOver)
-            CollisionLayer |= ElevationMath.WallBit;
-
-        ZAxis = new ZAxisSystem
+        if (IsFlying)
         {
-            JumpImpulse         = JumpImpulse,
-            JumpFallSpeed       = JumpFallSpeed,
-            ShadowScaleWhenJump = ShadowScaleWhenJump
-        };
-        ZAxis.Initialize(this);
-    }
-
-    protected virtual StateMachine CreateStateMachine() => new StateMachine();
-
-    private void EnsureStateMachine()
-    {
-        StateMachine = GetNodeOrNull<StateMachine>("StateMachine");
-
-        if (StateMachine == null)
-        {
-            StateMachine = CreateStateMachine();
-            StateMachine.Name = "StateMachine";
-            AddChild(StateMachine);
+            SupportZ = World.Grid.SurfaceZAt(GlobalPosition);
+            IsGrounded = false;
+            return;
         }
+
+        float support = World.Grid.SupportZ(Position, Radius, Z);
+        if (float.IsNegativeInfinity(support) && IgnorePits)
+            support = Z;
+        SupportZ = support;
+
+        if (Z > support + 0.5f || ZVelocity > 0f)
+        {
+            IsGrounded = false;
+            ZVelocity -= GRAVITY * GravityScale * delta;
+            Z += ZVelocity * delta;
+            if (Z <= support)
+            {
+                float impact = -ZVelocity;
+                Z = support;
+                ZVelocity = 0f;
+                IsGrounded = true;
+                OnLanded(impact);
+            }
+        }
+        else
+        {
+            Z = support;
+            ZVelocity = 0f;
+            IsGrounded = true;
+        }
+
+        if (float.IsNegativeInfinity(support) && !fellIntoVoid && Z < VOID_DEPTH)
+        {
+            fellIntoVoid = true;
+            OnFellIntoVoid();
+        }
+    }
+
+    public void ResetVoidFall()
+    {
+        fellIntoVoid = false;
+        ZVelocity = 0f;
+    }
+
+    public void PlaceAt(Vector2 groundPosition)
+    {
+        Position = groundPosition;
+        float surface = World.Grid.SurfaceZAt(groundPosition);
+        SupportZ = float.IsNegativeInfinity(surface) ? 0f : surface;
+        Z = SupportZ;
+        ZVelocity = 0f;
+        IsGrounded = true;
+        Impact.ClearKnockback();
+        ResetVoidFall();
+    }
+
+    public void Launch(float verticalVelocity)
+    {
+        ZVelocity = Mathf.Max(ZVelocity, verticalVelocity);
+        IsGrounded = false;
+    }
+
+    public void Flash(float duration, Color color)
+    {
+        flashDuration = duration;
+        flashRemaining = duration;
+        EntityMaterial.SetShaderParameter(StringNames.Of("flash_color"), color);
+        EntityMaterial.SetShaderParameter(StringNames.Of("flash"), 1f);
+    }
+
+    private void UpdateFlash(float delta)
+    {
+        if (flashRemaining <= 0f)
+            return;
+        flashRemaining -= delta;
+        float strength = flashRemaining <= 0f ? 0f : Mathf.Clamp(flashRemaining / flashDuration, 0f, 1f);
+        EntityMaterial.SetShaderParameter(StringNames.Of("flash"), strength > 0.45f ? 1f : strength * 1.6f);
+    }
+
+    public void SetOutline(float strength, Color color)
+    {
+        EntityMaterial.SetShaderParameter(StringNames.Of("outline"), strength);
+        EntityMaterial.SetShaderParameter(StringNames.Of("outline_color"), color);
+    }
+
+    public bool IsWithinVerticalReach(float otherZ, float otherSpan)
+    {
+        return Z < otherZ + otherSpan + 6f && otherZ < Z + HeightSpan + 6f;
+    }
+
+    public virtual HitResponse ReceiveHit(HitInfo hit)
+    {
+        if (IsDead)
+            return HitResponse.Ignored;
+        ImpactResult impact = Impact.Resolve(hit);
+        Health = Mathf.Max(0f, Health - hit.Damage);
+        Flash(0.1f, Colors.White);
+        OnHit(hit, impact);
+        if (Health <= 0f)
+        {
+            IsDead = true;
+            OnDeath(hit);
+            return HitResponse.Killed;
+        }
+        return HitResponse.Landed;
+    }
+
+    public void RestoreHealth(float amount)
+    {
+        Health = Mathf.Min(MaxHealth, Health + amount);
     }
 }

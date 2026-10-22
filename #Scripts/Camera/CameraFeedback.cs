@@ -1,55 +1,41 @@
 using Godot;
-using System;
 
-public static class CameraFeedback
+namespace Anomaly;
+
+// Trauma-based shake (offset ~ trauma^2) plus a short zoom punch for heavy moments.
+public sealed class CameraFeedback
 {
-    public struct ShakeParams
+    private const float MAX_OFFSET = 7f;
+    private const float MAX_ROLL = 0.018f;
+    private const float TRAUMA_DECAY = 1.9f;
+    private const float PUNCH_DECAY = 7f;
+
+    private readonly FastNoiseLite noise = new() { NoiseType = FastNoiseLite.NoiseTypeEnum.Simplex, Frequency = 0.9f };
+    private float trauma;
+    private float punch;
+    private float time;
+
+    public Vector2 Offset { get; private set; }
+    public float Roll { get; private set; }
+    public float ZoomBoost => punch;
+
+    public void AddTrauma(float amount) => trauma = Mathf.Min(1f, trauma + amount * GameSettings.ScreenShake);
+
+    public void Punch(float amount) => punch = Mathf.Max(punch, amount * Mathf.Min(1f, GameSettings.ScreenShake));
+
+    public void TenacityShatter()
     {
-        public float intensity;
-        public float duration;
+        AddTrauma(0.5f);
+        Punch(0.07f);
     }
 
-    // Base shake function - call this from UpdateShakeOffset
-    public static Vector2 ApplyShake(double delta, ref float shakeIntensity, ref float shakeTimer)
+    public void Update(float realDelta)
     {
-        if (shakeTimer <= 0)
-        {
-            shakeIntensity = 0f;
-            return Vector2.Zero;
-        }
-
-        shakeTimer -= (float)delta;
-
-        Vector2 offset = new Vector2(
-            (float)GD.Randf() * shakeIntensity - shakeIntensity / 2,
-            (float)GD.Randf() * shakeIntensity - shakeIntensity / 2
-        );
-
-        if (shakeTimer <= 0)
-        {
-            shakeIntensity = 0f;
-            return Vector2.Zero;
-        }
-
-        return offset;
+        time += realDelta * 60f;
+        trauma = Mathf.Max(0f, trauma - TRAUMA_DECAY * realDelta);
+        punch = Mathf.Lerp(punch, 0f, 1f - Mathf.Exp(-PUNCH_DECAY * realDelta));
+        float shake = trauma * trauma;
+        Offset = new Vector2(noise.GetNoise2D(time, 0f), noise.GetNoise2D(0f, time)) * MAX_OFFSET * shake;
+        Roll = noise.GetNoise2D(time, 100f) * MAX_ROLL * shake;
     }
-
-    // Initialize a shake with custom parameters
-    public static void InitiateShake(ref float shakeIntensity, ref float shakeTimer, ShakeParams param)
-    {
-        shakeIntensity = param.intensity;
-        shakeTimer = param.duration;
-    }
-
-    // Specific shake types
-    public static ShakeParams NormalShake() => new ShakeParams { intensity = 2.2f, duration = 0.15f };
-    public static ShakeParams WeaknessShake() => new ShakeParams { intensity = 2.4f, duration = 0.15f };
-    public static ShakeParams StaggerShake() => new ShakeParams { intensity = 2.6f, duration = 0.15f };
-    public static ShakeParams TenacityBreakShake() => new ShakeParams { intensity = 3.3f, duration = 0.4f };
-
-    // Helper to trigger shakes directly from camera context
-    public static void TriggerNormalShake(Camera camera) => camera?.ShakeCamera(0.5f);
-    public static void TriggerWeaknessShake(Camera camera) => camera?.ShakeCamera(0.75f);
-    public static void TriggerStaggerShake(Camera camera) => camera?.ShakeCamera(1f);
-    public static void TriggerTenacityBreakShake(Camera camera) => camera?.ShakeCamera(5f);
 }

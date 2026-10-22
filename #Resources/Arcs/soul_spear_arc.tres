@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="SoulWeaponArc" format=3]
+
+[ext_resource type="Script" path="res://#Scripts/Weapon/SoulWeaponArc.cs" id="1_arc"]
+[ext_resource type="Texture2D" path="res://#Assets/Weapons/spear.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_arc")
+ArcId = "soul_spear_arc"
+ArcName = "Soul Spear Arc"
+PrimaryDamageType = 1
+BaseEfficiency = 0.95
+MatchedEfficiency = 1.3
+SpecialMoveDamageType = 2
+SpecialMove = 2
+SpecialCooldown = 4.0
+SpecialDamageMultiplier = 1.6
+ManifestDamageMultiplier = 1.25
+ManifestKnockbackMultiplier = 0.9
+ManifestTenacityMultiplier = 1.2
+ManifestRangeBonus = 22.0
+ManifestArcDegrees = 90.0
+TrailColor = Color(0.78, 0.6, 1, 1)
+Icon = ExtResource("2_icon")
+Description = "The Scythe pierces like a spear. Manifests reach far in a narrow line; the special lunges forward and smashes on impact."

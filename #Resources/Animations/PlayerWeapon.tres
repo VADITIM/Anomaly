@@ -1,0 +1,497 @@
+[gd_resource type="AnimationLibrary" load_steps=29 format=3]
+
+[sub_resource type="Animation" id="Animation_0"]
+resource_name = "Attack_E"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [54, 55, 56, 45, 58, 59, 60]
+}
+
+[sub_resource type="Animation" id="Animation_1"]
+resource_name = "Attack_N"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0, 13, 14, 15, 16, 17, 18]
+}
+
+[sub_resource type="Animation" id="Animation_2"]
+resource_name = "Attack_NE"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [61, 62, 63, 64, 65, 66, 67]
+}
+
+[sub_resource type="Animation" id="Animation_3"]
+resource_name = "Attack_NW"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [19, 20, 21, 22, 34, 69, 70]
+}
+
+[sub_resource type="Animation" id="Animation_4"]
+resource_name = "Attack_S"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [85, 86, 87, 88, 89, 57, 46]
+}
+
+[sub_resource type="Animation" id="Animation_5"]
+resource_name = "Attack_SE"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [47, 48, 49, 50, 51, 52, 53]
+}
+
+[sub_resource type="Animation" id="Animation_6"]
+resource_name = "Attack_SW"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [78, 68, 80, 81, 82, 83, 84]
+}
+
+[sub_resource type="Animation" id="Animation_7"]
+resource_name = "Attack_W"
+length = 0.525
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.075, 0.15, 0.225, 0.3, 0.375, 0.45),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [71, 72, 73, 74, 75, 76, 77]
+}
+
+[sub_resource type="Animation" id="Animation_8"]
+resource_name = "Dodge_E"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [164, 165, 166, 167, 157, 167, 169, 170]
+}
+
+[sub_resource type="Animation" id="Animation_9"]
+resource_name = "Dodge_N"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [101, 90, 103, 104, 105, 104, 106, 101]
+}
+
+[sub_resource type="Animation" id="Animation_10"]
+resource_name = "Dodge_S"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [158, 159, 160, 161, 162, 161, 163, 158]
+}
+
+[sub_resource type="Animation" id="Animation_11"]
+resource_name = "Dodge_W"
+length = 0.8
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [107, 108, 109, 110, 111, 110, 112, 124]
+}
+
+[sub_resource type="Animation" id="Animation_12"]
+resource_name = "Idle_E"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [93, 94, 94, 94, 94, 95, 96, 97, 97, 97, 97, 97]
+}
+
+[sub_resource type="Animation" id="Animation_13"]
+resource_name = "Idle_N"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [168, 114, 115, 115, 115, 116, 117, 117, 117, 117, 117, 117]
+}
+
+[sub_resource type="Animation" id="Animation_14"]
+resource_name = "Idle_NE"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [98, 99, 99, 99, 99, 98, 100, 100, 100, 100, 100, 100]
+}
+
+[sub_resource type="Animation" id="Animation_15"]
+resource_name = "Idle_NW"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [118, 119, 119, 119, 119, 118, 120, 120, 120, 120, 120, 120]
+}
+
+[sub_resource type="Animation" id="Animation_16"]
+resource_name = "Idle_S"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [128, 129, 130, 130, 130, 131, 132, 132, 132, 132, 132, 132]
+}
+
+[sub_resource type="Animation" id="Animation_17"]
+resource_name = "Idle_SE"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [133, 134, 134, 102, 102, 91, 92, 92, 92, 92, 92, 92]
+}
+
+[sub_resource type="Animation" id="Animation_18"]
+resource_name = "Idle_SW"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [113, 125, 125, 125, 125, 126, 127, 127, 127, 127, 127, 127]
+}
+
+[sub_resource type="Animation" id="Animation_19"]
+resource_name = "Idle_W"
+length = 1.38
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.115, 0.23, 0.345, 0.46, 0.575, 0.69, 0.805, 0.92, 1.035, 1.15, 1.265),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [121, 122, 122, 122, 122, 121, 123, 123, 123, 123, 123, 123]
+}
+
+[sub_resource type="Animation" id="Animation_20"]
+resource_name = "Move_E"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [41, 42, 43, 44, 12, 1, 2, 3]
+}
+
+[sub_resource type="Animation" id="Animation_21"]
+resource_name = "Move_N"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [171, 172, 173, 174, 175, 176, 177, 178]
+}
+
+[sub_resource type="Animation" id="Animation_22"]
+resource_name = "Move_NE"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [4, 5, 6, 7, 8, 9, 10, 11]
+}
+
+[sub_resource type="Animation" id="Animation_23"]
+resource_name = "Move_NW"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [146, 136, 137, 138, 139, 140, 141, 142]
+}
+
+[sub_resource type="Animation" id="Animation_24"]
+resource_name = "Move_S"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [25, 26, 27, 28, 29, 30, 31, 32]
+}
+
+[sub_resource type="Animation" id="Animation_25"]
+resource_name = "Move_SE"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [33, 23, 35, 36, 37, 38, 39, 40]
+}
+
+[sub_resource type="Animation" id="Animation_26"]
+resource_name = "Move_SW"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [151, 152, 153, 154, 155, 156, 79, 24]
+}
+
+[sub_resource type="Animation" id="Animation_27"]
+resource_name = "Move_W"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = false
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [143, 144, 145, 135, 147, 148, 149, 150]
+}
+
+[resource]
+_data = {
+&"Attack_E": SubResource("Animation_0"),
+&"Attack_N": SubResource("Animation_1"),
+&"Attack_NE": SubResource("Animation_2"),
+&"Attack_NW": SubResource("Animation_3"),
+&"Attack_S": SubResource("Animation_4"),
+&"Attack_SE": SubResource("Animation_5"),
+&"Attack_SW": SubResource("Animation_6"),
+&"Attack_W": SubResource("Animation_7"),
+&"Dodge_E": SubResource("Animation_8"),
+&"Dodge_N": SubResource("Animation_9"),
+&"Dodge_S": SubResource("Animation_10"),
+&"Dodge_W": SubResource("Animation_11"),
+&"Idle_E": SubResource("Animation_12"),
+&"Idle_N": SubResource("Animation_13"),
+&"Idle_NE": SubResource("Animation_14"),
+&"Idle_NW": SubResource("Animation_15"),
+&"Idle_S": SubResource("Animation_16"),
+&"Idle_SE": SubResource("Animation_17"),
+&"Idle_SW": SubResource("Animation_18"),
+&"Idle_W": SubResource("Animation_19"),
+&"Move_E": SubResource("Animation_20"),
+&"Move_N": SubResource("Animation_21"),
+&"Move_NE": SubResource("Animation_22"),
+&"Move_NW": SubResource("Animation_23"),
+&"Move_S": SubResource("Animation_24"),
+&"Move_SE": SubResource("Animation_25"),
+&"Move_SW": SubResource("Animation_26"),
+&"Move_W": SubResource("Animation_27")
+}

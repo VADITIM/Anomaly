@@ -1,32 +1,3 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
-data_Anomaly_windows_x86_64/
-
-# Godot C# / Visual Studio artifacts
-.vs/
-bin/
-obj/
-.mono/
-*.user
-*.suo
-*.userprefs
-*.csproj.user
-*.sln.docstates
-*.csproj.old
-*.csproj.old.*
-
-# Local plugins / addons
-addons/
-desktop.ini
-
-# Optional export outputs
-build/
-exports/
-*.apk
-*.aab
-*.exe
-*.app
-*.zip
-
-.fakeCLAUDE.local.md

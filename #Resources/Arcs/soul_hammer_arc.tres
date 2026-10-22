@@ -1,0 +1,24 @@
+[gd_resource type="Resource" script_class="SoulWeaponArc" format=3]
+
+[ext_resource type="Script" path="res://#Scripts/Weapon/SoulWeaponArc.cs" id="1_arc"]
+[ext_resource type="Texture2D" path="res://#Assets/Weapons/hammer.png" id="2_icon"]
+
+[resource]
+script = ExtResource("1_arc")
+ArcId = "soul_hammer_arc"
+ArcName = "Soul Hammer Arc"
+PrimaryDamageType = 2
+BaseEfficiency = 0.95
+MatchedEfficiency = 1.3
+SpecialMoveDamageType = 0
+SpecialMove = 1
+SpecialCooldown = 5.0
+SpecialDamageMultiplier = 1.3
+ManifestDamageMultiplier = 1.35
+ManifestKnockbackMultiplier = 1.6
+ManifestTenacityMultiplier = 2.0
+ManifestRangeBonus = 0.0
+ManifestArcDegrees = 200.0
+TrailColor = Color(1, 0.68, 0.32, 1)
+Icon = ExtResource("2_icon")
+Description = "The Scythe strikes with a hammer's weight. Manifests crush Tenacity; the special sends a shattering wave through the ground."
