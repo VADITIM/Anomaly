@@ -24,11 +24,11 @@ Status: plan, not started. This is the handover for the next agent. It lists the
 | Amulet UI | `#Scripts/UI/AmuletIcon.cs`, `#Scripts/UI/Menus/AmuletWindow.cs`, `#Scenes/AmuletWindow.tscn` | window text reads "AMULET" |
 | Amulet hooks | `Player.cs`, `Player.Combat.cs`, `Player.Damage.cs`, `Player.Resources.cs`, `StatusMenu.cs` | `Amulets.Multiplier` calls |
 | Save data | `#Scripts/Save/ProgressionData.cs` | `AmuletInventory`, `EquippedAmulets` (saved by name) |
-| Input | `#Scripts/Core/GameInput.cs` | `AETHERIAC` bound to `Key.J`? (check), `ATTACK` to `Key.J`, `CAMERA_UNLOCK` |
+| Input | `#Scripts/Core/GameInput.cs` | `AETHERIAC` bound to `Key.R` (line 93, joypad `RightShoulder`), `ATTACK` to `Key.J`, `CAMERA_UNLOCK` to `Key.Z`. Y is unbound |
 | Player animation | `#Scripts/Entities/Player/PlayerAnimator.cs` | `Kio_Body.png`, `Kio_Weapon.png`, `WEAPON_LAYER_ENABLED = false` |
 | Scythe node | `#Scripts/Weapon/TelekineticScythe.cs` | floating orbit, `LINGER_TIME`, `ORBIT_RADIUS`, `STRIKES` table |
 
-Confirm the `AETHERIAC` key before any input work. The design says Aetheriac moves to Y, but the file's current binding was not read in full.
+The design moves Aetheriac from R to Y, and R goes to Corrupted Powers. Y was checked as unbound before the design was written.
 
 ## Steps
 
