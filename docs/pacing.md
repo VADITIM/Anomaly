@@ -12,7 +12,7 @@ Status: draft. Target and budgets are starting points, to be checked against pla
 - **Breadth of content.** Distinct encounters, bosses and rooms set the length. Walking slowly doesn't.
 - **Optional content.** Extra souls, Arc levels and side fights fill the upper hours. The mandatory path has to stand on its own.
 - **Backtracking that earns something.** Every return trip should unlock a path, a soul, a boss or a shortcut. Empty return trips are the main source of padding.
-- **Cheap return.** Shortcuts and loops keep return trips short. Fast travel isn't planned, so routes are what matter.
+- **Cheap return.** Shortcuts and loops keep return trips short. Fast travel exists only inside the Corrupted Void, through void rifts opened by a Void Heart. Overworld routes still matter.
 
 ## Time budget per region
 
@@ -35,7 +35,7 @@ Backtracking works without warp upgrades:
 
 ## Corrupted Void and backtracking
 
-The Corrupted Void is a separate map per region, not a mirror of the overworld. See `docs/corrupted-void.md` for its layout, spokes and rewards.
+The Corrupted Void is a separate map per region, not a mirror of the overworld. The region voids connect into one Corrupted Void, and void rifts give quick travel between regions after each Void Heart. See `docs/corrupted-void.md` for its layout, spokes, rifts and rewards.
 
 ## Soul-curve tuning
 

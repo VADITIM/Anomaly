@@ -6,12 +6,29 @@ Status: draft. Layout numbers are starting points, to be checked against playtim
 
 The Corrupted Void is a separate map for each region. It is not a mirror of the overworld. It has its own layout, enemies and rewards, and it's reached from its region through a rupture or gate.
 
+Each region's void is a smaller subregion. Together they form one connected Corrupted Void, which is the only fast travel between regions (see **Connected void**).
+
+## Hollow Reach
+
+Hollow Reach is the central hub of the overworld, in Verdanya. It's the most broken land in Akasa, so Void is everywhere in it: corruption, danger and pits to the Void. It connects to the other regions through Fractures.
+
 ## Shape
 
 - **Centre: teleport anchors.** The anchors sit close together in the middle of the void, so moving between them is quick. This is the hub.
 - **Spokes: content.** Routes expand outward from the hub. Each spoke has encounters, a reward and a way back to the centre, and it takes a few minutes to clear.
 - **Outer rings are a little further out.** Anchors spread out a little, so the far spokes take longer to walk, but a return to the hub is still short.
 - **Smaller than the overworld.** A void is sized to its time budget, not to the overworld footprint.
+
+## Connected void
+
+- **One region, many subregions.** Every region's void is a subregion of one large Corrupted Void. Players can cross from one region's void to another's.
+- **Void rifts.** Once a region's Void Heart is destroyed, void rifts open inside that region's void. Rifts link to other regions' voids, so travel between regions is quick, but only from inside the void. They're the only fast travel in the game.
+- **Rifts are unlocked, not free.** A rift only links to regions whose Void Heart the player has destroyed. Until then, the route between regions runs through the overworld.
+
+## Difficulty
+
+- The Act I tutorial void is the easy one. After it, void enemies are harder than the overworld enemies of the same region, by default **1–2 world levels higher**. The void is meant to feel dangerous.
+- Rewards scale with the extra danger, so the harder fights pay for themselves.
 
 ## Playtime
 
@@ -30,7 +47,8 @@ The Corrupted Void is a separate map for each region. It is not a mirror of the 
 
 - **Scenes.** One scene per void, `#Scenes/Void/<Region>Void.tscn`. Anchors are entity scenes (`#Scenes/Entities/VoidAnchor.tscn`), and the scene rule in `CLAUDE.md` applies.
 - **Placement.** `LevelBlueprint` decides where anchors and spokes go, using the same `PlacementKind` pattern as the overworld.
-- **Teleport graph.** Anchors that are unlocked are saved as flags in `WorldData`. Teleporting only moves between unlocked anchors. This is the only fast travel in the void.
+- **Teleport graph.** Anchors that are unlocked are saved as flags in `WorldData`. Teleporting only moves between unlocked anchors within one region void. Void rifts are separate flags, set by a region's Void Heart. They link region voids, so a rift is the only way to fast travel between regions.
+- **Difficulty.** Void enemies use the overworld roster with a world-level offset of +1 to +2 after the Act I tutorial, so `EnemyRoster` needs a level offset per void.
 - **Map.** `MapData` gets a void page per region, showing anchors and which spokes are open or sealed.
 - **Enemies.** Void enemies are their own roster, so `EnemyRoster` streaming and cleared state work the same way as in the overworld.
 
