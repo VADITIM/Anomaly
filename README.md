@@ -1,6 +1,6 @@
 # Anomaly — first build
 
-2D top-down action RPG in Godot 4.7 (.NET 8, C#). This vertical slice is centred on Hollow Reach in Verdanya, the most broken land in Akasa. Corrupted Fractures tear out of it toward three continents (Glaciemera, Èrmiosa and Elaphrium) and a sealed fourth (Azurean). Each continent holds a Void Heart for Kio to rupture. The Voice calls that "cleansing".
+2D top-down action RPG in Godot 4.7 (.NET 8, C#). This vertical slice is centred on Hollow Reach in Verdanya, the most broken land in Akasa. Corrupted Fractures tear out of it toward Èrmiosa, Azurean and Elaphrium. Glaciemera is reachable only through Èrmiosa. Each continent holds a Void Heart for Kio to rupture. The Voice calls that "cleansing".
 
 ## Run
 
@@ -46,10 +46,10 @@ Screenshot harness: `"Godot 4.7.2.exe" --path . -- --autopilot --capture=<dir>` 
 - **Pack AI.** `EnemyDirector` lets two melee and two ranged enemies commit at once. The rest hold spread-out flank slots and rotate in. An aggroed enemy alerts others in sight. Enemies sidestep swings (per-type chance), counter out of flinches, and harden for 1.3 s after three quick flinches (amber outline) so they can't be stunlocked. They press harder while Kio heals or is out of stamina.
 - **Resonance (leveling).** Kills grant Residue. Levelling up grants a point to attune at a bonfire into Vitality, Endurance, Might or Resolve. Each Resonance also quietly speeds up Corruption. The design is in the Obsidian vault at `Systems & Gameplay/Systems/Resonance.md`. Strikes now cost stamina, and base damage and stamina regen are lower; Resonance is how power comes back.
 - **World.** Hollow Reach is the hub, with one Fracture span out of it in each direction. Each continent is built as a loop: Fracture landing with a bonfire, a fork, a gauntlet, a Void Heart, then a **shortcut gate** (`ShortcutGate`) that only lifts from the far side and leads back to the landing. Opened gates persist.
-  - Frostwatch / Glaciemera (north): Wind Steppe, Rimebound Watch, Snowbound Pantheon, and the Frozen Ravine full of sleeping bats.
-  - The Bonefields / Èrmiosa (east): watch-post with a Gnawer nest, Ossuary Field, Higher Empire sanctum, and the Burial Pits.
-  - Aurelian Grove / Elaphrium (south): the Great Gate is barred from inside, so the way in runs through the Golden Wood and the Fountain Court to the Altar of the First, and the gate is opened on the way back.
-  - Azurean Verge (west): shade islands up to a sealed Fracture, which only stirs once all four Void Hearts are gone.
+  - The Bonefields / Èrmiosa (east): the first real region. Watch-post with a Gnawer nest, Ossuary Field, Higher Empire sanctum, and the Burial Pits. The Rend is introduced here, within the first 1–2 hours of play.
+  - Frostwatch / Glaciemera (north): reachable only through Èrmiosa. Wind Steppe, Rimebound Watch, Snowbound Pantheon, and the Frozen Ravine full of sleeping bats.
+  - Aurelian Grove / Elaphrium (south): optional. The player can see it from the start. The Great Gate is barred from inside, so the way in runs through the Golden Wood and the Fountain Court to the Altar of the First, and the gate is opened on the way back.
+  - Azurean Verge (west): open from the hub, with shade islands. The final section, Valdis, is not here. It sits inside the Corrupted Void, locked behind four Void Hearts.
   - Every continent has a Soul Cache detour guarded by a bait ambush.
 - **World loop.** Maldor's forge in Hollow Reach is the rest point: rest, swap Arcs, hone the Scythe. Bonfires hold the player-stat upgrades (Resonance, Vessel). Using a bonfire also makes it your respawn point; it doesn't heal or reset enemies. Dying leaves your souls at the death spot. Each Void Heart has two guard waves drawn from its continent's enemies, a rupture, and a difficulty increase. Saves go to `user://*.res` through `SaveManager`.
 - **Options.** Pause → Options has Audio (Master, Ambience, Effects, Interface, mute when unfocused), Video (window mode and size, VSync, frame cap, brightness), Effects (screen shake, flashes, chromatic aberration, film grain, bloom), Gameplay (damage numbers, aim assist, control hints) and Controls (keyboard and mouse rebinding). Settings are saved to `user://settings.cfg`, separately from the save game.

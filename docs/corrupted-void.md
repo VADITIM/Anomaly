@@ -23,6 +23,7 @@ Hollow Reach is the central hub of the overworld, in Verdanya. It's the most bro
 
 - **One region, many subregions.** Every region's void is a subregion of one large Corrupted Void. Players can cross from one region's void to another's.
 - **Void rifts.** Once a region's Void Heart is destroyed, void rifts open inside that region's void. Rifts link to other regions' voids, so travel between regions is quick, but only from inside the void. They're the only fast travel in the game.
+- **Valdis's final section is in the void.** It's locked behind four Void Hearts and sits inside the connected Corrupted Void, not on any continent.
 - **Rifts are unlocked, not free.** A rift only links to regions whose Void Heart the player has destroyed. Until then, the route between regions runs through the overworld.
 
 ## Difficulty
