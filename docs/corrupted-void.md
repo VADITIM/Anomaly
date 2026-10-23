@@ -30,7 +30,7 @@ Hollow Reach is the central hub of the overworld, in Verdanya. It's the most bro
 
 - Each Void Heart grants Kio one power when it's destroyed. The set of powers is the same whichever order the hearts are cleared in.
 - Some areas of a region are reached only with two, three or four Void Heart powers. Those gates are part of the region's layout, so the player can't reach them early.
-- Powers are TBD. They're separate from the Arc powers in `docs/corrupted-powers.md` until that doc is reconciled (see Open questions there).
+- Powers are TBD. They're separate from the Arc powers in `docs/corrupted-powers.md`, which unlock at Arc Refinement 5 and from the soul.
 - **Rifts are unlocked, not free.** A rift only links to regions whose Void Heart the player has destroyed. Until then, the route between regions runs through the overworld.
 
 ## Difficulty

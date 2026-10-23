@@ -7,6 +7,7 @@ Status: draft. Numbers are starting values for tuning, not final balance.
 A Corrupted Power can only be acquired by the soul it is bound to. Each Soul Arc has one power, and only that arc's soul can teach it.
 
 - **Refinement 5 unlocks the slot.** Refining the Arc to Level 5 opens its power slot.
+- **Maldor points to the soul.** Once the slot is open, Maldor points Kio toward where the soul might be.
 - **Finding the soul unlocks the power.** The slot stays empty until the soul is found.
 - **Soul sources.** A soul can be found as:
   - a corpse of an entity that used the weapon, or
@@ -19,11 +20,10 @@ Corrupted Powers are ability-focused powers that belong to Soul Arcs. Where an A
 
 ## Unlock
 
-Three gates, in order:
+Two gates, in order:
 
-1. **Second Void Heart.** Rupturing the second Void Heart unlocks the Corrupted Powers system. No power is owned yet.
-2. **Arc Level 5.** Refining a Soul Arc to Level 5 (`ArcUpgrades.MAX_LEVEL`) opens that Arc's power slot.
-3. **The soul.** Finding the bound soul (see Core rule) grants the power. Each Arc is refined and unlocked on its own.
+1. **Arc Level 5.** Refining a Soul Arc to Level 5 (`ArcUpgrades.MAX_LEVEL`) opens that Arc's power slot. Maldor then points Kio toward where the bound soul might be.
+2. **The soul.** Finding the bound soul (see Core rule) grants the power. Each Arc is refined and unlocked on its own.
 
 ## Activation
 

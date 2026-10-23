@@ -11,7 +11,7 @@ An artifact is worn in one of the four slots beside the status screen. It does t
 
 ## Soul bonus, the same principle as Corrupted Powers
 
-Corrupted Powers (`docs/corrupted-powers.md`) are bound to a Soul Arc and unlock in order: the second Void Heart, Arc Level 5, then the soul. Artifacts follow the same pattern:
+Corrupted Powers (`docs/corrupted-powers.md`) are bound to a Soul Arc and unlock in order: Arc Level 5, then the soul. Artifacts follow the same pattern:
 
 - **Each artifact has one bound soul.** The soul is the one that used the artifact. Only that soul's bonus belongs to that artifact.
 - **Soul sources.** The soul is found as a corpse or a full boss fight, as in `docs/corrupted-powers.md`. A Disciple's artifact is found in its region, and the bonus drops from the Disciple.
